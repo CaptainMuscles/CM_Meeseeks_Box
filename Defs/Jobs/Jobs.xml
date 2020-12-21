@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Defs>
+	<JobDef>
+		<defName>CM_Meeseeks_Box_Job_EmbraceTheVoid</defName>
+		<driverClass>CM_Meeseeks_Box.JobDriver_EmbraceTheVoid</driverClass>
+		<reportString>Embracing the void.</reportString>
+	</JobDef>
+	
+	<JobDef>
+		<defName>CM_Meeseeks_Box_Job_CastAbilityNoTarget</defName>
+		<driverClass>CM_Meeseeks_Box.JobDriver_CastAbilityNoTarget</driverClass>
+		<reportString>Using ability.</reportString>
+	</JobDef>
+</Defs>

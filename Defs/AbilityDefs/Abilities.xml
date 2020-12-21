@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <AbilityDef Name="MeeseeksSpawnCast">
+	<defName>CM_Meeseeks_Box_Ability_Spawn_Meeseeks</defName>
+    <label>create meeseeks</label>
+    <abilityClass>Ability</abilityClass>
+	<description>Create a helper capable of performing a single task to completion before disappearing.</description>
+    <statBases>
+      <Ability_Duration>0</Ability_Duration>
+    </statBases>
+	<jobDef>CastAbilityOnThingUninterruptible</jobDef>
+    <targetRequired>False</targetRequired>
+    <canUseAoeToGetTargets>False</canUseAoeToGetTargets>
+    <showPsycastEffects>False</showPsycastEffects>
+    <showCastingProgressBar>False</showCastingProgressBar>
+    <warmupMote>Mote_WarmupNeuroquake</warmupMote>
+    <verbProperties>
+      <verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
+      <label>create meeseeks</label>
+	  <violent>false</violent>
+	  <hasStandardCommand>true</hasStandardCommand>
+	  <targetable>false</targetable>
+	  <nonInterruptingSelfCast>true</nonInterruptingSelfCast>
+	  <onlyManualCast>True</onlyManualCast>
+    </verbProperties>
+  </AbilityDef>
+
+</Defs>
