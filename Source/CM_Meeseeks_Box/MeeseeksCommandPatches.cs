@@ -368,6 +368,21 @@ namespace CM_Meeseeks_Box
             }
         }
 
+        [HarmonyPatch(typeof(Pawn_WorkSettings))]
+        [HarmonyPatch("GetPriority", MethodType.Normal)]
+        public static class Pawn_WorkSettings_GetPriority_IgnorePriorityChanges
+        {
+            [HarmonyPostfix]
+            public static void Postfix(Pawn_WorkSettings __instance, ref int __result, Pawn ___pawn)
+            {
+                if (___pawn.kindDef == MeeseeksDefOf.MeeseeksKind)
+                {
+                    __result = Pawn_WorkSettings.DefaultPriority;
+                    Logger.MessageFormat(__instance, "Forcing default work priority of: {0}", __result);
+                }
+            }
+        }
+
         //[HarmonyPatch(typeof(PriorityWork))]
         //[HarmonyPatch("GetGizmos", MethodType.Normal)]
         //public static class MeeseeksCantClearPrioritizedWork

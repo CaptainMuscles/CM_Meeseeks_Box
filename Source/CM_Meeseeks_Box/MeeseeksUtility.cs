@@ -60,6 +60,7 @@ namespace CM_Meeseeks_Box
                                          where !w.alwaysStartActive && !mrMeeseeksLookAtMe.WorkTypeIsDisabled(w)
                                          select w)
             {
+                // Our patch overrides the priority, but we need to make sure they are all on
                 mrMeeseeksLookAtMe.workSettings.SetPriority(item, 3);
             }
 
