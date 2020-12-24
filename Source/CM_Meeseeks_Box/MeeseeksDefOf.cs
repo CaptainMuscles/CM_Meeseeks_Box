@@ -17,6 +17,7 @@ namespace CM_Meeseeks_Box
 
         public static WorkTypeDef CM_Meeseeks_Box_WorkType_Killing;
 
+        public static JobDef CM_Meeseeks_Box_Job_AcquireEquipment;
         public static JobDef CM_Meeseeks_Box_Job_EmbraceTheVoid;
         public static JobDef CM_Meeseeks_Box_Job_Kill;
 

@@ -16,7 +16,7 @@ namespace CM_Meeseeks_Box
         public JobDef lastStartedJobDef = null;
 
         public int givenTaskTick = -1;
-        public int acquiredWeaponTick = -1;
+        public int acquiredEquipmentTick = -1;
         public int checkedForClothingTick = -1;
         public BodyPartGroupDef lastCheckedBodyPartGroup = null;
 
@@ -67,7 +67,7 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look<bool>(ref this.givenTask, "givenTask", false);
             Scribe_Values.Look<bool>(ref this.taskCompleted, "taskCompleted", false);
             Scribe_Values.Look<int>(ref this.givenTaskTick, "givenTaskTick", -1);
-            Scribe_Values.Look<int>(ref this.acquiredWeaponTick, "acquiredWeaponTick", -1);
+            Scribe_Values.Look<int>(ref this.acquiredEquipmentTick, "acquiredWeaponTick", -1);
             Scribe_Values.Look<int>(ref this.checkedForClothingTick, "checkedForClothingTick", -1);
 
             Scribe_Deep.Look(ref savedJob, "savedJob");
@@ -103,13 +103,18 @@ namespace CM_Meeseeks_Box
             return givenTask;
         }
 
+        public bool HasTimeToQueueNewJob()
+        {
+            int ticksSinceOrder = Find.TickManager.TicksGame - givenTaskTick;
+            return (ticksSinceOrder < maxQueueOrderTicks);
+        }
+
         public bool CanTakeOrders()
         {
             if (!givenTask)
                 return true;
 
-            int ticksSinceOrder = Find.TickManager.TicksGame - givenTaskTick;
-            bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && ticksSinceOrder < maxQueueOrderTicks);
+            bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && HasTimeToQueueNewJob());
 
             return canQueueNewJob;
         }
@@ -119,16 +124,15 @@ namespace CM_Meeseeks_Box
             if (!givenTask)
                 return true;
 
-            int ticksSinceOrder = Find.TickManager.TicksGame - givenTaskTick;
-            bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && ticksSinceOrder < maxQueueOrderTicks);
+            bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && HasTimeToQueueNewJob());
             bool jobIsSame = (job.def == savedJob.def);
 
             return (canQueueNewJob && jobIsSame);
         }
 
-
         public void PreTryTakeOrderedJob(Job job)
         {
+            Logger.MessageFormat(this, "Here");
             // This allows Mr Meeseeks to know what clothes he could wear if he does take the job
             if (!givenTask)
             {
@@ -139,6 +143,7 @@ namespace CM_Meeseeks_Box
 
         public void PostTryTakeOrderedJob(bool success, Job job)
         {
+            Logger.MessageFormat(this, "Here");
             // If he didn't take the job and hasn't been officially given one, clear out the saved job
             if (!success && !givenTask)
             {

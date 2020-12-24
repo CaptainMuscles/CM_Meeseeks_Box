@@ -105,6 +105,28 @@ namespace CM_Meeseeks_Box
         }
 
         [HarmonyPatch(typeof(Pawn_JobTracker))]
+        [HarmonyPatch("TryTakeOrderedJobPrioritizedWork", MethodType.Normal)]
+        public static class Pawn_JobTracker_TryTakeOrderedJobPrioritizedWork
+        {
+            [HarmonyPrefix]
+            public static void Prefix(Pawn_JobTracker __instance, Job job, WorkGiver giver, Pawn ___pawn)
+            {
+                //Logger.MessageFormat(__instance, "TryTakeOrderedJobPrioritizedWork Prefix");
+
+                if (___pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = ___pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null)
+                    {
+                        // I don't see any reason why this shouldn't always be the case, but we'll only do it for Meeseeks just to minimize potential impact
+                        job.workGiverDef = giver.def;
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Pawn_JobTracker))]
         [HarmonyPatch("TryTakeOrderedJob", MethodType.Normal)]
         public static class MeeseeksTryTakeOrderedJob
         {
@@ -139,7 +161,7 @@ namespace CM_Meeseeks_Box
             }
 
             [HarmonyPostfix]
-            public static void MonitorMeeseeksJob(Pawn_JobTracker __instance, Job job, ref bool __result, Pawn ___pawn)
+            public static void Postfix(Pawn_JobTracker __instance, Job job, ref bool __result, Pawn ___pawn)
             {
                 //Logger.MessageFormat(__instance, "TryTakeOrderedJob Postfix");
 
@@ -258,24 +280,27 @@ namespace CM_Meeseeks_Box
                         {
                             gizmoList.Clear();
 
-                            string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
-
-                            List<Gizmo> priorityGizmos = __instance.mindState.priorityWork.GetGizmos().ToList();
-                            //Logger.MessageFormat(__instance, "Meeseeks GetGizmos, priority gizmo count: {0}", priorityGizmos.Count);
-
-                            // This is specifically to allow Achtung's increase/decrease priority gizmos
-                            // TODO: Check for Achtung and do this more on purpose
-                            foreach (Gizmo gizmo in priorityGizmos)
+                            if (compMeeseeksMemory.HasTimeToQueueNewJob())
                             {
-                                Command_Action commandAction = gizmo as Command_Action;
-                                if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
-                                {
-                                    yield return gizmo;
+                                string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
 
-                                }
-                                else
+                                List<Gizmo> priorityGizmos = __instance.mindState.priorityWork.GetGizmos().ToList();
+                                //Logger.MessageFormat(__instance, "Meeseeks GetGizmos, priority gizmo count: {0}", priorityGizmos.Count);
+
+                                // This is specifically to allow Achtung's increase/decrease priority gizmos
+                                // TODO: Check for Achtung and do this more on purpose
+                                foreach (Gizmo gizmo in priorityGizmos)
                                 {
-                                    //Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
+                                    Command_Action commandAction = gizmo as Command_Action;
+                                    if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
+                                    {
+                                        yield return gizmo;
+
+                                    }
+                                    else
+                                    {
+                                        //Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
+                                    }
                                 }
                             }
                         }

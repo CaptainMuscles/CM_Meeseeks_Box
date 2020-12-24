@@ -69,11 +69,11 @@
     <Compile Include="CompProperties_WornGizmos.cs" />
     <Compile Include="CompWornGizmos.cs" />
     <Compile Include="DebugPatches.cs" />
-    <Compile Include="JobDriver_CastAbilityNoTarget.cs" />
-    <Compile Include="JobDriver_EmbraceTheVoid.cs" />
-    <Compile Include="JobDriver_Kill.cs" />
-    <Compile Include="JobGiver_AcquireAppropriateClothing.cs" />
-    <Compile Include="JobGiver_AcquireAppropriateWeapon.cs" />
+    <Compile Include="Jobs\JobDriver_AcquireEquipment.cs" />
+    <Compile Include="Jobs\JobDriver_CastAbilityNoTarget.cs" />
+    <Compile Include="Jobs\JobDriver_EmbraceTheVoid.cs" />
+    <Compile Include="Jobs\JobDriver_Kill.cs" />
+    <Compile Include="Jobs\JobGiver_AcquireAppropriateEquipment.cs" />
     <Compile Include="LetterStackPatches.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MeeseeksCommandPatches.cs" />
