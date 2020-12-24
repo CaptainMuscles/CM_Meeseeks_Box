@@ -16,12 +16,16 @@ namespace CM_Meeseeks_Box
         public JobDef lastStartedJobDef = null;
 
         public int givenTaskTick = -1;
+        public int acquiredWeaponTick = -1;
+        public int checkedForClothingTick = -1;
+        public BodyPartGroupDef lastCheckedBodyPartGroup = null;
 
         private bool destroyed = false;
 
         private static int maxQueueOrderTicks = 300;
 
-        private static List<JobDef> freeJobs = new List<JobDef> { JobDefOf.Equip, JobDefOf.Goto };
+        private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
+        //private static List<BodyPartGroupDef> clothingPartPriority = new List<BodyPartGroupDef>();
         
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
 
@@ -49,6 +53,13 @@ namespace CM_Meeseeks_Box
                     meeseeks.health.AddHediff(painHediff);
                 }
             }
+
+            //clothingPartPriority = new List<BodyPartGroupDef>();
+            //clothingPartPriority.Add(BodyPartGroupDefOf.FullHead);
+            //clothingPartPriority.Add(BodyPartGroupDefOf.UpperHead);
+            //clothingPartPriority.Add(BodyPartGroupDefOf.Eyes);
+            //clothingPartPriority.Add(BodyPartGroupDefOf.Torso);
+            //clothingPartPriority.Add(BodyPartGroupDefOf.Legs);
         }
 
         public override void PostExposeData()
@@ -56,6 +67,8 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look<bool>(ref this.givenTask, "givenTask", false);
             Scribe_Values.Look<bool>(ref this.taskCompleted, "taskCompleted", false);
             Scribe_Values.Look<int>(ref this.givenTaskTick, "givenTaskTick", -1);
+            Scribe_Values.Look<int>(ref this.acquiredWeaponTick, "acquiredWeaponTick", -1);
+            Scribe_Values.Look<int>(ref this.checkedForClothingTick, "checkedForClothingTick", -1);
 
             Scribe_Deep.Look(ref savedJob, "savedJob");
             Scribe_Defs.Look(ref lastStartedJobDef, "lastStartedJobDef");
@@ -150,7 +163,11 @@ namespace CM_Meeseeks_Box
             // We don't check for givenTask here because we want further forced jobs as given by the Achtung mod to become the new current saved job
             if (job.playerForced && !freeJobs.Contains(job.def))
             {
-                givenTask = true;
+                if (!givenTask)
+                {
+                    givenTask = true;
+                    givenTaskTick = Find.TickManager.TicksGame;
+                }
 
                 savedJob = new SavedJob(job);
 

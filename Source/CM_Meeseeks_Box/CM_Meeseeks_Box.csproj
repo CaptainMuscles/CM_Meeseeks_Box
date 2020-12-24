@@ -71,6 +71,8 @@
     <Compile Include="DebugPatches.cs" />
     <Compile Include="JobDriver_CastAbilityNoTarget.cs" />
     <Compile Include="JobDriver_EmbraceTheVoid.cs" />
+    <Compile Include="JobDriver_Kill.cs" />
+    <Compile Include="JobGiver_AcquireAppropriateClothing.cs" />
     <Compile Include="JobGiver_AcquireAppropriateWeapon.cs" />
     <Compile Include="LetterStackPatches.cs" />
     <Compile Include="Logger.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="ThinkNode_MeeseeksCompleteTask.cs" />
     <Compile Include="Verb_Cooldown.cs" />
     <Compile Include="Verb_SpawnMeeseeks.cs" />
+    <Compile Include="WorkGiver_Kill.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using Verse.AI;
 
@@ -140,7 +141,7 @@ namespace CM_Meeseeks_Box
             [HarmonyPostfix]
             public static void MonitorMeeseeksJob(Pawn_JobTracker __instance, Job job, ref bool __result, Pawn ___pawn)
             {
-                Logger.MessageFormat(__instance, "TryTakeOrderedJob Postfix");
+                //Logger.MessageFormat(__instance, "TryTakeOrderedJob Postfix");
 
                 if (__result == true && ___pawn != null)
                 {
@@ -148,7 +149,7 @@ namespace CM_Meeseeks_Box
 
                     if (compMeeseeksMemory != null)
                     {
-                        Logger.MessageFormat(__instance, "Meeseeks TookOrderedJob");
+                        //Logger.MessageFormat(__instance, "Meeseeks TookOrderedJob");
                         compMeeseeksMemory.PostTryTakeOrderedJob(__result, job);
                     }
                 }
@@ -190,31 +191,99 @@ namespace CM_Meeseeks_Box
         [HarmonyPatch("GetGizmos", MethodType.Normal)]
         public static class MeeseeksNoGizmosAfterJobStarted
         {
-            [HarmonyPrefix]
-            public static bool Prefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+            //[HarmonyPrefix]
+            //public static bool Prefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
+            //{
+            //    //Logger.MessageFormat(__instance, "GetGizmos Prefix");
+
+            //    if (__instance != null)
+            //    {
+            //        CompMeeseeksMemory compMeeseeksMemory = __instance.GetComp<CompMeeseeksMemory>();
+
+            //        if (compMeeseeksMemory != null)
+            //        {
+            //            //bool givenTask = compMeeseeksMemory.GivenTask();
+
+            //            Logger.MessageFormat(__instance, "Meeseeks GetGizmos");
+
+            //            //if (givenTask)
+            //            {
+            //                List<Gizmo> newResult = new List<Gizmo>();
+
+            //                if (__instance.IsColonistPlayerControlled)
+            //                {
+            //                    string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
+
+            //                    // This is specifically to allow Achtung's increase/decrease priority gizmos
+            //                    // TODO: Check for Achtung and do this more on purpose
+            //                    foreach(Gizmo gizmo in __instance.mindState.priorityWork.GetGizmos())
+            //                    {
+            //                        Command_Action commandAction = gizmo as Command_Action;
+            //                        if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
+            //                        {
+            //                            newResult.AddItem(gizmo);
+            //                        }
+            //                        else
+            //                        {
+            //                            Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
+            //                        }
+            //                    }
+            //                }
+
+            //                __result = newResult;
+
+            //                return false;
+            //            }
+            //        }
+            //    }
+
+            //    return true;
+            //}
+
+            [HarmonyPostfix]
+            public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> gizmos, Pawn __instance)
             {
-                //Logger.MessageFormat(__instance, "GetGizmos Prefix");
+                List<Gizmo> gizmoList = gizmos.ToList();
 
-                if (__instance != null)
+                //Logger.MessageFormat(__instance, "GetGizmos Postfix");
+
+                CompMeeseeksMemory compMeeseeksMemory = __instance.GetComp<CompMeeseeksMemory>();
+
+                if (compMeeseeksMemory != null)
                 {
-                    CompMeeseeksMemory compMeeseeksMemory = __instance.GetComp<CompMeeseeksMemory>();
-
-                    if (compMeeseeksMemory != null)
+                    //bool givenTask = compMeeseeksMemory.GivenTask();
+                    //if (givenTask)
                     {
-                        bool givenTask = compMeeseeksMemory.GivenTask();
-
-                        //Logger.MessageFormat(__instance, "CanTakeOrder Meeseeks: {0}", canTakeOrder.ToString());
-
-                        if (givenTask)
+                        if (__instance.IsColonistPlayerControlled)
                         {
-                            if (__result == null)
-                                __result = new List<Gizmo>();
-                            return false;
+                            gizmoList.Clear();
+
+                            string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
+
+                            List<Gizmo> priorityGizmos = __instance.mindState.priorityWork.GetGizmos().ToList();
+                            //Logger.MessageFormat(__instance, "Meeseeks GetGizmos, priority gizmo count: {0}", priorityGizmos.Count);
+
+                            // This is specifically to allow Achtung's increase/decrease priority gizmos
+                            // TODO: Check for Achtung and do this more on purpose
+                            foreach (Gizmo gizmo in priorityGizmos)
+                            {
+                                Command_Action commandAction = gizmo as Command_Action;
+                                if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
+                                {
+                                    yield return gizmo;
+
+                                }
+                                else
+                                {
+                                    //Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
+                                }
+                            }
                         }
                     }
                 }
-
-                return true;
+                
+                foreach (Gizmo gizmo in gizmoList)
+                    yield return gizmo;
             }
         }
 
@@ -378,8 +447,94 @@ namespace CM_Meeseeks_Box
                 if (___pawn.kindDef == MeeseeksDefOf.MeeseeksKind)
                 {
                     __result = Pawn_WorkSettings.DefaultPriority;
-                    Logger.MessageFormat(__instance, "Forcing default work priority of: {0}", __result);
+                    //Logger.MessageFormat(__instance, "Forcing default work priority of: {0}", __result);
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(FloatMenuMakerMap))]
+        [HarmonyPatch("ChoicesAtFor", MethodType.Normal)]
+        static class FloatMenuMakerMap_ChoicesAtFor_Patch
+        {
+            [HarmonyPostfix]
+            public static void Postfix(List<FloatMenuOption> __result, Vector3 clickPos, Pawn pawn)
+            {
+                if (pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null && compMeeseeksMemory.CanTakeOrders())
+                    {
+                        IntVec3 intVec = IntVec3.FromVector3(clickPos);
+                        FloatMenuOption guardOption = GuardLocationOption(compMeeseeksMemory, intVec, pawn);
+
+                        if (guardOption != null)
+                        {
+                            __result.Add(guardOption);
+                        }
+                    }
+                }
+            }
+
+            private static FloatMenuOption GuardLocationOption(CompMeeseeksMemory compMeeseeksMemory, IntVec3 clickCell, Pawn pawn)
+            {
+                int num = GenRadial.NumCellsInRadius(2.9f);
+                IntVec3 curLoc;
+                for (int i = 0; i < num; i++)
+                {
+                    curLoc = GenRadial.RadialPattern[i] + clickCell;
+                    if (!curLoc.Standable(pawn.Map))
+                    {
+                        continue;
+                    }
+                    if (curLoc != pawn.Position)
+                    {
+                        if (!pawn.CanReach(curLoc, PathEndMode.OnCell, Danger.Deadly))
+                        {
+                            return new FloatMenuOption("CannotGoNoPath".Translate(), null);
+                        }
+                        Action action = delegate
+                        {
+                            IntVec3 intVec = RCellFinder.BestOrderedGotoDestNear(curLoc, pawn);
+                            Job job = JobMaker.MakeJob(JobDefOf.Goto, intVec);
+                            if (pawn.Map.exitMapGrid.IsExitCell(UI.MouseCell()))
+                            {
+                                job.exitMapOnArrival = true;
+                            }
+                            else if (!pawn.Map.IsPlayerHome && !pawn.Map.exitMapGrid.MapUsesExitGrid && CellRect.WholeMap(pawn.Map).IsOnEdge(UI.MouseCell(), 3) && pawn.Map.Parent.GetComponent<FormCaravanComp>() != null && MessagesRepeatAvoider.MessageShowAllowed("MessagePlayerTriedToLeaveMapViaExitGrid-" + pawn.Map.uniqueID, 60f))
+                            {
+                                if (pawn.Map.Parent.GetComponent<FormCaravanComp>().CanFormOrReformCaravanNow)
+                                {
+                                    Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CanReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
+                                }
+                                else
+                                {
+                                    Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CantReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
+                                }
+                            }
+                            if (compMeeseeksMemory.CanTakeOrders())
+                            {
+                                pawn.drafter.Drafted = true;
+                                if (pawn.jobs.TryTakeOrderedJob(job))
+                                {
+                                    MoteMaker.MakeStaticMote(intVec, pawn.Map, ThingDefOf.Mote_FeedbackGoto);
+                                }
+                                else
+                                {
+                                    pawn.drafter.Drafted = false;
+                                }
+                            }
+                            
+                        };
+                        return new FloatMenuOption("CM_Meeseeks_MeeseeksBox_GuardHere".Translate(), action, MenuOptionPriority.GoHere)
+                        {
+                            autoTakeable = true,
+                            autoTakeablePriority = 10f
+                        };
+                    }
+                    return null;
+                }
+                return null;
             }
         }
 

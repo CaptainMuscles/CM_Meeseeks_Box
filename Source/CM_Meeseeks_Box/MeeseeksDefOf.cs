@@ -15,7 +15,10 @@ namespace CM_Meeseeks_Box
         public static HediffDef CM_Meeseeks_Box_Hediff_Existence_Is_Pain;
         public static ThoughtDef CM_Meeseeks_Box_Thought_Existence_Is_Pain;
 
+        public static WorkTypeDef CM_Meeseeks_Box_WorkType_Killing;
+
         public static JobDef CM_Meeseeks_Box_Job_EmbraceTheVoid;
+        public static JobDef CM_Meeseeks_Box_Job_Kill;
 
         public static SoundDef CM_Meeseeks_Box_Poof_In;
         public static SoundDef CM_Meeseeks_Box_Poof_Out;

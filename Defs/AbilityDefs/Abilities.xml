@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-  <AbilityDef Name="MeeseeksSpawnCast">
+  <AbilityDef>
 	<defName>CM_Meeseeks_Box_Ability_Spawn_Meeseeks</defName>
     <label>create meeseeks</label>
     <abilityClass>Ability</abilityClass>
@@ -14,7 +14,7 @@
     <canUseAoeToGetTargets>False</canUseAoeToGetTargets>
     <showPsycastEffects>False</showPsycastEffects>
     <showCastingProgressBar>False</showCastingProgressBar>
-    <warmupMote>Mote_WarmupNeuroquake</warmupMote>
+    <!--<warmupMote>Mote_WarmupNeuroquake</warmupMote>-->
     <verbProperties>
       <verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
       <label>create meeseeks</label>

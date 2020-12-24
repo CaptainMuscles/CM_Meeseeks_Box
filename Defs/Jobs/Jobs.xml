@@ -12,4 +12,13 @@
 		<driverClass>CM_Meeseeks_Box.JobDriver_CastAbilityNoTarget</driverClass>
 		<reportString>Using ability.</reportString>
 	</JobDef>
+	
+	<JobDef>
+		<defName>CM_Meeseeks_Box_Job_Kill</defName>
+		<driverClass>CM_Meeseeks_Box.JobDriver_Kill</driverClass>
+		<reportString>killing TargetA.</reportString>
+		<alwaysShowWeapon>true</alwaysShowWeapon>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
 </Defs>

@@ -15,6 +15,8 @@ namespace CM_Meeseeks_Box
     {
         private static StringBuilder debugSb;
 
+        private static int rescanWeaponsDelay = 250;
+
         private float MinMeleeWeaponDPSThreshold
         {
             get
@@ -42,10 +44,6 @@ namespace CM_Meeseeks_Box
         protected override Job TryGiveJob(Pawn pawn)
         {
             if (pawn.equipment == null)
-            {
-                return null;
-            }
-            if (pawn.RaceProps.Humanlike && pawn.WorkTagIsDisabled(WorkTags.Violent))
             {
                 return null;
             }
@@ -86,18 +84,30 @@ namespace CM_Meeseeks_Box
             if (compMeeseeksMemory == null || compMeeseeksMemory.savedJob == null || compMeeseeksMemory.savedJob.targetA == null || !compMeeseeksMemory.savedJob.targetA.IsValid)
                 return null;
 
+            if (Find.TickManager.TicksGame < compMeeseeksMemory.acquiredWeaponTick + rescanWeaponsDelay)
+                return null;
+
+            compMeeseeksMemory.acquiredWeaponTick = Find.TickManager.TicksGame;
+
             List<SkillDef> relevantSkills = null;
             if (compMeeseeksMemory.savedJob.workGiverDef == null)
                 relevantSkills = new List<SkillDef>();
             else
                 relevantSkills = compMeeseeksMemory.savedJob.workGiverDef.workType.relevantSkills;
 
-            if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackMelee)
+            // For some reason the entry for melee doesn't seem to get read for the kill job, so we'll do it manually...
+            if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackMelee || compMeeseeksMemory.savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill || pawn.Drafted)
                 relevantSkills.Add(SkillDefOf.Melee);
-            if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackStatic)
+            if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackStatic || compMeeseeksMemory.savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill || pawn.Drafted)
                 relevantSkills.Add(SkillDefOf.Shooting);
 
-            bool combatJob = (relevantSkills.Contains(SkillDefOf.Shooting) || relevantSkills.Contains(SkillDefOf.Melee));
+            bool combatJob = (compMeeseeksMemory.savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill || pawn.Drafted);
+
+            // I mean this shouldn't be possible but...
+            if (combatJob && pawn.RaceProps.Humanlike && pawn.WorkTagIsDisabled(WorkTags.Violent))
+            {
+                return null;
+            }
 
             float distanceToTarget = compMeeseeksMemory.savedJob.targetA.Cell.DistanceTo(pawn.PositionHeld);
             float maxTotalDistance = distanceToTarget * 1.5f;
@@ -109,23 +119,22 @@ namespace CM_Meeseeks_Box
                 maxDistanceToWeapon *= 2.0f;
             }
 
-            List<Thing> weapons = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Weapon);
+            List<Thing> weapons = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Weapon).Where(weapon => (!EquipmentUtility.IsBiocoded(weapon) && !weapon.IsForbidden(pawn) && pawn.CanReserveAndReach(weapon, PathEndMode.OnCell, pawn.NormalMaxDanger()))).ToList();
             if (weapons.Count == 0)
                 return null;
 
             Thing selectedWeapon = null;
             float selectedWeaponScore = GetWeaponScore(pawn.equipment.Primary, relevantSkills);
+            selectedWeaponScore *= selectedWeaponScore;
+
             foreach(Thing weapon in weapons)
             {
-                if (EquipmentUtility.IsBiocoded(weapon))
-                    continue;
-
                 float distanceToWeapon = weapon.PositionHeld.DistanceTo(pawn.PositionHeld);
                 if (distanceToWeapon <= maxDistanceToWeapon && (distanceToWeapon + distanceToTarget) <= maxTotalDistance)
                 {
                     float weaponScore = GetWeaponScore(weapon, relevantSkills);
                     float distanceFactor = distanceToWeapon + 1.0f;
-                    weaponScore /= (distanceFactor * distanceFactor);
+                    weaponScore = (weaponScore * weaponScore) / (distanceFactor * distanceFactor);
                     if (DebugViewSettings.debugApparelOptimize && weaponScore > 0.0f)
                     {
                         debugSb.AppendLine(weapon.LabelCap + ": " + weaponScore.ToString("F2"));
@@ -161,18 +170,6 @@ namespace CM_Meeseeks_Box
                 return 0.0f;
             }
 
-            if (relevantSkills.Contains(SkillDefOf.Melee))
-            {
-                if (weapon.def.IsMeleeWeapon)
-                {
-                    float averageDPS = weapon.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS);
-                    if (averageDPS > this.MinMeleeWeaponDPSThreshold)
-                        return weapon.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS);
-                }
-                    
-                return 0.0f;
-            }
-
             if (relevantSkills.Contains(SkillDefOf.Shooting))
             {
                 if (weapon.def.IsRangedWeapon && weapon.GetStatValue(StatDefOf.RangedWeapon_Cooldown) > 0.0f && !weapon.def.Verbs.NullOrEmpty())
@@ -185,12 +182,20 @@ namespace CM_Meeseeks_Box
                             damage = verb.defaultProjectile.projectile.GetDamageAmount(weapon);
                         if (verb.burstShotCount != 0)
                             damage *= verb.burstShotCount;
-                    }
 
-                    return damage / weapon.GetStatValue(StatDefOf.RangedWeapon_Cooldown);
+                        return damage / weapon.GetStatValue(StatDefOf.RangedWeapon_Cooldown);
+                    }
                 }
-                    
-                return 0.0f;
+            }
+
+            if (relevantSkills.Contains(SkillDefOf.Melee))
+            {
+                if (weapon.def.IsMeleeWeapon)
+                {
+                    float averageDPS = weapon.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS);
+                    if (averageDPS > this.MinMeleeWeaponDPSThreshold)
+                        return weapon.GetStatValue(StatDefOf.MeleeWeapon_AverageDPS);
+                }
             }
 
             if (HasReleventStatModifiers(weapon, relevantSkills))
@@ -204,7 +209,7 @@ namespace CM_Meeseeks_Box
             List<StatModifier> statModifiers = weapon.def.equippedStatOffsets;
             if (relevantSkills != null && statModifiers != null)
             {
-                Logger.MessageFormat(this, "Found relevantSkills...");
+                //Logger.MessageFormat(this, "Found relevantSkills...");
                 foreach (StatModifier statModifier in statModifiers)
                 {
                     List<SkillNeed> skillNeedOffsets = statModifier.stat.skillNeedOffsets;
@@ -212,12 +217,12 @@ namespace CM_Meeseeks_Box
 
                     if (skillNeedOffsets != null)
                     {
-                        Logger.MessageFormat(this, "Found skillNeedOffsets...");
+                        //Logger.MessageFormat(this, "Found skillNeedOffsets...");
                         foreach (SkillNeed skillNeed in skillNeedOffsets)
                         {
                             if (relevantSkills.Contains(skillNeed.skill))
                             {
-                                Logger.MessageFormat(this, "{0} has {1}, relevant to {2}", weapon.Label, statModifier.stat.label, skillNeed.skill);
+                                //Logger.MessageFormat(this, "{0} has {1}, relevant to {2}", weapon.Label, statModifier.stat.label, skillNeed.skill);
                                 return true;
                             }
                         }
@@ -229,7 +234,7 @@ namespace CM_Meeseeks_Box
                         {
                             if (relevantSkills.Contains(skillNeed.skill))
                             {
-                                Logger.MessageFormat(this, "{0} has {1}, relevant to {2}", weapon.Label, statModifier.stat.label, skillNeed.skill);
+                                //Logger.MessageFormat(this, "{0} has {1}, relevant to {2}", weapon.Label, statModifier.stat.label, skillNeed.skill);
                                 return true;
                             }
                         }
