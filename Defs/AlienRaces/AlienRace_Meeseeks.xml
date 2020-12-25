@@ -153,8 +153,8 @@
 			<MoveSpeed>3.00</MoveSpeed>
 			<Flammability>0.2</Flammability>
 			<PsychicSensitivity>0.3</PsychicSensitivity>
-			<ComfyTemperatureMin>-30</ComfyTemperatureMin>
-			<ComfyTemperatureMax>35</ComfyTemperatureMax>
+			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
+			<ComfyTemperatureMax>100</ComfyTemperatureMax>
 			<PainShockThreshold>5</PainShockThreshold>
 			<ToxicSensitivity>0.3</ToxicSensitivity>
 			<MentalBreakThreshold>0.3</MentalBreakThreshold>
