@@ -68,6 +68,7 @@
     <Compile Include="CompProperties_MeeseeksMemory.cs" />
     <Compile Include="CompProperties_WornGizmos.cs" />
     <Compile Include="CompWornGizmos.cs" />
+    <Compile Include="Patches\CaravanFormingUtilityPatches.cs" />
     <Compile Include="Patches\DebugPatches.cs" />
     <Compile Include="Jobs\JobDriver_AcquireEquipment.cs" />
     <Compile Include="Jobs\JobDriver_CastAbilityNoTarget.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="MeeseeksDefOf.cs" />
     <Compile Include="MeeseeksMod.cs" />
     <Compile Include="MeeseeksUtility.cs" />
+    <Compile Include="Patches\PawnGeneratorPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavedJob.cs" />
     <Compile Include="ThinkNode_MeeseeksCompleteTask.cs" />
