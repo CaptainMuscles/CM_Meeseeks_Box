@@ -25,6 +25,7 @@ namespace CM_Meeseeks_Box
         private static int maxQueueOrderTicks = 300;
 
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
+        private static List<JobDef> noExplodeJobs = new List<JobDef> { JobDefOf.Equip };
         //private static List<BodyPartGroupDef> clothingPartPriority = new List<BodyPartGroupDef>();
         
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
@@ -211,7 +212,7 @@ namespace CM_Meeseeks_Box
         {
             if (Meeseeks != null)
             {
-                if (!taskCompleted)
+                if (!taskCompleted && !noExplodeJobs.Contains(job.def))
                 {
                     taskCompleted = true;
                     Logger.WarningFormat(this, "Meeseeks job error : {0}, marking as complete.", job.def.defName);
@@ -223,7 +224,7 @@ namespace CM_Meeseeks_Box
         {
             if (Meeseeks != null)
             {
-                if (!taskCompleted)
+                if (!taskCompleted && !noExplodeJobs.Contains(job.def))
                 {
                     taskCompleted = true;
                     Logger.MessageFormat(this, "Meeseeks succeeded at: {0}", job.def.defName);
@@ -282,19 +283,14 @@ namespace CM_Meeseeks_Box
 
         public Job GetSavedJob()
         {
-            //if (savedJob != null)
-            //    return savedJob;
-            //else
-            //    return null;
+            if (savedJob == null || !noExplodeJobs.Contains(savedJob.def))
+                return null;
 
-            if (savedJob != null && (HasInvalidTarget(savedJob.targetA) || HasInvalidTarget(savedJob.targetB) || HasInvalidTarget(savedJob.targetC)))
+            if (HasInvalidTarget(savedJob.targetA) || HasInvalidTarget(savedJob.targetB) || HasInvalidTarget(savedJob.targetC))
                 taskCompleted = true;
 
             if (taskCompleted)
                 return JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_EmbraceTheVoid);
-
-            if (savedJob == null)
-                return null;
 
             if (lastStartedJobDef != null && lastStartedJobDef == savedJob.def)
                 return JobMaker.MakeJob(JobDefOf.Wait_MaintainPosture, 2);
