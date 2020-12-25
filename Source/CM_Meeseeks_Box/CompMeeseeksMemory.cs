@@ -24,6 +24,8 @@ namespace CM_Meeseeks_Box
 
         private static int maxQueueOrderTicks = 300;
 
+        public Voice voice = new Voice();
+
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
         private static List<JobDef> noExplodeJobs = new List<JobDef> { JobDefOf.Equip };
         //private static List<BodyPartGroupDef> clothingPartPriority = new List<BodyPartGroupDef>();
@@ -73,6 +75,13 @@ namespace CM_Meeseeks_Box
 
             Scribe_Deep.Look(ref savedJob, "savedJob");
             Scribe_Defs.Look(ref lastStartedJobDef, "lastStartedJobDef");
+
+            Scribe_Deep.Look(ref voice, "Voice");
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && voice == null)
+            {
+                voice = new Voice();
+            }
         }
 
         public override void CompTick()
@@ -155,7 +164,7 @@ namespace CM_Meeseeks_Box
             {
                 givenTask = true;
                 givenTaskTick = Find.TickManager.TicksGame;
-                MeeseeksUtility.PlayAcceptTaskSound(this.parent);
+                MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
             }
         }
 
@@ -283,7 +292,7 @@ namespace CM_Meeseeks_Box
 
         public Job GetSavedJob()
         {
-            if (savedJob == null || !noExplodeJobs.Contains(savedJob.def))
+            if (savedJob == null || noExplodeJobs.Contains(savedJob.def))
                 return null;
 
             if (HasInvalidTarget(savedJob.targetA) || HasInvalidTarget(savedJob.targetB) || HasInvalidTarget(savedJob.targetC))

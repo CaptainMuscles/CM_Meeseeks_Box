@@ -17,24 +17,31 @@ namespace CM_Meeseeks_Box
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
-            MeeseeksUtility.PlayFinishTaskSound(pawn);
-
-            int waitTime = Rand.RangeInclusive(60, 180);
-
-            Toil wait = Toils_General.Wait(waitTime, 0);
-            LocalTargetInfo faceCamera = new LocalTargetInfo(pawn.Position + IntVec3.South);
-            pawn.rotationTracker.FaceTarget(faceCamera);
-            yield return wait;
-
-            yield return new Toil
+            CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
+            if (compMeeseeksMemory == null)
             {
-                initAction = delegate ()
+                yield return Toils_General.Do(delegate { });
+            }
+            else
+            {
+                yield return Toils_General.Do(delegate
+                {
+                    MeeseeksUtility.PlayFinishTaskSound(pawn, compMeeseeksMemory.voice);
+                });
+
+                int waitTime = Rand.RangeInclusive(60, 180);
+
+                Toil wait = Toils_General.Wait(waitTime, 0);
+                LocalTargetInfo faceCamera = new LocalTargetInfo(pawn.Position + IntVec3.South);
+                pawn.rotationTracker.FaceTarget(faceCamera);
+                yield return wait;
+
+                yield return Toils_General.Do(delegate
                 {
                     Logger.MessageFormat(this, "Meeseeks task completed. Vanishing.");
-
                     MeeseeksUtility.DespawnMeeseeks(pawn);
-                }
-            };
+                });
+            }
         }
     }
 }

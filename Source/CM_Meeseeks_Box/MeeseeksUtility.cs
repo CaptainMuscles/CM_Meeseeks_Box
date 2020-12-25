@@ -34,19 +34,29 @@ namespace CM_Meeseeks_Box
             PoofOutSounds.RandomElement().PlayOneShot(GetTargetInfo(target));
         }
 
-        public static void PlayAcceptTaskSound(Thing target)
+        public static void PlayAcceptTaskSound(Thing target, Voice voice)
         {
-            AcceptTaskSounds.RandomElement().PlayOneShot(GetTargetInfo(target));
+            PlayVoicedSound(target, voice, AcceptTaskSounds.RandomElement());
         }
 
-        public static void PlayFinishTaskSound(Thing target)
+        public static void PlayFinishTaskSound(Thing target, Voice voice)
         {
-            FinishTaskSounds.RandomElement().PlayOneShot(GetTargetInfo(target));
+            PlayVoicedSound(target, voice, FinishTaskSounds.RandomElement());
         }
 
-        public static void PlayGreetingSound(Thing target)
+        public static void PlayGreetingSound(Thing target, Voice voice)
         {
-            GreetingSounds.RandomElement().PlayOneShot(GetTargetInfo(target));
+            PlayVoicedSound(target, voice, GreetingSounds.RandomElement());
+        }
+
+        public static void PlayVoicedSound(Thing target, Voice voice, SoundDef soundDef)
+        {
+            Logger.MessageFormat(target, "{0} playing sound {2} with voice: {1}", target, soundDef.defName, voice);
+
+            SoundInfo soundInfo = GetTargetInfo(target);
+            soundInfo.pitchFactor = voice.pitch;
+            soundInfo.volumeFactor = voice.volume;
+            soundDef.PlayOneShot(soundInfo);
         }
 
         public static void SpawnMeeseeks(IntVec3 position, Map map, int skillLevel, bool jumpCamera)
@@ -79,7 +89,9 @@ namespace CM_Meeseeks_Box
             }
 
             GenSpawn.Spawn(mrMeeseeksLookAtMe, position, map);
-            MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe);
+
+            CompMeeseeksMemory compMeeseeksMemory = mrMeeseeksLookAtMe.GetComp<CompMeeseeksMemory>();
+            MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.voice);
 
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
             GenSpawn.Spawn(smoke, position, map);

@@ -18,10 +18,10 @@
           <min>50</min>        
           <max>50</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -44,10 +44,10 @@
           <min>50</min>        
           <max>50</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -70,10 +70,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -96,10 +96,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -122,10 +122,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -148,10 +148,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -174,10 +174,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -200,10 +200,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -226,10 +226,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -252,10 +252,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -278,10 +278,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
@@ -304,10 +304,10 @@
           <min>20</min>        
           <max>30</max>
         </volumeRange>
-		<pitchRange>
+		<!--<pitchRange>
 		  <min>0.95</min>
 		  <max>1.05</max>
-	    </pitchRange>
+	    </pitchRange>-->
       </li>
     </subSounds>
   </SoundDef>
