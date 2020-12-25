@@ -81,6 +81,7 @@
     <Compile Include="MeeseeksDefOf.cs" />
     <Compile Include="MeeseeksMod.cs" />
     <Compile Include="MeeseeksUtility.cs" />
+    <Compile Include="Patches\PawnDiedOrDownedThoughtsUtilityPatches.cs" />
     <Compile Include="Patches\PawnGeneratorPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavedJob.cs" />
