@@ -47,7 +47,7 @@ namespace CM_Meeseeks_Box
             //    reason = "AbilityAlreadyQueued".Translate();
             //    return true;
             //}
-            if (CasterIsPawn && CasterPawn.Downed)
+            if (CasterIsPawn && !CasterPawn.Awake())
             {
                 reason = "CommandDisabledUnconscious".TranslateWithBackup("CommandCallRoyalAidUnconscious").Formatted(CasterPawn);
                 return true;
