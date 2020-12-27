@@ -20,7 +20,7 @@ namespace CM_Meeseeks_Box
 
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
-            Logger.MessageFormat(this, "Checking for saved job on Meeseeks.");
+            //Logger.MessageFormat(this, "Checking for saved job on Meeseeks.");
 
             CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
 
@@ -29,7 +29,7 @@ namespace CM_Meeseeks_Box
                 Job savedJob = compMeeseeksMemory.GetSavedJob();
                 if (savedJob != null)
                 {
-                    Logger.MessageFormat(this, "Meeseeks attempting to make reservation on job. {0}", savedJob.def.defName);
+                    //Logger.MessageFormat(this, "Meeseeks attempting to make reservation on job. {0}", savedJob.def.defName);
 
                     Pawn otherReserver = null;
 
@@ -53,7 +53,7 @@ namespace CM_Meeseeks_Box
 
                         if (reservationsMade)
                         {
-                            Logger.MessageFormat(this, "Resuming saved job.");
+                            //Logger.MessageFormat(this, "Resuming saved job.");
                             return new ThinkResult(savedJob, this, null, fromQueue: false);
                         }
                     }
