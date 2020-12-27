@@ -121,7 +121,7 @@ namespace CM_Meeseeks_Box
             Toil findEquipment = new Toil();
             findEquipment.initAction = delegate
             {
-                Logger.MessageFormat(this, "Searching for equipment...");
+                //Logger.MessageFormat(this, "Searching for equipment...");
                 Thing foundEquipment = FindEquipment(pawn);
                 if (foundEquipment != null && pawn.Reserve(foundEquipment, job, 1, -1, null, false))
                 {

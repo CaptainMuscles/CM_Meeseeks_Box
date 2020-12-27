@@ -46,12 +46,8 @@ namespace CM_Meeseeks_Box
 
             Thing selectedEquipment = JobDriver_AcquireEquipment.FindEquipment(pawn);
 
-            Logger.MessageFormat(this, "Checking for equipment...");
-
             if (!DebugViewSettings.debugApparelOptimize && Find.TickManager.TicksGame < pawn.mindState.nextApparelOptimizeTick)
                 return null;
-
-            Logger.MessageFormat(this, "Still checking for equipment...");
 
             if (selectedEquipment != null)
                 return JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_AcquireEquipment, selectedEquipment);
