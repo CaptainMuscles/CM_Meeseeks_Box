@@ -51,7 +51,7 @@ namespace CM_Meeseeks_Box
 
         public static void PlayVoicedSound(Thing target, Voice voice, SoundDef soundDef)
         {
-            Logger.MessageFormat(target, "{0} playing sound {2} with voice: {1}", target, soundDef.defName, voice);
+            //Logger.MessageFormat(target, "{0} playing sound {2} with voice: {1}", target, soundDef.defName, voice);
 
             SoundInfo soundInfo = GetTargetInfo(target);
             soundInfo.pitchFactor = voice.pitch;
