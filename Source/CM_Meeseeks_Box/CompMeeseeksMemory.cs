@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -26,6 +27,9 @@ namespace CM_Meeseeks_Box
 
         public Voice voice = new Voice();
 
+        private List<string> jobList = new List<string>();
+        private List<string> jobResults = new List<string>();
+
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
         private static List<JobDef> noExplodeJobs = new List<JobDef> { JobDefOf.Equip };
         //private static List<BodyPartGroupDef> clothingPartPriority = new List<BodyPartGroupDef>();
@@ -41,6 +45,27 @@ namespace CM_Meeseeks_Box
                     meeseeks = this.parent as Pawn;
                 return meeseeks;
             }
+        }
+
+        public string GetDebugInfo()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("Jobs started: ");
+
+            for (int i = 0; i < Math.Max(jobList.Count, jobResults.Count); ++i)
+            {
+                string jobName = "???";
+                if (i < jobList.Count)
+                    jobName = jobList[i];
+
+                string jobResult = "???";
+                if (i < jobResults.Count)
+                    jobResult = jobResults[i];
+
+                stringBuilder.AppendLine(jobName + " - " + jobResult);
+            }
+
+            return stringBuilder.ToString();
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
@@ -78,6 +103,14 @@ namespace CM_Meeseeks_Box
 
             Scribe_Deep.Look(ref voice, "Voice");
 
+            Scribe_Collections.Look(ref jobList, "jobList");
+            Scribe_Collections.Look(ref jobResults, "jobResult");
+
+            if (jobList == null)
+                jobList = new List<string>();
+            if (jobResults == null)
+                jobResults = new List<string>();
+
             if (Scribe.mode == LoadSaveMode.PostLoadInit && voice == null)
             {
                 voice = new Voice();
@@ -106,6 +139,13 @@ namespace CM_Meeseeks_Box
                 Logger.MessageFormat(this, "Meeseeks dead. Vanishing.");
                 MeeseeksUtility.DespawnMeeseeks(Meeseeks);
             }
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+
+            Logger.MessageFormat(this, "Meeseeks despawned \n{0}", this.GetDebugInfo());
         }
 
         public bool GivenTask()
@@ -142,7 +182,6 @@ namespace CM_Meeseeks_Box
 
         public void PreTryTakeOrderedJob(Job job)
         {
-            Logger.MessageFormat(this, "Here");
             // This allows Mr Meeseeks to know what clothes he could wear if he does take the job
             if (!givenTask)
             {
@@ -153,7 +192,6 @@ namespace CM_Meeseeks_Box
 
         public void PostTryTakeOrderedJob(bool success, Job job)
         {
-            Logger.MessageFormat(this, "Here");
             // If he didn't take the job and hasn't been officially given one, clear out the saved job
             if (!success && !givenTask)
             {
@@ -170,8 +208,15 @@ namespace CM_Meeseeks_Box
 
         public void StartedJob(Job job)
         {
+            if (job == null)
+            {
+                Logger.MessageFormat(this, "Meeseeks attempting to start null job...");
+                return;
+            }
             string jobName = job.def.defName;
             lastStartedJobDef = job.def;
+
+            jobList.Add(jobName);
 
             //Logger.MessageFormat(this, "Meeseeks has started job: {0}", jobName);
 
@@ -186,13 +231,15 @@ namespace CM_Meeseeks_Box
 
                 savedJob = new SavedJob(job);
 
-                Logger.MessageFormat(this, "Meeseeks has accepted task: {0}", savedJob.def.defName);
+                //Logger.MessageFormat(this, "Meeseeks has accepted task: {0}", savedJob.def.defName);
             }
         }
 
         public void EndCurrentJob(Job job, JobDriver jobDriver, JobCondition condition)
         {
-            Logger.MessageFormat(this, "Meeseeks has finished job: {0}, {1}", job.def.defName, condition.ToString());
+            //Logger.MessageFormat(this, "Meeseeks has finished job: {0}, {1}", job.def.defName, condition.ToString());
+
+            jobResults.Add(condition.ToString());
 
             if (givenTask)
             {
@@ -236,7 +283,7 @@ namespace CM_Meeseeks_Box
                 if (!taskCompleted && !noExplodeJobs.Contains(job.def))
                 {
                     taskCompleted = true;
-                    Logger.MessageFormat(this, "Meeseeks succeeded at: {0}", job.def.defName);
+                    //Logger.MessageFormat(this, "Meeseeks succeeded at: {0}", job.def.defName);
                 }
             }
         }
@@ -330,6 +377,21 @@ namespace CM_Meeseeks_Box
                 return false;
 
             return true;
+        }
+
+        public string GetSummary()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine(Meeseeks.GetUniqueLoadID());
+
+            stringBuilder.AppendLine("Jobs started: ");
+            foreach (string jobName in jobList)
+            {
+                stringBuilder.AppendLine(jobName);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }
