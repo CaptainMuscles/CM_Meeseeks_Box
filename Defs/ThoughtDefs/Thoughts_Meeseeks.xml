@@ -10,17 +10,17 @@
     </requiredTraits>
     <stages>
 	  <li>
-        <label>I'm Mr Meeseeks, look at me!</label>
+        <label>Look at me!</label>
         <description>I'm Mr Meeseeks, look at me!</description>
         <baseMoodEffect>15</baseMoodEffect>
       </li>
       <li>
-        <label>This is getting weird...</label>
+        <label>Getting weird...</label>
         <description>This is getting weird...</description>
         <baseMoodEffect>5</baseMoodEffect>
       </li>
       <li>
-        <label>I need to fulfill my purpose so I can go away!</label>
+        <label>Must... fulfill... purpose...!</label>
         <description>I need to fulfill my purpose so I can go away!</description>
         <baseMoodEffect>-5</baseMoodEffect>
       </li>
