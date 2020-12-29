@@ -244,7 +244,7 @@ namespace CM_Meeseeks_Box
             }
             else
             {
-                relevantSkills = compMeeseeksMemory.savedJob.workGiverDef.workType.relevantSkills;
+                relevantSkills = new List<SkillDef>(compMeeseeksMemory.savedJob.workGiverDef.workType.relevantSkills);
             }
 
             // For some reason the entry for melee doesn't seem to get read for the kill job, so we'll do it manually...
