@@ -7,6 +7,7 @@ using Verse.AI;
 
 namespace CM_Meeseeks_Box
 {
+    [StaticConstructorOnStartup]
     public class Command_VerbTargetWithCooldown : Command_VerbTarget
     {
         Verb_Cooldown verbCooldown => verb as Verb_Cooldown;

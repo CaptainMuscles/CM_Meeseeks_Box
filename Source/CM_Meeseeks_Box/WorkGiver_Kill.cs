@@ -39,11 +39,14 @@ namespace CM_Meeseeks_Box
         public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
         {
             Pawn targetPawn = t as Pawn;
-            return (targetPawn != null);
+            return (targetPawn != null && !targetPawn.Destroyed && !targetPawn.Dead);
         }
 
         public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
         {
+            if (!HasJobOnThing(pawn, t, forced))
+                return null;
+
             return JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill, t);
         }
     }

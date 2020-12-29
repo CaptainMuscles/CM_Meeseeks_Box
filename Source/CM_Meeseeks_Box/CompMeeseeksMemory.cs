@@ -11,6 +11,7 @@ namespace CM_Meeseeks_Box
     class CompMeeseeksMemory : ThingComp
     {
         private bool givenTask = false;
+        private bool startedTask = false;
         private bool taskCompleted = false;
 
         public SavedJob savedJob = null;
@@ -27,12 +28,15 @@ namespace CM_Meeseeks_Box
 
         public Voice voice = new Voice();
 
+        private bool playedAcceptSound = false;
+
         private List<string> jobList = new List<string>();
         private List<string> jobResults = new List<string>();
         public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
 
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
-        
+        public static List<JobDef> noContinueJobs = new List<JobDef> { JobDefOf.Goto };
+
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
 
         public bool GivenTask => givenTask;
@@ -94,7 +98,10 @@ namespace CM_Meeseeks_Box
         public override void PostExposeData()
         {
             Scribe_Values.Look<bool>(ref this.givenTask, "givenTask", false);
+            Scribe_Values.Look<bool>(ref this.startedTask, "startedTask", false);
             Scribe_Values.Look<bool>(ref this.taskCompleted, "taskCompleted", false);
+            Scribe_Values.Look<bool>(ref this.playedAcceptSound, "playedAcceptSound", false);
+            
             Scribe_Values.Look<int>(ref this.givenTaskTick, "givenTaskTick", -1);
             Scribe_Values.Look<int>(ref this.acquiredEquipmentTick, "acquiredWeaponTick", -1);
             Scribe_Values.Look<int>(ref this.checkedForClothingTick, "checkedForClothingTick", -1);
@@ -166,7 +173,7 @@ namespace CM_Meeseeks_Box
         public bool HasTimeToQueueNewJob()
         {
             int ticksSinceOrder = Find.TickManager.TicksGame - givenTaskTick;
-            return (ticksSinceOrder < maxQueueOrderTicks);
+            return (givenTask && ticksSinceOrder < maxQueueOrderTicks && savedJob != null && !noContinueJobs.Contains(savedJob.def));
         }
 
         public bool CanTakeOrders()
@@ -212,6 +219,8 @@ namespace CM_Meeseeks_Box
             {
                 givenTask = true;
                 givenTaskTick = Find.TickManager.TicksGame;
+                playedAcceptSound = true;
+                MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
             }
         }
 
@@ -232,23 +241,14 @@ namespace CM_Meeseeks_Box
             // We don't check for givenTask here because we want further forced jobs as given by the Achtung mod to become the new current saved job
             if (job.playerForced && !freeJobs.Contains(job.def))
             {
-                if (!givenTask)
+                if (!startedTask)
                 {
-                    givenTask = true;
-                    givenTaskTick = Find.TickManager.TicksGame;
-                    MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+                    startedTask = true;
+
+                    if (!playedAcceptSound)
+                        MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
 
                     TargetIndex targetIndex = GetJobPrimaryTarget(job);
-                    if (targetIndex == TargetIndex.None)
-                    {
-                        // Let the hacks begin!
-                        // First, hauling to a construction job
-                        if (job.def == JobDefOf.HaulToContainer && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
-                        {
-                            if (job.targetC.IsValid)
-                                targetIndex = TargetIndex.C;
-                        }
-                    }
 
                     if (targetIndex != TargetIndex.None)
                     {
@@ -299,12 +299,40 @@ namespace CM_Meeseeks_Box
                 }
                 else
                 {
-                    Logger.MessageFormat(this, "Non scanner WorkGiver", job.workGiverDef.defName);
+                    //Logger.MessageFormat(this, "Non scanner WorkGiver", job.workGiverDef.defName);
                 }
             }
             else
             {
-                Logger.MessageFormat(this, "No workGiverDef found for {0}", job.def.defName);
+                //Logger.MessageFormat(this, "No workGiverDef found for {0}", job.def.defName);
+            }
+
+            if (result == TargetIndex.None)
+            {
+                // Let the hacks begin!
+                // First, hauling to a construction job
+                if (job.def == JobDefOf.HaulToContainer && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                {
+                    if (job.targetC.IsValid)
+                        result = TargetIndex.C;
+                }
+
+                if (result == TargetIndex.None)
+                {
+                    // There shold only be a few non scanner, non workGiver jobs that a Meeseeks could get, lets default to whatever targets we have if possible
+                    if (HasValidTarget(job.targetA))
+                        result = TargetIndex.A;
+                    if (HasValidTarget(job.targetB))
+                        result = TargetIndex.B;
+                    if (HasValidTarget(job.targetC))
+                        result = TargetIndex.C;
+
+
+                    if (result != TargetIndex.None)
+                        Logger.WarningFormat(this, "Had to default to any target for job {0}", job.def.defName);
+                    else
+                        Logger.WarningFormat(this, "Could not find any target at all for job {0}", job.def.defName);
+                }
             }
 
             return result;
@@ -349,7 +377,7 @@ namespace CM_Meeseeks_Box
             if (!targetInfo.IsValid)
                 return false;
 
-            if (!targetInfo.HasThing)
+            if (!targetInfo.HasThing )
                 return true;
 
             Thing target = targetInfo.Thing;

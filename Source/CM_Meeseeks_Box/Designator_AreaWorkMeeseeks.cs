@@ -23,7 +23,7 @@ namespace CM_Meeseeks_Box
         {
             defaultLabel = "CM_Meeseeks_Box_SelectJobAreaLabel".Translate();
             defaultDesc = "CM_Meeseeks_Box_SelectJobAreaDescription".Translate();
-            icon = ContentFinder<Texture2D>.Get("UI/Designators/AreaAllowedExpand");
+            icon = ContentFinder<Texture2D>.Get("Icons/SelectTargets");
             soundDragSustain = SoundDefOf.Designate_DragStandard;
             soundDragChanged = SoundDefOf.Designate_DragStandard_Changed;
             useMouseIcon = true;
@@ -39,12 +39,12 @@ namespace CM_Meeseeks_Box
                 return false;
             }
 
-            Job currentJob = Meeseeks.CurJob;
-            if (currentJob != null)
+            SavedJob savedJob = Memory.savedJob;
+            if (savedJob != null)
             {
-                if (currentJob.workGiverDef != null)
+                if (savedJob.workGiverDef != null)
                 {
-                    WorkGiver_Scanner workGiverScanner = currentJob.workGiverDef.Worker as WorkGiver_Scanner;
+                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
 
                     if (workGiverScanner != null)
                     {
@@ -65,12 +65,12 @@ namespace CM_Meeseeks_Box
 
         public override AcceptanceReport CanDesignateThing(Thing thing)
         {
-            Job currentJob = Meeseeks.CurJob;
-            if (currentJob != null)
+            SavedJob savedJob = Memory.savedJob;
+            if (savedJob != null)
             {
-                if (currentJob.workGiverDef != null)
+                if (savedJob.workGiverDef != null)
                 {
-                    WorkGiver_Scanner workGiverScanner = currentJob.workGiverDef.Worker as WorkGiver_Scanner;
+                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
 
                     if (workGiverScanner != null)
                     {
@@ -85,12 +85,12 @@ namespace CM_Meeseeks_Box
 
         public override void DesignateSingleCell(IntVec3 cell)
         {
-            Job currentJob = Meeseeks.CurJob;
-            if (currentJob != null)
+            SavedJob savedJob = Memory.savedJob;
+            if (savedJob != null)
             {
-                if (currentJob.workGiverDef != null)
+                if (savedJob.workGiverDef != null)
                 {
-                    WorkGiver_Scanner workGiverScanner = currentJob.workGiverDef.Worker as WorkGiver_Scanner;
+                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
 
                     if (workGiverScanner != null)
                     {
@@ -148,12 +148,12 @@ namespace CM_Meeseeks_Box
 
         private void RenderHighlightOverSelectableCells(List<IntVec3> dragCells)
         {
-            Job currentJob = Meeseeks.CurJob;
-            if (currentJob != null)
+            SavedJob savedJob = Memory.savedJob;
+            if (savedJob != null)
             {
-                if (currentJob.workGiverDef != null)
+                if (savedJob.workGiverDef != null)
                 {
-                    WorkGiver_Scanner workGiverScanner = currentJob.workGiverDef.Worker as WorkGiver_Scanner;
+                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
 
                     foreach(IntVec3 cell in dragCells)
                     {

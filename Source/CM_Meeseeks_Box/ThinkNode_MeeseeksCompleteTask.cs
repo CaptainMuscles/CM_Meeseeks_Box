@@ -12,8 +12,6 @@ namespace CM_Meeseeks_Box
 {
     public class ThinkNode_MeeseeksCompleteTask : ThinkNode
     {
-        private static List<JobDef> noExplodeJobs = new List<JobDef> { JobDefOf.Equip };
-
         public override ThinkNode DeepCopy(bool resolve = true)
         {
             ThinkNode_QueuedJob obj = (ThinkNode_QueuedJob)base.DeepCopy(resolve);
@@ -28,6 +26,11 @@ namespace CM_Meeseeks_Box
 
             if (compMeeseeksMemory != null && compMeeseeksMemory.GivenTask)
             {
+                SavedJob savedJob = compMeeseeksMemory.savedJob;
+
+                if (savedJob == null || CompMeeseeksMemory.noContinueJobs.Contains(savedJob.def))
+                    return ThinkResult.NoJob;
+
                 Job nextJob = GetNextJob(pawn, compMeeseeksMemory);
 
                 if (nextJob == null)
@@ -53,7 +56,7 @@ namespace CM_Meeseeks_Box
             Job nextJob = null;
 
             SavedJob savedJob = compMeeseeksMemory.savedJob;
-            if (savedJob == null)// || noExplodeJobs.Contains(savedJob.def))
+            if (savedJob == null)
             {
                 Logger.MessageFormat(this, "No saved job...");
                 return null;
@@ -134,7 +137,7 @@ namespace CM_Meeseeks_Box
         {
             Job job = null;
 
-            if (targetInfo.HasThing)
+            if (targetInfo.HasThing && !targetInfo.ThingDestroyed)
                 job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
 
             if (job == null)

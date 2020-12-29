@@ -213,55 +213,6 @@ namespace CM_Meeseeks_Box
         [HarmonyPatch("GetGizmos", MethodType.Normal)]
         public static class MeeseeksNoGizmosAfterJobStarted
         {
-            //[HarmonyPrefix]
-            //public static bool Prefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
-            //{
-            //    //Logger.MessageFormat(__instance, "GetGizmos Prefix");
-
-            //    if (__instance != null)
-            //    {
-            //        CompMeeseeksMemory compMeeseeksMemory = __instance.GetComp<CompMeeseeksMemory>();
-
-            //        if (compMeeseeksMemory != null)
-            //        {
-            //            //bool givenTask = compMeeseeksMemory.GivenTask();
-
-            //            Logger.MessageFormat(__instance, "Meeseeks GetGizmos");
-
-            //            //if (givenTask)
-            //            {
-            //                List<Gizmo> newResult = new List<Gizmo>();
-
-            //                if (__instance.IsColonistPlayerControlled)
-            //                {
-            //                    string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
-
-            //                    // This is specifically to allow Achtung's increase/decrease priority gizmos
-            //                    // TODO: Check for Achtung and do this more on purpose
-            //                    foreach(Gizmo gizmo in __instance.mindState.priorityWork.GetGizmos())
-            //                    {
-            //                        Command_Action commandAction = gizmo as Command_Action;
-            //                        if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
-            //                        {
-            //                            newResult.AddItem(gizmo);
-            //                        }
-            //                        else
-            //                        {
-            //                            Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
-            //                        }
-            //                    }
-            //                }
-
-            //                __result = newResult;
-
-            //                return false;
-            //            }
-            //        }
-            //    }
-
-            //    return true;
-            //}
-
             [HarmonyPostfix]
             public static IEnumerable<Gizmo> Postfix(IEnumerable<Gizmo> gizmos, Pawn __instance)
             {
@@ -271,41 +222,34 @@ namespace CM_Meeseeks_Box
 
                 CompMeeseeksMemory compMeeseeksMemory = __instance.GetComp<CompMeeseeksMemory>();
 
-                if (compMeeseeksMemory != null)
+                if (__instance.IsColonistPlayerControlled && compMeeseeksMemory != null)
                 {
-                    //bool givenTask = compMeeseeksMemory.GivenTask();
-                    //if (givenTask)
+                    gizmoList.Clear();
+
+                    if (compMeeseeksMemory.HasTimeToQueueNewJob())
                     {
-                        if (__instance.IsColonistPlayerControlled)
+                        // First add our own gizmo for queueing jobs in an area
+
+                        yield return new Designator_AreaWorkMeeseeks(__instance);
+
+                        string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
+
+                        List<Gizmo> priorityGizmos = __instance.mindState.priorityWork.GetGizmos().ToList();
+                        //Logger.MessageFormat(__instance, "Meeseeks GetGizmos, priority gizmo count: {0}", priorityGizmos.Count);
+
+                        // This is specifically to allow Achtung's increase/decrease priority gizmos
+                        // TODO: Check for Achtung and do this more on purpose
+                        foreach (Gizmo gizmo in priorityGizmos)
                         {
-                            gizmoList.Clear();
-
-                            if (compMeeseeksMemory.HasTimeToQueueNewJob())
+                            Command_Action commandAction = gizmo as Command_Action;
+                            if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
                             {
-                                // First add our own gizmo for queueing jobs in an area
+                                yield return gizmo;
 
-                                yield return new Designator_AreaWorkMeeseeks(__instance);
-
-                                string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
-
-                                List<Gizmo> priorityGizmos = __instance.mindState.priorityWork.GetGizmos().ToList();
-                                //Logger.MessageFormat(__instance, "Meeseeks GetGizmos, priority gizmo count: {0}", priorityGizmos.Count);
-
-                                // This is specifically to allow Achtung's increase/decrease priority gizmos
-                                // TODO: Check for Achtung and do this more on purpose
-                                foreach (Gizmo gizmo in priorityGizmos)
-                                {
-                                    Command_Action commandAction = gizmo as Command_Action;
-                                    if (commandAction == null || commandAction.defaultLabel != clearCommandLabel)
-                                    {
-                                        yield return gizmo;
-
-                                    }
-                                    else
-                                    {
-                                        //Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
-                                    }
-                                }
+                            }
+                            else
+                            {
+                                //Logger.MessageFormat(__instance, "Meeseeks GetGizmos - Skipping gizmo");
                             }
                         }
                     }
@@ -456,6 +400,8 @@ namespace CM_Meeseeks_Box
                         {
                             IntVec3 intVec = RCellFinder.BestOrderedGotoDestNear(curLoc, pawn);
                             Job job = JobMaker.MakeJob(JobDefOf.Goto, intVec);
+                            job.playerForced = true;
+
                             if (pawn.Map.exitMapGrid.IsExitCell(UI.MouseCell()))
                             {
                                 job.exitMapOnArrival = true;
@@ -471,23 +417,20 @@ namespace CM_Meeseeks_Box
                                     Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CantReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
                                 }
                             }
-                            if (compMeeseeksMemory.CanTakeOrders())
+
+                            pawn.drafter.Drafted = true;
+                            if (pawn.jobs.TryTakeOrderedJob(job))
                             {
-                                pawn.drafter.Drafted = true;
-                                if (pawn.jobs.TryTakeOrderedJob(job))
-                                {
-                                    MoteMaker.MakeStaticMote(intVec, pawn.Map, ThingDefOf.Mote_FeedbackGoto);
-                                }
-                                else
-                                {
-                                    pawn.drafter.Drafted = false;
-                                }
+                                MoteMaker.MakeStaticMote(intVec, pawn.Map, ThingDefOf.Mote_FeedbackGoto);
                             }
-                            
+                            else
+                            {
+                                pawn.drafter.Drafted = false;
+                            }
                         };
                         return new FloatMenuOption("CM_Meeseeks_Box_GuardHere".Translate(), action, MenuOptionPriority.GoHere)
                         {
-                            autoTakeable = true,
+                            autoTakeable = false,
                             autoTakeablePriority = 10f
                         };
                     }
