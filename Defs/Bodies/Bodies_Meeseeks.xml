@@ -31,7 +31,7 @@
                 <li>HeadAttackTool</li>
               </groups>
               <parts>
-                <li>
+                <!--<li>
                   <def>Skull</def>
                   <coverage>0.18</coverage>
                   <depth>Inside</depth>
@@ -49,7 +49,7 @@
                       </groups>
                     </li>
                   </parts>
-                </li>
+                </li>-->
                 <li>
                   <def>Eye</def>
                   <customLabel>left eye</customLabel>
