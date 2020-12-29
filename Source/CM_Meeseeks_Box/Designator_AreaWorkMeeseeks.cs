@@ -95,7 +95,7 @@ namespace CM_Meeseeks_Box
                     if (workGiverScanner != null)
                     {
                         if (this.HasJobOnCell(workGiverScanner, cell))
-                            Memory.AddJobTarget(cell);
+                            Memory.AddJobTarget(cell, workGiverScanner.def);
 
                         foreach (Thing thing in cell.GetThingList(base.Map))
                         {
@@ -109,15 +109,34 @@ namespace CM_Meeseeks_Box
 
         public override void DesignateThing(Thing thing)
         {
-            Memory.AddJobTarget(thing);
+            bool didIt = false;
+            SavedJob savedJob = Memory.savedJob;
+            if (savedJob != null)
+            {
+                if (savedJob.workGiverDef != null)
+                {
+                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
+
+                    if (workGiverScanner != null)
+                    {
+                        Memory.AddJobTarget(thing, workGiverScanner.def);
+                        didIt = true;
+                    }
+                }
+            }
+
+            if (!didIt)
+                Memory.AddJobTarget(thing);
         }
 
         private bool HasJobOnCell(WorkGiver_Scanner workGiverScanner, IntVec3 cell)
         {
-            if (workGiverScanner != null)
+            List<WorkGiver_Scanner> workGivers = WorkerDefUtility.GetCombinedWorkGiverScanners(workGiverScanner);
+
+            foreach (WorkGiver_Scanner scanner in workGivers)
             {
-                var potentialWorkCells = workGiverScanner.PotentialWorkCellsGlobal(Meeseeks);
-                if ((potentialWorkCells == null || potentialWorkCells.Contains(cell)) && workGiverScanner.HasJobOnCell(Meeseeks, cell, true))
+                var potentialWorkCells = scanner.PotentialWorkCellsGlobal(Meeseeks);
+                if ((potentialWorkCells == null || potentialWorkCells.Contains(cell)) && scanner.HasJobOnCell(Meeseeks, cell, true))
                     return true;
             }
 
@@ -126,10 +145,12 @@ namespace CM_Meeseeks_Box
 
         private bool HasJobOnThing(WorkGiver_Scanner workGiverScanner, Thing thing)
         {
-            if (workGiverScanner != null)
+            List<WorkGiver_Scanner> workGivers = WorkerDefUtility.GetCombinedWorkGiverScanners(workGiverScanner);
+
+            foreach (WorkGiver_Scanner scanner in workGivers)
             {
-                var potentialWorkThings = workGiverScanner.PotentialWorkThingsGlobal(Meeseeks);
-                if ((potentialWorkThings == null || potentialWorkThings.Contains(thing)) && workGiverScanner.HasJobOnThing(Meeseeks, thing, true))
+                var potentialWorkThings = scanner.PotentialWorkThingsGlobal(Meeseeks);
+                if ((potentialWorkThings == null || potentialWorkThings.Contains(thing)) && scanner.HasJobOnThing(Meeseeks, thing, true))
                     return true;
             }
 

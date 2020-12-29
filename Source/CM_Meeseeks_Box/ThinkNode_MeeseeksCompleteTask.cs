@@ -86,8 +86,7 @@ namespace CM_Meeseeks_Box
                         WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
                         if (workGiverScanner != null)
                         {
-                            List<WorkGiver_Scanner> workGivers = WorkerDefUtility.GetCombinedDefs(workGiverScanner).Where(workGiverDef => workGiverDef.giverClass != null)
-                                                                                                                   .Select(workGiverDef => (WorkGiver_Scanner)workGiverDef.Worker).ToList();
+                            List<WorkGiver_Scanner> workGivers = WorkerDefUtility.GetCombinedWorkGiverScanners(workGiverScanner);
 
                             foreach(WorkGiver_Scanner scanner in workGivers)
                             {

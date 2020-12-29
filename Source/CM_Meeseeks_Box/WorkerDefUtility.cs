@@ -27,15 +27,27 @@ namespace CM_Meeseeks_Box
         }
 
         public static readonly List<WorkGiverDef> constructionDefs = AllWorkerDefs<WorkGiver_ConstructDeliverResources>().Concat(AllWorkerDefs<WorkGiver_ConstructFinishFrames>()).ToList();
-        public static List<WorkGiverDef> GetCombinedDefs(WorkGiver baseWorkgiver)
+
+        public static List<WorkGiverDef> GetCombinedDefs(WorkGiver baseWorkGiver)
         {
-            if (constructionDefs.Contains(baseWorkgiver.def))
+            return GetCombinedDefs(baseWorkGiver.def);
+        }
+
+        public static List<WorkGiverDef> GetCombinedDefs(WorkGiverDef baseWorkGiverDef)
+        {
+            if (constructionDefs.Contains(baseWorkGiverDef))
                 return constructionDefs.ToList();
 
-            if (baseWorkgiver.def.giverClass != null && (baseWorkgiver.def.Worker as WorkGiver_Warden) != null)
+            if (baseWorkGiverDef.giverClass != null && (baseWorkGiverDef.Worker as WorkGiver_Warden) != null)
                 return AllWorkerDefs<WorkGiver_Warden>();
 
-            return new List<WorkGiverDef> { baseWorkgiver.def };
+            return new List<WorkGiverDef> { baseWorkGiverDef };
+        }
+
+        public static List<WorkGiver_Scanner> GetCombinedWorkGiverScanners(WorkGiver_Scanner workGiverScanner)
+        {
+            return GetCombinedDefs(workGiverScanner).Where(workGiverDef => workGiverDef.giverClass != null)
+                                                    .Select(workGiverDef => (WorkGiver_Scanner)workGiverDef.Worker).ToList();
         }
         // ***
     }
