@@ -244,9 +244,14 @@ namespace CM_Meeseeks_Box
                 if (!startedTask)
                 {
                     startedTask = true;
+                    givenTask = true;
+                    givenTaskTick = Find.TickManager.TicksGame;
 
                     if (!playedAcceptSound)
+                    {
                         MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+                        playedAcceptSound = true;
+                    }
 
                     TargetIndex targetIndex = GetJobPrimaryTarget(job);
 
