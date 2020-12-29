@@ -33,7 +33,7 @@ namespace CM_Meeseeks_Box
 
                 Job nextJob = GetNextJob(pawn, compMeeseeksMemory);
 
-                if (nextJob == null)
+                if (nextJob == null && compMeeseeksMemory.jobTargets.Count == 0)
                     nextJob = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_EmbraceTheVoid);
 
                 if (nextJob != null)
@@ -74,13 +74,14 @@ namespace CM_Meeseeks_Box
 
             compMeeseeksMemory.SortJobTargets();
 
+            List<LocalTargetInfo> delayedTargets = new List<LocalTargetInfo>();
+
             while (compMeeseeksMemory.jobTargets.Count > 0 && jobTarget == null)
             {
                 jobTarget = compMeeseeksMemory.jobTargets.FirstOrDefault();
 
                 if (jobTarget != null && jobTarget.IsValid)
                 {
-
                     if (savedJob.workGiverDef != null && savedJob.workGiverDef.Worker != null)
                     {
                         WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
@@ -103,7 +104,17 @@ namespace CM_Meeseeks_Box
 
                             if (nextJob == null)
                             {
-                                Logger.MessageFormat(this, "No job found for {0}.", jobTarget.ToString());
+                                // Special case for construction jobs, resource delivery can block the job
+                                if (TargetIsBeingConstructed(meeseeks, jobTarget, workGiverScanner))
+                                {
+                                    delayedTargets.Add(jobTarget);
+                                    Logger.MessageFormat(this, "Delaying construction job for {0}.", jobTarget.ToString());
+                                }
+                                else
+                                {
+                                    Logger.MessageFormat(this, "No job found for {0}.", jobTarget.ToString());
+                                }
+
                                 jobTarget = null;
                             }
                         }
@@ -129,6 +140,9 @@ namespace CM_Meeseeks_Box
                     compMeeseeksMemory.jobTargets.RemoveAt(0);
             }
 
+            // Put delayed targets back on the target list
+            compMeeseeksMemory.jobTargets.AddRange(delayedTargets);
+
             return nextJob;
         }
 
@@ -137,7 +151,16 @@ namespace CM_Meeseeks_Box
             Job job = null;
 
             if (targetInfo.HasThing && !targetInfo.ThingDestroyed)
+            {
+                // Special case for uninstall, the workgiver doesn't check to see if its already uninstalled
+                if (workGiverScanner as WorkGiver_Uninstall != null && !targetInfo.Thing.Spawned)
+                {
+                    Logger.MessageFormat(this, "Target is inside {0}", targetInfo.Thing.ParentHolder);
+                    return null;
+                }
+
                 job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
+            }
 
             if (job == null)
                 job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
@@ -155,6 +178,30 @@ namespace CM_Meeseeks_Box
             }
 
             return job;
+        }
+
+        private bool TargetIsBeingConstructed(Pawn meeseeks, LocalTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)
+        {
+            bool constructionWork = WorkerDefUtility.constructionDefs.Contains(workGiverScanner.def);
+            if (constructionWork)
+            {
+                if (targetInfo.HasThing)
+                {
+                    if (!targetInfo.ThingDestroyed && ((targetInfo.Thing as Blueprint) != null || (targetInfo.Thing as Frame) != null))
+                        return true;
+                }
+                else
+                {
+                    var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
+                    foreach (Thing thing in thingsAtCell)
+                    {
+                        if ((thing as Blueprint) != null || (thing as Frame) != null)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
