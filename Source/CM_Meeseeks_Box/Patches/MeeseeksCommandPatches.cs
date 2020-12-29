@@ -282,6 +282,10 @@ namespace CM_Meeseeks_Box
 
                             if (compMeeseeksMemory.HasTimeToQueueNewJob())
                             {
+                                // First add our own gizmo for queueing jobs in an area
+
+                                yield return new Designator_AreaWorkMeeseeks(__instance);
+
                                 string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
 
                                 List<Gizmo> priorityGizmos = __instance.mindState.priorityWork.GetGizmos().ToList();
@@ -481,7 +485,7 @@ namespace CM_Meeseeks_Box
                             }
                             
                         };
-                        return new FloatMenuOption("CM_Meeseeks_MeeseeksBox_GuardHere".Translate(), action, MenuOptionPriority.GoHere)
+                        return new FloatMenuOption("CM_Meeseeks_Box_GuardHere".Translate(), action, MenuOptionPriority.GoHere)
                         {
                             autoTakeable = true,
                             autoTakeablePriority = 10f

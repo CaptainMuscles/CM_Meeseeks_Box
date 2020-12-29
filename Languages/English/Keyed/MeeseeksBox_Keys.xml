@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
-	<CM_Meeseeks_MeeseeksBox_PressButtonLabel>Press button</CM_Meeseeks_MeeseeksBox_PressButtonLabel>
-	<CM_Meeseeks_MeeseeksBox_PressButtonDescription>Press the button.</CM_Meeseeks_MeeseeksBox_PressButtonDescription>
-	<CM_Meeseeks_MeeseeksBox_GuardHere>Guard here</CM_Meeseeks_MeeseeksBox_GuardHere>
+	<CM_Meeseeks_Box_GuardHere>Guard here</CM_Meeseeks_Box_GuardHere>
+	<CM_Meeseeks_Box_SelectJobAreaLabel>Select job area</CM_Meeseeks_Box_SelectJobAreaLabel>
+	<CM_Meeseeks_Box_SelectJobAreaDescription>Select and area. The current job will be performed on all valid targets in the selected area.</CM_Meeseeks_Box_SelectJobAreaDescription>
 </LanguageData>

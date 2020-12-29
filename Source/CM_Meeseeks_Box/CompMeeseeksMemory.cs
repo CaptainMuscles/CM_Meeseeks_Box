@@ -29,12 +29,13 @@ namespace CM_Meeseeks_Box
 
         private List<string> jobList = new List<string>();
         private List<string> jobResults = new List<string>();
+        public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
 
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
-        private static List<JobDef> noExplodeJobs = new List<JobDef> { JobDefOf.Equip };
-        //private static List<BodyPartGroupDef> clothingPartPriority = new List<BodyPartGroupDef>();
         
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
+
+        public bool GivenTask => givenTask;
 
         private Pawn meeseeks = null;
         public Pawn Meeseeks
@@ -105,11 +106,14 @@ namespace CM_Meeseeks_Box
 
             Scribe_Collections.Look(ref jobList, "jobList");
             Scribe_Collections.Look(ref jobResults, "jobResult");
+            Scribe_Collections.Look(ref jobTargets, "jobTargets", LookMode.LocalTargetInfo);
 
             if (jobList == null)
                 jobList = new List<string>();
             if (jobResults == null)
                 jobResults = new List<string>();
+            if (jobTargets == null)
+                jobTargets = new List<LocalTargetInfo>();
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit && voice == null)
             {
@@ -148,9 +152,15 @@ namespace CM_Meeseeks_Box
             Logger.MessageFormat(this, "Meeseeks despawned \n{0}", this.GetDebugInfo());
         }
 
-        public bool GivenTask()
+        public void AddJobTarget(LocalTargetInfo target)
         {
-            return givenTask;
+            if (!jobTargets.Contains(target))
+                jobTargets.Add(target);
+        }
+
+        public void SortJobTargets()
+        {
+            jobTargets.Sort((a, b) => (int)(Meeseeks.PositionHeld.DistanceTo(a.Cell) - Meeseeks.PositionHeld.DistanceTo(b.Cell)));
         }
 
         public bool HasTimeToQueueNewJob()
@@ -202,7 +212,6 @@ namespace CM_Meeseeks_Box
             {
                 givenTask = true;
                 givenTaskTick = Find.TickManager.TicksGame;
-                MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
             }
         }
 
@@ -227,131 +236,107 @@ namespace CM_Meeseeks_Box
                 {
                     givenTask = true;
                     givenTaskTick = Find.TickManager.TicksGame;
-                }
+                    MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
 
-                savedJob = new SavedJob(job);
+                    TargetIndex targetIndex = GetJobPrimaryTarget(job);
+                    if (targetIndex == TargetIndex.None)
+                    {
+                        // Let the hacks begin!
+                        // First, hauling to a construction job
+                        if (job.def == JobDefOf.HaulToContainer && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                        {
+                            if (job.targetC.IsValid)
+                                targetIndex = TargetIndex.C;
+                        }
+                    }
+
+                    if (targetIndex != TargetIndex.None)
+                    {
+                        // Construction jobs need to track the cell in order to advance to the next stage when searching for jobs later
+                        if (job.GetTarget(targetIndex).HasThing && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                        {
+                            AddJobTarget(job.GetTarget(targetIndex).Cell);
+                        }
+                        else
+                        {
+                            AddJobTarget(job.GetTarget(targetIndex));
+                        }
+                    }
+                    else
+                    {
+                        Logger.MessageFormat(this, "No target found for {0}", job.def.defName);
+                    }
+
+                    savedJob = new SavedJob(job);
+                }
 
                 //Logger.MessageFormat(this, "Meeseeks has accepted task: {0}", savedJob.def.defName);
             }
         }
 
-        public void EndCurrentJob(Job job, JobDriver jobDriver, JobCondition condition)
+        private TargetIndex GetJobPrimaryTarget(Job job)
         {
-            //Logger.MessageFormat(this, "Meeseeks has finished job: {0}, {1}", job.def.defName, condition.ToString());
+            TargetIndex result = TargetIndex.None;
 
-            jobResults.Add(condition.ToString());
-
-            if (givenTask)
+            if (job.workGiverDef != null && job.workGiverDef.Worker != null)
             {
-                if (job.def.defName == savedJob.def.defName)
+                WorkGiver_Scanner workGiverScanner = job.workGiverDef.Worker as WorkGiver_Scanner;
+                if (workGiverScanner != null)
                 {
-                    switch (condition)
-                    {
-                        case JobCondition.Errored:
-                            JobErrored(job);
-                            break;
-                        case JobCondition.Succeeded:
-                            JobSucceeded(job);
-                            break;
-                        case JobCondition.InterruptForced:
-                            JobInterrupted(job);
-                            break;
-                        case JobCondition.Incompletable:
-                            JobIncompletable(job);
-                            break;
-                    }
+                    if (this.HasSameJobOnThing(job, workGiverScanner, job.targetA))
+                        return TargetIndex.A;
+                    if (this.HasSameJobOnThing(job, workGiverScanner, job.targetB))
+                        return TargetIndex.B;
+                    if (this.HasSameJobOnThing(job, workGiverScanner, job.targetC))
+                        return TargetIndex.C;
+
+                    if (this.HasSameJobOnCell(job, workGiverScanner, job.targetA))
+                        return TargetIndex.A;
+                    if (this.HasSameJobOnCell(job, workGiverScanner, job.targetB))
+                        return TargetIndex.B;
+                    if (this.HasSameJobOnCell(job, workGiverScanner, job.targetC))
+                        return TargetIndex.C;
+                }
+                else
+                {
+                    Logger.MessageFormat(this, "Non scanner WorkGiver", job.workGiverDef.defName);
                 }
             }
-        }
-
-        private void JobErrored(Job job)
-        {
-            if (Meeseeks != null)
+            else
             {
-                if (!taskCompleted && !noExplodeJobs.Contains(job.def))
-                {
-                    taskCompleted = true;
-                    Logger.WarningFormat(this, "Meeseeks job error : {0}, marking as complete.", job.def.defName);
-                }
+                Logger.MessageFormat(this, "No workGiverDef found for {0}", job.def.defName);
             }
+
+            return result;
         }
 
-        private void JobSucceeded(Job job)
+        private bool HasSameJobOnThing(Job job, WorkGiver_Scanner workGiverScanner, LocalTargetInfo targetInfo)
         {
-            if (Meeseeks != null)
+            if (HasValidTarget(targetInfo) && targetInfo.HasThing)
             {
-                if (!taskCompleted && !noExplodeJobs.Contains(job.def))
-                {
-                    taskCompleted = true;
-                    //Logger.MessageFormat(this, "Meeseeks succeeded at: {0}", job.def.defName);
-                }
+                Job getJob = workGiverScanner.JobOnThing(Meeseeks, targetInfo.Thing, true);
+                if (getJob != null && getJob.def == job.def)
+                    return true;
             }
+
+            return false;
         }
 
-        private void JobInterrupted(Job job)
+        private bool HasSameJobOnCell(Job job, WorkGiver_Scanner workGiverScanner, LocalTargetInfo targetInfo)
         {
-            if (Meeseeks != null)
+            if (HasValidTarget(targetInfo) && !targetInfo.HasThing)
             {
-                if (taskCompleted)
-                {
-                    // This job might have been marked completed in an earlier iteration (previous item in a bill or a previous part of a forced job) cancel that if interrupted.
-                    taskCompleted = false;
-                    Logger.MessageFormat(this, "Meeseeks interrupted at: {0}", job.def.defName);
-                }
+                Job getJob = workGiverScanner.JobOnCell(Meeseeks, targetInfo.Cell, true);
+                if (getJob != null && getJob.def == job.def)
+                    return true;
             }
+
+            return false;
         }
 
-        private void JobIncompletable(Job job)
+        private bool HasValidTarget(LocalTargetInfo targetInfo)
         {
-            if (Meeseeks != null)
-            {
-                if (job.targetA != null)
-                {
-                    // If the primary target was a pawn
-                    Pawn targetPawn = job.targetA.Pawn;
-                    if (targetPawn != null)
-                    {
-                        // If its dead, we will consider ourselves successful
-                        if (targetPawn.Dead)
-                        {
-                            JobSucceeded(job);
-                        }
-                        // If it is not on this map, then lets leave the map
-                        else if (targetPawn.MapHeld != Meeseeks.MapHeld)
-                        {
-                            IntVec3 exitSpot;
-                            if (RCellFinder.TryFindBestExitSpot(Meeseeks, out exitSpot, TraverseMode.ByPawn))
-                            {
-                                Job leaveMapJob = JobMaker.MakeJob(JobDefOf.Goto, exitSpot);
-                                leaveMapJob.exitMapOnArrival = true;
-                                leaveMapJob.failIfCantJoinOrCreateCaravan = false;
-                                leaveMapJob.locomotionUrgency = PawnUtility.ResolveLocomotion(Meeseeks, LocomotionUrgency.Walk, LocomotionUrgency.Jog);
-                                leaveMapJob.expiryInterval = 99999;
-                                leaveMapJob.canBash = true;
-
-                                Meeseeks.jobs.jobQueue.EnqueueFirst(leaveMapJob);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public Job GetSavedJob()
-        {
-            if (savedJob == null || noExplodeJobs.Contains(savedJob.def))
-                return null;
-
-            if (HasInvalidTarget(savedJob.targetA) || HasInvalidTarget(savedJob.targetB) || HasInvalidTarget(savedJob.targetC))
-                taskCompleted = true;
-
-            if (taskCompleted)
-                return JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_EmbraceTheVoid);
-
-            if (lastStartedJobDef != null && lastStartedJobDef == savedJob.def)
-                return JobMaker.MakeJob(JobDefOf.Wait_MaintainPosture, 2);
-
-            return savedJob.MakeJob();
+            return (targetInfo != null && this.TargetValid(targetInfo));
         }
 
         private bool HasInvalidTarget(LocalTargetInfo targetInfo)
@@ -372,11 +357,67 @@ namespace CM_Meeseeks_Box
             if (target.Destroyed)
                 return false;
 
-            Pawn pawn = targetInfo.Pawn;
-            if (pawn != null && pawn.Dead)
-                return false;
+            //Pawn pawn = targetInfo.Pawn;
+            //if (pawn != null && pawn.Dead)
+            //    return false;
 
             return true;
+        }
+
+        public void EndCurrentJob(Job job, JobDriver jobDriver, JobCondition condition)
+        {
+            //Logger.MessageFormat(this, "Meeseeks has finished job: {0}, {1}", job.def.defName, condition.ToString());
+
+            jobResults.Add(condition.ToString());
+
+            if (givenTask)
+            {
+                if (job.def.defName == savedJob.def.defName)
+                {
+                    //switch (condition)
+                    //{
+                    //    case JobCondition.Incompletable:
+                    //        JobIncompletable(job);
+                    //        break;
+                    //}
+                }
+            }
+        }
+
+        private void JobIncompletable(Job job)
+        {
+            if (Meeseeks != null)
+            {
+                if (job.targetA != null)
+                {
+                    // If the primary target was a pawn
+                    Pawn targetPawn = job.targetA.Pawn;
+                    if (targetPawn != null)
+                    {
+                        // If its dead, we will consider ourselves successful
+                        if (targetPawn.Dead)
+                        {
+                            //JobSucceeded(job);
+                        }
+                        // If it is not on this map, then lets leave the map
+                        else if (targetPawn.MapHeld != Meeseeks.MapHeld)
+                        {
+                            IntVec3 exitSpot;
+                            if (RCellFinder.TryFindBestExitSpot(Meeseeks, out exitSpot, TraverseMode.ByPawn))
+                            {
+                                Job leaveMapJob = JobMaker.MakeJob(JobDefOf.Goto, exitSpot);
+                                leaveMapJob.exitMapOnArrival = true;
+                                leaveMapJob.failIfCantJoinOrCreateCaravan = false;
+                                leaveMapJob.locomotionUrgency = PawnUtility.ResolveLocomotion(Meeseeks, LocomotionUrgency.Walk, LocomotionUrgency.Jog);
+                                leaveMapJob.expiryInterval = 99999;
+                                leaveMapJob.canBash = true;
+
+                                Meeseeks.jobs.jobQueue.EnqueueFirst(leaveMapJob);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public string GetSummary()

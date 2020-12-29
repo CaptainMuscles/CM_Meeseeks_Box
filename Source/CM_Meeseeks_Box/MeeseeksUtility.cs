@@ -9,6 +9,9 @@ namespace CM_Meeseeks_Box
 {
     public static class MeeseeksUtility
     {
+        private static Pawn designatingMeeseeks = null;
+        public static Pawn DesignatingMeeseeks => designatingMeeseeks;
+
         private static SoundDef[] PoofInSounds = { MeeseeksDefOf.CM_Meeseeks_Box_Poof_In };
         private static SoundDef[] PoofOutSounds = { MeeseeksDefOf.CM_Meeseeks_Box_Poof_Out };
 
@@ -57,6 +60,11 @@ namespace CM_Meeseeks_Box
             soundInfo.pitchFactor = voice.pitch;
             soundInfo.volumeFactor = voice.volume;
             soundDef.PlayOneShot(soundInfo);
+        }
+
+        public static void DesignateMeeseeksWorkArea(Pawn mrMeeseeksLookAtMe)
+        {
+
         }
 
         public static void SpawnMeeseeks(IntVec3 position, Map map, int skillLevel, bool jumpCamera)
