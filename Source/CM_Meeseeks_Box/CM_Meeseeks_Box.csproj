@@ -86,7 +86,9 @@
     <Compile Include="Patches\MentalBreakWorkerPatches.cs" />
     <Compile Include="Patches\PawnDiedOrDownedThoughtsUtilityPatches.cs" />
     <Compile Include="Patches\PawnGeneratorPatches.cs" />
+    <Compile Include="Patches\Pawn_HealthTrackerPatches.cs" />
     <Compile Include="Patches\SelectionDrawerPatches.cs" />
+    <Compile Include="Patches\StatWorkerPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavedJob.cs" />
     <Compile Include="ThinkNode_MeeseeksCompleteTask.cs" />
