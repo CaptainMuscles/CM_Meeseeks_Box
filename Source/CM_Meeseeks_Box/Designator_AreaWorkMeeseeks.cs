@@ -136,7 +136,7 @@ namespace CM_Meeseeks_Box
             foreach (WorkGiver_Scanner scanner in workGivers)
             {
                 var potentialWorkCells = scanner.PotentialWorkCellsGlobal(Meeseeks);
-                if ((potentialWorkCells == null || potentialWorkCells.Contains(cell)) && scanner.HasJobOnCell(Meeseeks, cell, true))
+                if ((potentialWorkCells == null || potentialWorkCells.Contains(cell)) && !Memory.jobTargets.Contains(cell) && scanner.HasJobOnCell(Meeseeks, cell, true))
                     return true;
             }
 
@@ -150,7 +150,7 @@ namespace CM_Meeseeks_Box
             foreach (WorkGiver_Scanner scanner in workGivers)
             {
                 var potentialWorkThings = scanner.PotentialWorkThingsGlobal(Meeseeks);
-                if ((potentialWorkThings == null || potentialWorkThings.Contains(thing)) && scanner.HasJobOnThing(Meeseeks, thing, true))
+                if ((potentialWorkThings == null || potentialWorkThings.Contains(thing)) && !Memory.jobTargets.Contains(thing) && scanner.HasJobOnThing(Meeseeks, thing, true))
                     return true;
             }
 
