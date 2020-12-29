@@ -162,7 +162,7 @@ namespace CM_Meeseeks_Box
         public void AddJobTarget(LocalTargetInfo target, WorkGiverDef workGiverDef)
         {
             // Construction jobs need to track the cell in order to advance to the next stage when searching for jobs later
-            if (target.HasThing && workGiverDef != null && WorkerDefUtility.GetCombinedDefs(workGiverDef).Contains(workGiverDef))
+            if (target.HasThing && workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(workGiverDef))
             {
                 AddJobTarget(target.Cell);
             }
