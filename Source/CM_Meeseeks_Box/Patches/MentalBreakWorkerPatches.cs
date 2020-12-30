@@ -20,7 +20,7 @@ namespace CM_Meeseeks_Box
         {
             private static List<string> disallowedMentalBreakNames = new List<string>
                 { "FireStartingSpree", "Binging_DrugExtreme", "Jailbreaker", "Slaughterer", "RunWild", "GiveUpExit",
-                  "Binging_DrugMajor", "BedroomTantrum", "SadisticRage",
+                  "Binging_DrugMajor", "BedroomTantrum", "SadisticRage", "CorpseObsession",
                   "Binging_Food", "Wander_OwnRoom"};
 
             [HarmonyPostfix]
