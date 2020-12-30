@@ -130,9 +130,6 @@ namespace CM_Meeseeks_Box
                         {
                             Logger.MessageFormat(this, "No work scanner");
                         }
-
-                        if (nextJob == null)
-                            jobTarget = null;
                     }
                     else
                     {
@@ -143,6 +140,9 @@ namespace CM_Meeseeks_Box
                 {
                     Logger.MessageFormat(this, "No jobTarget found.");
                 }
+
+                if (nextJob == null)
+                    jobTarget = null;
 
                 if (nextJob == null && (jobTarget == null || !jobTarget.IsValid))
                     compMeeseeksMemory.jobTargets.RemoveAt(0);
