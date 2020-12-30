@@ -77,6 +77,9 @@ namespace CM_Meeseeks_Box
                                     if (targetCString != null) stringBuilder.AppendLine(targetCString);
                                 }
 
+                                if (meeseeksMemory.jobStuck)
+                                    stringBuilder.AppendLine("***JOB STUCK***");
+
                                 if (savedJob != null)
                                 {
                                     stringBuilder.AppendLine(String.Format("Saved job: {0}", savedJob.def.defName));

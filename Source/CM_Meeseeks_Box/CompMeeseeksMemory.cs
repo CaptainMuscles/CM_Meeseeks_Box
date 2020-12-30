@@ -16,6 +16,10 @@ namespace CM_Meeseeks_Box
 
         public SavedJob savedJob = null;
         public JobDef lastStartedJobDef = null;
+        public LocalTargetInfo lastStartedJobTarget = null;
+        public int lastStartedJobTick = 0;
+
+        public bool jobStuck = false;
 
         public int givenTaskTick = -1;
         public int acquiredEquipmentTick = -1;
@@ -108,6 +112,8 @@ namespace CM_Meeseeks_Box
 
             Scribe_Deep.Look(ref savedJob, "savedJob");
             Scribe_Defs.Look(ref lastStartedJobDef, "lastStartedJobDef");
+            Scribe_TargetInfo.Look(ref lastStartedJobTarget, "lastStartedJobTarget");
+            Scribe_Values.Look<int>(ref lastStartedJobTick, "lastStartedJobTick");
 
             Scribe_Deep.Look(ref voice, "Voice");
 
@@ -245,7 +251,12 @@ namespace CM_Meeseeks_Box
                 return;
             }
             string jobName = job.def.defName;
+
+            jobStuck = (lastStartedJobDef == job.def && lastStartedJobTarget == job.targetA && lastStartedJobTick == Find.TickManager.TicksGame);
+
             lastStartedJobDef = job.def;
+            lastStartedJobTarget = job.targetA;
+            lastStartedJobTick = Find.TickManager.TicksGame;
 
             jobList.Add(jobName);
 
@@ -282,6 +293,21 @@ namespace CM_Meeseeks_Box
 
                 //Logger.MessageFormat(this, "Meeseeks has accepted task: {0}", savedJob.def.defName);
             }
+        }
+
+        public bool JobStuckRepeat(Job newJob)
+        {
+            if (jobStuck)
+            {
+                jobStuck = false;
+
+                if (newJob != null && newJob.def == lastStartedJobDef && newJob.targetA == lastStartedJobTarget && Find.TickManager.TicksGame == lastStartedJobTick)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private TargetIndex GetJobPrimaryTarget(Job job)

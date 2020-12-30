@@ -95,11 +95,19 @@ namespace CM_Meeseeks_Box
 
                                 if (nextJob != null)
                                 {
-                                    Logger.MessageFormat(this, "Job WAS found for {0}.", scanner.def.defName);
+                                    if (compMeeseeksMemory.JobStuckRepeat(nextJob))
+                                    {
+                                        Logger.ErrorFormat(this, "Stuck job detected and removed on {0}.", jobTarget);
+                                        nextJob = null;
+                                    }
+                                    else
+                                    {
+                                        Logger.MessageFormat(this, "Job WAS found for {0}.", scanner.def.defName);
+                                    }
                                     break;
                                 }
 
-                                Logger.MessageFormat(this, "No {0} job found.", scanner.def.defName);
+                                //Logger.MessageFormat(this, "No {0} job found.", scanner.def.defName);
                             }
 
                             if (nextJob == null)
@@ -112,7 +120,7 @@ namespace CM_Meeseeks_Box
                                 }
                                 else
                                 {
-                                    Logger.MessageFormat(this, "No job found for {0}.", jobTarget.ToString());
+                                    //Logger.MessageFormat(this, "No job found for {0}.", jobTarget.ToString());
                                 }
 
                                 jobTarget = null;
@@ -159,10 +167,11 @@ namespace CM_Meeseeks_Box
                     return null;
                 }
 
-                job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
+                if (workGiverScanner.HasJobOnThing(meeseeks, targetInfo.Thing, true))
+                    job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
             }
 
-            if (job == null)
+            if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
                 job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
 
             if (job == null)
@@ -170,8 +179,9 @@ namespace CM_Meeseeks_Box
                 var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
                 foreach (Thing thing in thingsAtCell)
                 {
-                    Logger.MessageFormat(this, "Checking {0} for {1}.", thing.GetUniqueLoadID(), workGiverScanner.def.defName);
-                    job = workGiverScanner.JobOnThing(meeseeks, thing, true);
+                    //Logger.MessageFormat(this, "Checking {0} for {1}.", thing.GetUniqueLoadID(), workGiverScanner.def.defName);
+                    if (workGiverScanner.HasJobOnThing(meeseeks, thing, true))
+                        job = workGiverScanner.JobOnThing(meeseeks, thing, true);
                     if (job != null)
                         break;
                 }
