@@ -251,12 +251,14 @@ namespace CM_Meeseeks_Box
             bool killJob = (compMeeseeksMemory.savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill);
             bool combatJob = (killJob || pawn.Drafted);
 
-            AddDebugLine("combatJob == " + combatJob.ToString());
-
             if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackMelee || combatJob)
                 relevantSkills.Add(SkillDefOf.Melee);
             if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackStatic || combatJob)
                 relevantSkills.Add(SkillDefOf.Shooting);
+
+            combatJob = (combatJob || (relevantSkills.Contains(SkillDefOf.Melee) || relevantSkills.Contains(SkillDefOf.Shooting)));
+
+            AddDebugLine("combatJob == " + combatJob.ToString());
 
             foreach (SkillDef skill in relevantSkills)
                 AddDebugLine(skill.defName);
@@ -342,6 +344,10 @@ namespace CM_Meeseeks_Box
                         selectedEquipmentScore = equipmentScore;
                     }
                 }
+                else
+                {
+                    AddDebugLine("Too far away: " + equippable.GetUniqueLoadID());
+                }
             }
 
             AddDebugLine("BEST: " + selectedEquipment);
@@ -371,15 +377,30 @@ namespace CM_Meeseeks_Box
         private static bool CanEquipThis(bool combat, Pawn pawn, Thing weapon, List<SkillDef> relevantSkills)
         {
             if (weapon.IsForbidden(pawn))
+            {
+                AddDebugLine("Forbidden: " + weapon.GetUniqueLoadID());
                 return false;
+            }
             if (weapon.IsBurning())
+            {
+                AddDebugLine("Burning: " + weapon.GetUniqueLoadID());
                 return false;
+            }
             if (EquipmentUtility.IsBiocoded(weapon))
+            {
+                AddDebugLine("Biocoded: " + weapon.GetUniqueLoadID());
                 return false;
+            }
             if (!pawn.CanReserveAndReach(weapon, PathEndMode.OnCell, pawn.NormalMaxDanger()))
+            {
+                AddDebugLine("Can't touch this: " + weapon.GetUniqueLoadID());
                 return false;
+            }
             if (!combat && !HasReleventStatModifiers(weapon, relevantSkills))
+            {
+                AddDebugLine("Irrelevant: " + weapon.GetUniqueLoadID());
                 return false;
+            }
 
             return true;
         }
