@@ -228,9 +228,9 @@ namespace CM_Meeseeks_Box
 
                     if (compMeeseeksMemory.HasTimeToQueueNewJob())
                     {
-                        // First add our own gizmo for queueing jobs in an area
-
-                        yield return new Designator_AreaWorkMeeseeks(__instance);
+                        // First add our own gizmo for queueing jobs in an area - IF the job's workgiver is a scanner type
+                        if (compMeeseeksMemory.savedJob != null && compMeeseeksMemory.savedJob.workGiverDef != null && compMeeseeksMemory.savedJob.workGiverDef.Worker as WorkGiver_Scanner != null)
+                            yield return new Designator_AreaWorkMeeseeks(__instance);
 
                         string clearCommandLabel = "CommandClearPrioritizedWork".Translate();
 

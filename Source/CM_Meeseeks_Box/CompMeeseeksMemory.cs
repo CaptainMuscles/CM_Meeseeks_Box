@@ -43,6 +43,9 @@ namespace CM_Meeseeks_Box
 
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
 
+        private Pawn creator = null;
+        public Pawn Creator => creator;
+
         public bool GivenTask => givenTask;
 
         private Pawn meeseeks = null;
@@ -105,6 +108,8 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look<bool>(ref this.startedTask, "startedTask", false);
             Scribe_Values.Look<bool>(ref this.taskCompleted, "taskCompleted", false);
             Scribe_Values.Look<bool>(ref this.playedAcceptSound, "playedAcceptSound", false);
+
+            Scribe_References.Look(ref this.creator, "creator");
             
             Scribe_Values.Look<int>(ref this.givenTaskTick, "givenTaskTick", -1);
             Scribe_Values.Look<int>(ref this.acquiredEquipmentTick, "acquiredWeaponTick", -1);
@@ -163,6 +168,15 @@ namespace CM_Meeseeks_Box
             base.PostDeSpawn(map);
 
             Logger.MessageFormat(this, "Meeseeks despawned \n{0}", this.GetDebugInfo());
+        }
+
+        public void SetCreator(Pawn creatingPawn)
+        {
+            CompMeeseeksMemory creatorMemory = creatingPawn.GetComp<CompMeeseeksMemory>();
+            if (creatorMemory != null)
+                creator = creatorMemory.Creator;
+            else
+                creator = creatingPawn;
         }
 
         public void AddJobTarget(LocalTargetInfo target, WorkGiverDef workGiverDef)

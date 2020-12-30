@@ -4,6 +4,7 @@ using UnityEngine;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using System;
 
 namespace CM_Meeseeks_Box
 {
@@ -65,7 +66,8 @@ namespace CM_Meeseeks_Box
         public override void PostExposeData()
         {
             base.PostExposeData();
-            Scribe_Deep.Look(ref verbTracker, "verbTracker", this);
+            // TODO: Get this and CompUseEffect_UseVerb to share verbs
+            //Scribe_Deep.Look(ref verbTracker, "verbTracker", this);
         }
 
         public override void CompTick()
@@ -82,6 +84,40 @@ namespace CM_Meeseeks_Box
             }
         }
 
+        //public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn pawn)
+        //{
+        //    foreach (Verb verb in VerbTracker.AllVerbs)
+        //    {
+        //        Verb_Cooldown verbCooldown = verb as Verb_Cooldown;
+        //        Action action = null;
+        //        string optionLabel = verb.verbProps.label.Translate();
+
+        //        bool cooldownReady = true;
+        //        if (verbCooldown != null)
+        //        {
+        //            cooldownReady = (verbCooldown.cooldownTicksRemaining <= 0);
+
+        //            if (!cooldownReady)
+        //                optionLabel += " - " + "AbilityOnCooldown".Translate(verbCooldown.cooldownTicksRemaining.ToStringTicksToPeriod(allowSeconds: true, shortForm: false, canUseDecimals: false));
+        //        }
+
+        //        if (cooldownReady)
+        //        {
+        //            action = delegate
+        //            {
+        //                if (verb.verbProps.hasStandardCommand)
+        //                {
+        //                    verb.caster = pawn;
+        //                    verb.TryStartCastOn(pawn);
+        //                }
+        //            };
+        //        }
+
+        //        FloatMenuOption useVerbOption = new FloatMenuOption(optionLabel, action);
+        //        yield return useVerbOption;
+        //    }
+        //}
+
         public override IEnumerable<Gizmo> CompGetWornGizmosExtra()
         {
             foreach (Gizmo item in base.CompGetWornGizmosExtra())
@@ -94,11 +130,11 @@ namespace CM_Meeseeks_Box
                 yield break;
             }
             ThingWithComps gear = parent;
-            foreach (Verb allVerb in VerbTracker.AllVerbs)
+            foreach (Verb verb in VerbTracker.AllVerbs)
             {
-                if (allVerb.verbProps.hasStandardCommand)
+                if (verb.verbProps.hasStandardCommand)
                 {
-                    yield return CreateVerbTargetCommand(gear, allVerb);
+                    yield return CreateVerbTargetCommand(gear, verb);
                 }
             }
         }
@@ -110,7 +146,7 @@ namespace CM_Meeseeks_Box
             Command_VerbTargetWithCooldown command_VerbTarget = new Command_VerbTargetWithCooldown();
             command_VerbTarget.defaultDesc = gear.def.description;
             command_VerbTarget.hotKey = Props.hotKey;
-            command_VerbTarget.defaultLabel = verb.verbProps.label;
+            command_VerbTarget.defaultLabel = verb.verbProps.label.Translate();
             command_VerbTarget.verb = verb;
             if (verb.verbProps.defaultProjectile != null && verb.verbProps.commandIcon == null)
             {

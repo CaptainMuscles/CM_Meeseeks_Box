@@ -25,44 +25,16 @@ namespace CM_Meeseeks_Box
             int skillLevel = 5;
 
             ThingComp owningThingComp = (this.DirectOwner as ThingComp);
-            if (owningThingComp != null)
-            {
-                ThingWithComps theBox = owningThingComp.parent;
-                if (theBox != null)
-                {
-                    QualityCategory boxQuality = QualityCategory.Normal;
-                    theBox.TryGetQuality(out boxQuality);
 
-                    int qualityInt = (int)boxQuality;
-                    skillLevel = qualityInt * 3;
-                }
-            }
+            ThingWithComps theBox = owningThingComp.parent;
 
-            IntVec3 summonPosition = this.FindSpawnPosition(this.caster);
-            bool jumpCamera = (this.CasterIsPawn && this.CasterPawn.IsColonistPlayerControlled);
+            QualityCategory boxQuality = QualityCategory.Normal;
+            theBox.TryGetQuality(out boxQuality);
 
-            MeeseeksUtility.SpawnMeeseeks(summonPosition, caster.Map, skillLevel, jumpCamera);
-        }
+            int qualityInt = (int)boxQuality;
+            skillLevel = qualityInt * 3;
 
-        private IntVec3 FindSpawnPosition(Thing caster)
-        {
-            IntVec3 spawnPosition = caster.Position;
-            List<IntVec3> randomOffsets = GenAdj.AdjacentCells8WayRandomized();
-            foreach (IntVec3 randomOffset in randomOffsets)
-            {
-                spawnPosition = caster.Position + randomOffset;
-                if (spawnPosition.InBounds(caster.Map) && spawnPosition.Walkable(caster.Map))
-                {
-                    Building_Door building_Door = spawnPosition.GetEdifice(caster.Map) as Building_Door;
-                    // TODO: Could anything other than a pawn summon a meeseeks this way? If so, change this function to use Pawn
-                    if (building_Door == null)// || building_Door.CanPhysicallyPass(caster))
-                    {
-                        return spawnPosition;
-                    }
-                }
-            }
-
-            return caster.Position;
+            MeeseeksUtility.SpawnMeeseeks(this.CasterPawn, theBox.SpawnedParentOrMe, caster.Map, skillLevel);
         }
     }
 }

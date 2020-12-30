@@ -1,33 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-  <ThingDef ParentName="ApparelBase">
+  <ThingDef Name="MeeseeksBox">
+    <thingClass>ThingWithComps</thingClass>
     <defName>Apparel_Meeseeks_Box</defName>
     <label>meeseeks box</label>
     <description>A box that can create a helper capable of performing a single task to completion before disappearing.</description>
+	<category>Item</category>
+    <selectable>True</selectable>
+    <pathCost>14</pathCost>
+    <useHitPoints>True</useHitPoints>
+    <drawGUIOverlay>true</drawGUIOverlay>
+    <altitudeLayer>Item</altitudeLayer>
+    <alwaysHaulable>True</alwaysHaulable>
+    <burnableByRecipe>true</burnableByRecipe>
+    <smeltable>true</smeltable>
     <techLevel>Spacer</techLevel>
-		<!--<comps>
-      <li Class="CompProperties_Reloadable">
-        <maxCharges>6</maxCharges>
-        <ammoDef>ComponentIndustrial</ammoDef>
-        <ammoCountPerCharge>1</ammoCountPerCharge>
-        <baseReloadTicks>60</baseReloadTicks>
-        <soundReload>Standard_Reload</soundReload>
-        <hotKey>Misc4</hotKey>
-        <chargeNoun>create</chargeNoun>
-        <displayGizmoWhileUndrafted>true</displayGizmoWhileUndrafted>
-      </li>
-    </comps>-->
 	<comps>
+	  <li Class="CompProperties_Forbiddable"/>
+      <li>
+        <compClass>CompColorable</compClass>
+      </li>
+	  <li>
+        <compClass>CompQuality</compClass>
+      </li>
       <li Class="CM_Meeseeks_Box.CompProperties_WornGizmos">
         <hotKey>Misc4</hotKey>
 		<coolDownTicks>5000</coolDownTicks>
+      </li>
+	  <li Class="CompProperties_Usable">
+        <useJob>UseItem</useJob>
+        <useLabel>Press button</useLabel>
+      </li>
+      <li Class="CM_Meeseeks_Box.CompProperties_UseEffectUseVerb">
+		<verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
       </li>
     </comps>
     <verbs>
       <li>
         <verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
-        <label>create meeseeks</label>
+        <label>CM_Meeseeks_Box_PressButton</label>
         <violent>false</violent>
         <hasStandardCommand>true</hasStandardCommand>
         <targetable>false</targetable>
@@ -57,36 +69,21 @@
     <graphicData>
       <texPath>Things/Items/MeeseeksBox</texPath>
       <graphicClass>Graphic_Single</graphicClass>
+	  <onGroundRandomRotateAngle>35</onGroundRandomRotateAngle>
     </graphicData>
     <tickerType>Normal</tickerType>
     <statBases>
       <WorkToMake>14000</WorkToMake>
       <Mass>3</Mass>
       <Flammability>0.4</Flammability>
-      <EquipDelay>2</EquipDelay>
     </statBases>
     <thingSetMakerTags>
       <li>RewardStandardMidFreq</li>
       <li>RewardStandardQualitySuper</li>
     </thingSetMakerTags>
-    <thingCategories>
-      <li>ApparelUtility</li>
+	<thingCategories>
+      <li>Items</li>
     </thingCategories>
-    <apparel>
-      <scoreOffset>4</scoreOffset>
-      <careIfWornByCorpse>false</careIfWornByCorpse>
-      <careIfDamaged>false</careIfDamaged>
-      <wearPerDay>0</wearPerDay>
-      <bodyPartGroups>
-        <li>Waist</li>
-      </bodyPartGroups>
-      <layers>
-        <li>Belt</li>
-      </layers>
-      <tags>
-        <li>BoxMeeseeks</li>
-      </tags>
-    </apparel>
     <tradeTags>
       <li>ExoticMisc</li>
     </tradeTags>

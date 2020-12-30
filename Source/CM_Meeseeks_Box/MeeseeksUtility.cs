@@ -67,7 +67,7 @@ namespace CM_Meeseeks_Box
 
         }
 
-        public static void SpawnMeeseeks(IntVec3 position, Map map, int skillLevel, bool jumpCamera)
+        public static void SpawnMeeseeks(Pawn creator, Thing creatingThing, Map map, int skillLevel)
         {
             PawnKindDef pawnKindDef = MeeseeksDefOf.MeeseeksKind;
 
@@ -96,13 +96,15 @@ namespace CM_Meeseeks_Box
                     need.CurLevelPercentage = 1.0f;
             }
 
-            GenSpawn.Spawn(mrMeeseeksLookAtMe, position, map);
+            IntVec3 summonPosition = MeeseeksUtility.FindSpawnPosition(creatingThing);
+            GenSpawn.Spawn(mrMeeseeksLookAtMe, summonPosition, map);
 
             CompMeeseeksMemory compMeeseeksMemory = mrMeeseeksLookAtMe.GetComp<CompMeeseeksMemory>();
+            compMeeseeksMemory.SetCreator(creator);
             MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.voice);
 
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
-            GenSpawn.Spawn(smoke, position, map);
+            GenSpawn.Spawn(smoke, summonPosition, map);
             MeeseeksUtility.PlayPoofInSound(smoke);
 
             //ThingDef moteDef = DefDatabase<ThingDef>.GetNamedSilentFail("Mote_PsycastSkipOuterRingExit");
@@ -111,11 +113,33 @@ namespace CM_Meeseeks_Box
 
             //GenExplosion.DoExplosion(mrMeeseeksLookAtMe.PositionHeld, mrMeeseeksLookAtMe.MapHeld, 1.0f, DamageDefOf.Smoke, null, -1, -1f, MeeseeksDefOf.CM_Meeseeks_Box_Poof_In, null, null, null, ThingDefOf.Gas_Smoke, 1f);
 
+            bool jumpCamera = (creator.IsColonistPlayerControlled);
             if (jumpCamera)
             {
                 LookTargets otherSideTarget = new LookTargets(mrMeeseeksLookAtMe);
                 CameraJumper.TrySelect(otherSideTarget.TryGetPrimaryTarget());
             }
+        }
+
+        static private IntVec3 FindSpawnPosition(Thing spawningThing)
+        {
+            IntVec3 spawnPosition = spawningThing.Position;
+            List<IntVec3> randomOffsets = GenAdj.AdjacentCells8WayRandomized();
+            foreach (IntVec3 randomOffset in randomOffsets)
+            {
+                spawnPosition = spawningThing.Position + randomOffset;
+                if (spawnPosition.InBounds(spawningThing.Map) && spawnPosition.Walkable(spawningThing.Map))
+                {
+                    Building_Door building_Door = spawnPosition.GetEdifice(spawningThing.Map) as Building_Door;
+                    // TODO: Could anything other than a pawn summon a meeseeks this way? If so, change this function to use Pawn
+                    if (building_Door == null)// || building_Door.CanPhysicallyPass(caster))
+                    {
+                        return spawnPosition;
+                    }
+                }
+            }
+
+            return spawningThing.Position;
         }
 
         public static void DespawnMeeseeks(Pawn mrMeeseeksLookAtMe)
