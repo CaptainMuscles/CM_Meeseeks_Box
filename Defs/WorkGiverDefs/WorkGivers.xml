@@ -4,7 +4,7 @@
   <!-- ============= Killin' ============= -->
   
   <WorkGiverDef>
-    <defName>CM_Meeseeks_Box_Job_Kill</defName>
+    <defName>CM_Meeseeks_Box_WorkGiver_Kill</defName>
     <label>kill</label>
     <giverClass>CM_Meeseeks_Box.WorkGiver_Kill</giverClass>
     <workType>Hunting</workType>

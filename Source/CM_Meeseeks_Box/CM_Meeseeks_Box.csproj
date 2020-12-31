@@ -72,7 +72,9 @@
     <Compile Include="Comps\CompWornGizmos.cs" />
     <Compile Include="Jobs\JobDriver_UseMeeseeksBox.cs" />
     <Compile Include="Jobs\JobGiver_UseMeeseeksBox.cs" />
+    <Compile Include="MentalStates\MentalStateWorker_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeks.cs" />
+    <Compile Include="MentalStates\MentalState_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeks.cs" />
     <Compile Include="Patches\AreaAllowedGUIPatches.cs" />
     <Compile Include="Patches\CaravanFormingUtilityPatches.cs" />

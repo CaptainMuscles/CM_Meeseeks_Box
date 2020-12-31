@@ -202,17 +202,19 @@ namespace CM_Meeseeks_Box
             givenTaskTick = Find.TickManager.TicksGame;
 
             MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+        }
 
-            //            public bool givenTask = false;
-            //public bool startedTask = false;
-            //public bool taskCompleted = false;
+        public void ForceNewJob(Job newJob, LocalTargetInfo targetInfo)
+        {
+            jobTargets = new List<LocalTargetInfo> { targetInfo };
 
-            //public SavedJob savedJob = null;
+            givenTask = true;
+            startedTask = true;
+            taskCompleted = false;
 
-            //public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
+            savedJob = new SavedJob(newJob);
 
-            //public int givenTaskTick = -1;
-            //public int acquiredEquipmentTick = -1;
+            givenTaskTick = Find.TickManager.TicksGame;
         }
 
         public void AddJobTarget(LocalTargetInfo target, WorkGiverDef workGiverDef)

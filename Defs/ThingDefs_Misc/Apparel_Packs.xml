@@ -26,7 +26,7 @@
       </li>
       <li Class="CM_Meeseeks_Box.CompProperties_WornGizmos">
         <hotKey>Misc4</hotKey>
-		<coolDownTicks>5000</coolDownTicks>
+		<coolDownTicks>600</coolDownTicks>
       </li>
 	  <li Class="CompProperties_Usable">
         <useJob>UseItem</useJob>
@@ -34,7 +34,7 @@
       </li>
       <li Class="CM_Meeseeks_Box.CompProperties_UseEffectUseVerb">
 		<verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
-		<coolDownTicks>5000</coolDownTicks>
+		<coolDownTicks>600</coolDownTicks>
       </li>
     </comps>
     <verbs>

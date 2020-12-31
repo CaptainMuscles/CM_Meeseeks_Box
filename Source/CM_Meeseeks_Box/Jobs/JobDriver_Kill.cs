@@ -42,8 +42,12 @@ namespace CM_Meeseeks_Box
             checkTargetToil.initAction = delegate
             {
                 targetCheckTick = Find.TickManager.TicksGame;
+
+                if (pawn.equipment.Primary == null || pawn.equipment.Primary.def.IsMeleeWeapon)
+                    pawn.jobs.curDriver.JumpToToil(meleeLabel);
             };
             yield return checkTargetToil;
+
             //Toil gotoCastPos = Toils_Combat.GotoCastPosition(TargetIndex.A, true, 0.95f).JumpIfDespawnedOrNull(TargetIndex.A, startCollectCorpseLabel).FailOn(() => Find.TickManager.TicksGame > jobStartTick + 5000);
             Toil gotoCastPos = Toils_Combat.GotoCastPosition(TargetIndex.A, true, 0.95f)
                                            .JumpIfDespawnedOrNull(TargetIndex.A, startCollectCorpseLabel)
@@ -75,7 +79,8 @@ namespace CM_Meeseeks_Box
 
             // Melee
             yield return meleeLabel;
-            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+            yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch).JumpIf(() => Find.TickManager.TicksGame > targetCheckTick + targetCheckInterval, checkTargetToil);
+            //yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.OnCell).JumpIf(() => Find.TickManager.TicksGame > targetCheckTick + targetCheckInterval, checkTargetToil);
             Toil meleeAttack = new Toil();
             meleeAttack.tickAction = delegate
             {
