@@ -101,7 +101,12 @@ namespace CM_Meeseeks_Box
 
             CompMeeseeksMemory compMeeseeksMemory = mrMeeseeksLookAtMe.GetComp<CompMeeseeksMemory>();
             compMeeseeksMemory.SetCreator(creator);
-            MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.voice);
+
+            // The voices for greeting and task acceptance can overlap depending on the speed the game is running,
+            //   especially if another Meeseeks created us, so just don't do it in that case
+            CompMeeseeksMemory creatorMemory = creator.GetComp<CompMeeseeksMemory>();
+            if (creatorMemory == null)
+                MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.voice);
 
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
             GenSpawn.Spawn(smoke, summonPosition, map);
