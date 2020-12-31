@@ -11,6 +11,8 @@ namespace CM_Meeseeks_Box
         public static PawnKindDef MeeseeksKind;
         public static ThingDef MeeseeksRace;
 
+        public static ThingDef CM_Meeseeks_Box_Thing_Meeseeks_Box;
+
         public static TraitDef CM_Meeseeks_Box_Trait_Meeseeks;
         public static HediffDef CM_Meeseeks_Box_Hediff_Existence_Is_Pain;
         public static ThoughtDef CM_Meeseeks_Box_Thought_Existence_Is_Pain;
@@ -20,6 +22,7 @@ namespace CM_Meeseeks_Box
         public static JobDef CM_Meeseeks_Box_Job_AcquireEquipment;
         public static JobDef CM_Meeseeks_Box_Job_EmbraceTheVoid;
         public static JobDef CM_Meeseeks_Box_Job_Kill;
+        public static JobDef CM_Meeseeks_Box_Job_UseMeeseeksBox;
 
         public static SoundDef CM_Meeseeks_Box_Poof_In;
         public static SoundDef CM_Meeseeks_Box_Poof_Out;

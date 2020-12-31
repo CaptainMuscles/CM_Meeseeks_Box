@@ -3,7 +3,7 @@
 
   <ThingDef Name="MeeseeksBox">
     <thingClass>ThingWithComps</thingClass>
-    <defName>Apparel_Meeseeks_Box</defName>
+    <defName>CM_Meeseeks_Box_Thing_Meeseeks_Box</defName>
     <label>meeseeks box</label>
     <description>A box that can create a helper capable of performing a single task to completion before disappearing.</description>
 	<category>Item</category>
@@ -34,6 +34,7 @@
       </li>
       <li Class="CM_Meeseeks_Box.CompProperties_UseEffectUseVerb">
 		<verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
+		<coolDownTicks>5000</coolDownTicks>
       </li>
     </comps>
     <verbs>
