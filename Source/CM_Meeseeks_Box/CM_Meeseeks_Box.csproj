@@ -70,6 +70,10 @@
     <Compile Include="Comps\CompProperties_WornGizmos.cs" />
     <Compile Include="Comps\CompUseEffect_UseVerb.cs" />
     <Compile Include="Comps\CompWornGizmos.cs" />
+    <Compile Include="Jobs\JobDriver_UseMeeseeksBox.cs" />
+    <Compile Include="Jobs\JobGiver_UseMeeseeksBox.cs" />
+    <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeks.cs" />
+    <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeks.cs" />
     <Compile Include="Patches\AreaAllowedGUIPatches.cs" />
     <Compile Include="Patches\CaravanFormingUtilityPatches.cs" />
     <Compile Include="Patches\DebugPatches.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Jobs\JobGiver_AcquireAppropriateEquipment.cs" />
     <Compile Include="Designator_AreaWorkMeeseeks.cs" />
     <Compile Include="Patches\FloatMenuMakerMapPatches.cs" />
+    <Compile Include="Patches\ForbidUtilityPatches.cs" />
     <Compile Include="Patches\LetterStackPatches.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Patches\MeeseeksCommandPatches.cs" />
@@ -101,7 +106,7 @@
     <Compile Include="Verb_SpawnMeeseeks.cs" />
     <Compile Include="Voice.cs" />
     <Compile Include="WorkerDefUtility.cs" />
-    <Compile Include="WorkGiver_Kill.cs" />
+    <Compile Include="Jobs\WorkGiver_Kill.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

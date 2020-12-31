@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- Mental breaks: extreme -->
+
+  <MentalBreakDef>
+    <defName>CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeks</defName>
+    <mentalState>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeks</mentalState>
+    <baseCommonality>2</baseCommonality>
+    <intensity>Minor</intensity>
+    <requiredTrait>CM_Meeseeks_Box_Trait_Meeseeks</requiredTrait>
+	<workerClass>CM_Meeseeks_Box.MentalStateWorker_MeeseeksMakeMeeseeks</workerClass>
+  </MentalBreakDef>
+  <MentalStateDef ParentName="BaseMentalState">
+    <defName>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeks</defName>
+    <stateClass>CM_Meeseeks_Box.MentalState_MeeseeksMakeMeeseeks</stateClass>
+    <label>asking for help</label>
+    <category>Misc</category>
+    <blockInteractionInitiationExcept>
+    </blockInteractionInitiationExcept>
+    <blockInteractionRecipientExcept>
+      <li>Insult</li>
+    </blockInteractionRecipientExcept>
+    <blockRandomInteraction>true</blockRandomInteraction>
+    <prisonersCanDo>false</prisonersCanDo>
+    <colonistsOnly>true</colonistsOnly>
+    <minTicksBeforeRecovery>6000</minTicksBeforeRecovery>
+    <maxTicksBeforeRecovery>10000</maxTicksBeforeRecovery>
+    <recoveryMtbDays>0.033</recoveryMtbDays>
+    <nameColor>(0.65, 0.9, 0.93)</nameColor>
+    <!--<beginLetter>{0} is seeking help to finish his task.</beginLetter>
+    <beginLetterDef>NegativeEvent</beginLetterDef>-->
+    <baseInspectLine>Seeking help</baseInspectLine>
+    <recoverFromSleep>true</recoverFromSleep>
+    <unspawnedCanDo>false</unspawnedCanDo>
+  </MentalStateDef>
+
+</Defs>

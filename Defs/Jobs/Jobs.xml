@@ -4,13 +4,13 @@
 	<JobDef>
 		<defName>CM_Meeseeks_Box_Job_EmbraceTheVoid</defName>
 		<driverClass>CM_Meeseeks_Box.JobDriver_EmbraceTheVoid</driverClass>
-		<reportString>Embracing the void.</reportString>
+		<reportString>embracing the void.</reportString>
 	</JobDef>
 	
 	<JobDef>
 		<defName>CM_Meeseeks_Box_Job_CastAbilityNoTarget</defName>
 		<driverClass>CM_Meeseeks_Box.JobDriver_CastAbilityNoTarget</driverClass>
-		<reportString>Using ability.</reportString>
+		<reportString>using ability.</reportString>
 	</JobDef>
 	
 	<JobDef>
@@ -26,6 +26,13 @@
 		<defName>CM_Meeseeks_Box_Job_AcquireEquipment</defName>
 		<driverClass>CM_Meeseeks_Box.JobDriver_AcquireEquipment</driverClass>
 		<reportString>equipping TargetA.</reportString>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
+	
+	<JobDef>
+		<defName>CM_Meeseeks_Box_Job_UseMeeseeksBox</defName>
+		<driverClass>CM_Meeseeks_Box.JobDriver_UseMeeseeksBox</driverClass>
+		<reportString>getting help.</reportString>
 		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
 	</JobDef>
 

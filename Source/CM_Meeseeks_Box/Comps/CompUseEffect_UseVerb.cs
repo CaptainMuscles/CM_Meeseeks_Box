@@ -42,6 +42,29 @@ namespace CM_Meeseeks_Box
             return true;
         }
 
+        public bool OffCooldown()
+        {
+            foreach (Verb verb in VerbTracker.AllVerbs)
+            {
+                if (verb.GetType() == Props.verbClass && verb.verbProps.hasStandardCommand)
+                {
+                    Verb_Cooldown verbCooldown = verb as Verb_Cooldown;
+
+                    // Note that this has not been tested with regular verbs, only Verb_Cooldown
+                    if (verbCooldown != null)
+                    {
+                        return verbCooldown.CanCast;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);

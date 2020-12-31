@@ -10,9 +10,13 @@ namespace CM_Meeseeks_Box
     [StaticConstructorOnStartup]
     class CompMeeseeksMemory : ThingComp
     {
-        private bool givenTask = false;
-        private bool startedTask = false;
-        private bool taskCompleted = false;
+        private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
+        public static List<JobDef> noContinueJobs = new List<JobDef> { JobDefOf.Goto };
+        private static int maxQueueOrderTicks = 300;
+
+        public bool givenTask = false;
+        public bool startedTask = false;
+        public bool taskCompleted = false;
 
         public SavedJob savedJob = null;
         public JobDef lastStartedJobDef = null;
@@ -21,14 +25,12 @@ namespace CM_Meeseeks_Box
 
         public bool jobStuck = false;
 
+        public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
+
         public int givenTaskTick = -1;
         public int acquiredEquipmentTick = -1;
-        public int checkedForClothingTick = -1;
-        public BodyPartGroupDef lastCheckedBodyPartGroup = null;
 
         private bool destroyed = false;
-
-        private static int maxQueueOrderTicks = 300;
 
         public Voice voice = new Voice();
 
@@ -36,15 +38,15 @@ namespace CM_Meeseeks_Box
 
         private List<string> jobList = new List<string>();
         private List<string> jobResults = new List<string>();
-        public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
-
-        private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
-        public static List<JobDef> noContinueJobs = new List<JobDef> { JobDefOf.Goto };
+        
 
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
 
         private Pawn creator = null;
         public Pawn Creator => creator;
+
+        private List<Pawn> createdMeeseeks = new List<Pawn>();
+        public List<Pawn> CreatedMeeseeks => createdMeeseeks;
 
         public bool GivenTask => givenTask;
 
@@ -113,7 +115,6 @@ namespace CM_Meeseeks_Box
             
             Scribe_Values.Look<int>(ref this.givenTaskTick, "givenTaskTick", -1);
             Scribe_Values.Look<int>(ref this.acquiredEquipmentTick, "acquiredWeaponTick", -1);
-            Scribe_Values.Look<int>(ref this.checkedForClothingTick, "checkedForClothingTick", -1);
 
             Scribe_Deep.Look(ref savedJob, "savedJob");
             Scribe_Defs.Look(ref lastStartedJobDef, "lastStartedJobDef");
@@ -125,6 +126,8 @@ namespace CM_Meeseeks_Box
             Scribe_Collections.Look(ref jobList, "jobList");
             Scribe_Collections.Look(ref jobResults, "jobResult");
             Scribe_Collections.Look(ref jobTargets, "jobTargets", LookMode.LocalTargetInfo);
+
+            Scribe_Collections.Look(ref createdMeeseeks, "createdMeeseeks", LookMode.Reference);
 
             if (jobList == null)
                 jobList = new List<string>();
@@ -174,9 +177,42 @@ namespace CM_Meeseeks_Box
         {
             CompMeeseeksMemory creatorMemory = creatingPawn.GetComp<CompMeeseeksMemory>();
             if (creatorMemory != null)
-                creator = creatorMemory.Creator;
-            else
-                creator = creatingPawn;
+            {
+                creatorMemory.AddChildMeeseeks(Meeseeks);
+            }
+
+            creator = creatingPawn;
+        }
+
+        public void AddChildMeeseeks(Pawn child)
+        {
+            createdMeeseeks.Add(child);
+        }
+
+        public void CopyJobDataFrom(CompMeeseeksMemory otherMemory)
+        {
+            jobTargets = new List<LocalTargetInfo>(otherMemory.jobTargets);
+
+            givenTask = otherMemory.givenTask;
+            startedTask = otherMemory.startedTask;
+            taskCompleted = otherMemory.taskCompleted;
+
+            savedJob = new SavedJob(otherMemory.savedJob.MakeJob());
+
+            givenTaskTick = Find.TickManager.TicksGame;
+
+            MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+
+            //            public bool givenTask = false;
+            //public bool startedTask = false;
+            //public bool taskCompleted = false;
+
+            //public SavedJob savedJob = null;
+
+            //public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
+
+            //public int givenTaskTick = -1;
+            //public int acquiredEquipmentTick = -1;
         }
 
         public void AddJobTarget(LocalTargetInfo target, WorkGiverDef workGiverDef)
@@ -205,18 +241,35 @@ namespace CM_Meeseeks_Box
 
         public bool HasTimeToQueueNewJob()
         {
+            if (CreatedByMeeseeks())
+                return false;
+
             int ticksSinceOrder = Find.TickManager.TicksGame - givenTaskTick;
             return (givenTask && ticksSinceOrder < maxQueueOrderTicks && savedJob != null && !noContinueJobs.Contains(savedJob.def));
         }
 
         public bool CanTakeOrders()
         {
+            if (CreatedByMeeseeks())
+                return false;
+
             if (!givenTask)
                 return true;
 
             bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && HasTimeToQueueNewJob());
 
             return canQueueNewJob;
+        }
+
+        public bool CreatedByMeeseeks()
+        {
+            if (creator == null)
+                return false;
+
+            if (creator.GetComp<CompMeeseeksMemory>() == null)
+                return false;
+
+            return true;
         }
 
         public bool CanTakeOrderedJob(Job job)
