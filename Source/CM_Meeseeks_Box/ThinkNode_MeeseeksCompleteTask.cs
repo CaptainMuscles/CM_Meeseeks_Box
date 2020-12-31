@@ -37,14 +37,7 @@ namespace CM_Meeseeks_Box
                     nextJob = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_EmbraceTheVoid);
 
                 if (nextJob != null)
-                {
-                    bool reservationsMade = nextJob.TryMakePreToilReservations(pawn, false);
-
-                    if (reservationsMade)
-                        return new ThinkResult(nextJob, this, null, fromQueue: false);
-
-                    Logger.MessageFormat(this, "Could not make reservations.");
-                }
+                    return new ThinkResult(nextJob, this, null, fromQueue: false);
 
             }
 
@@ -124,6 +117,18 @@ namespace CM_Meeseeks_Box
                                 }
 
                                 jobTarget = null;
+                            }
+                            else
+                            {
+                                bool reservationsMade = nextJob.TryMakePreToilReservations(meeseeks, false);
+                                if (!reservationsMade)
+                                {
+                                    delayedTargets.Add(jobTarget);
+                                    Logger.MessageFormat(this, "Delaying job for {0} because reservations could not be made.", jobTarget.ToString());
+
+                                    nextJob = null;
+                                    jobTarget = null;
+                                }
                             }
                         }
                         else
