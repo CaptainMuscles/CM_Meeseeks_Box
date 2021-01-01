@@ -40,6 +40,10 @@
         <li Class="ThinkNode_Subtree">
           <treeDef>BurningResponse</treeDef>
         </li>
+		<!-- Mental state critical -->
+		<li Class="ThinkNode_Subtree">
+          <treeDef>Meeseeks_MentalStateCritical</treeDef>
+        </li>
         <li Class="ThinkNode_Subtree">
           <treeDef>MentalStateCritical</treeDef>
         </li>
@@ -48,12 +52,11 @@
         <li Class="JobGiver_ReactToCloseMeleeThreat" />
             
         <!-- Mental state non critical -->
-        <li Class="ThinkNode_Subtree">
-          <treeDef>MentalStateNonCritical</treeDef>
-        </li>
-
 		<li Class="ThinkNode_Subtree">
           <treeDef>Meeseeks_MentalStateNonCritical</treeDef>
+        </li>
+        <li Class="ThinkNode_Subtree">
+          <treeDef>MentalStateNonCritical</treeDef>
         </li>
         <!-- Insertion hook for modders -->
         <li Class="ThinkNode_SubtreesByTag">
@@ -71,9 +74,6 @@
         <!-- Do a queued job -->
         <li Class="ThinkNode_QueuedJob" />
 		
-		<!-- Fulfill our purpose so we can go away -->
-        <li Class="CM_Meeseeks_Box.ThinkNode_MeeseeksCompleteTask" />
-
         <!-- Wait if drafted -->
         <li Class="ThinkNode_ConditionalColonist">
           <subNodes>
@@ -100,6 +100,10 @@
         <li Class="ThinkNode_SubtreesByTag">
           <insertTag>Humanlike_PostDuty</insertTag>
         </li>
+		
+		<!-- Fulfill our purpose so we can go away -->
+        <li Class="CM_Meeseeks_Box.ThinkNode_MeeseeksCompleteTask" />
+
         
         <!-- Prisoner -->
         <li Class="ThinkNode_ConditionalPrisoner">
@@ -434,17 +438,38 @@
                 <!-- Hostility response
                 <li Class="JobGiver_ConfigurableHostilityResponse" /> -->
             
-                <!-- Lord directives
+                <!-- Lord directives -->
                 <li Class="ThinkNode_Subtree">
                   <treeDef>LordDutyConstant</treeDef>
-                </li> -->
+                </li> 
 			  </subNodes>
 			</li>
 		  </subNodes>
 		</thinkRoot>
 	</ThinkTreeDef>
 	
-    <ThinkTreeDef>
+  <ThinkTreeDef>
+    <defName>Meeseeks_MentalStateCritical</defName>
+    <thinkRoot Class="ThinkNode_Tagger">
+      <tagToGive>InMentalState</tagToGive>
+      <subNodes>
+        <li Class="ThinkNode_ConditionalMentalState">
+          <state>CM_Meeseeks_Box_MentalState_MeeseeksKillCreator</state>
+          <subNodes>
+            <li Class="ThinkNode_Priority">
+              <subNodes>
+			    <li Class="JobGiver_MoveToStandable"/>
+                <li Class="CM_Meeseeks_Box.JobGiver_KillCreator" />
+                <li Class="JobGiver_StandAndBeSociallyActive" />
+                </subNodes>
+            </li>
+          </subNodes>
+        </li>
+      </subNodes>
+    </thinkRoot>
+  </ThinkTreeDef>
+  
+  <ThinkTreeDef>
     <defName>Meeseeks_MentalStateNonCritical</defName>
     <thinkRoot Class="ThinkNode_Tagger">
       <tagToGive>InMentalState</tagToGive>

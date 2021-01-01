@@ -32,7 +32,8 @@ namespace CM_Meeseeks_Box
 
         private bool destroyed = false;
 
-        public Voice voice = new Voice();
+        private Voice voice = new Voice();
+        public Voice Voice => voice;
 
         private bool playedAcceptSound = false;
 
@@ -312,7 +313,7 @@ namespace CM_Meeseeks_Box
             }
         }
 
-        public void StartedJob(Job job)
+        public void StartedJob(Job job, JobDriver driver)
         {
             if (job == null)
             {
@@ -329,7 +330,7 @@ namespace CM_Meeseeks_Box
 
             jobList.Add(jobName);
 
-            //Logger.MessageFormat(this, "Meeseeks has started job: {0}", jobName);
+            //Logger.MessageFormat(this, "Meeseeks has started job: {0}, driver: {1}, jobGiver: {2}", jobName, driver, job.jobGiver);
 
             // We don't check for givenTask here because we want further forced jobs as given by the Achtung mod to become the new current saved job
             if (job.playerForced && !freeJobs.Contains(job.def))

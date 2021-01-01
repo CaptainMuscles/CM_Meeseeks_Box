@@ -26,7 +26,7 @@ namespace CM_Meeseeks_Box
             {
                 yield return Toils_General.Do(delegate
                 {
-                    MeeseeksUtility.PlayFinishTaskSound(pawn, compMeeseeksMemory.voice);
+                    MeeseeksUtility.PlayFinishTaskSound(pawn, compMeeseeksMemory.Voice);
                 });
 
                 int waitTime = Rand.RangeInclusive(60, 180);

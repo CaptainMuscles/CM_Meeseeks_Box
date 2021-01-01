@@ -70,8 +70,12 @@
     <Compile Include="Comps\CompProperties_WornGizmos.cs" />
     <Compile Include="Comps\CompUseEffect_UseVerb.cs" />
     <Compile Include="Comps\CompWornGizmos.cs" />
+    <Compile Include="Jobs\JobDriver_ApproachTarget.cs" />
     <Compile Include="Jobs\JobDriver_UseMeeseeksBox.cs" />
+    <Compile Include="Jobs\JobGiver_KillCreator.cs" />
     <Compile Include="Jobs\JobGiver_UseMeeseeksBox.cs" />
+    <Compile Include="Jobs\LordJob_MeeseeksKillCreator.cs" />
+    <Compile Include="Jobs\LordToil_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeks.cs" />
     <Compile Include="MentalStates\MentalState_MeeseeksKillCreator.cs" />

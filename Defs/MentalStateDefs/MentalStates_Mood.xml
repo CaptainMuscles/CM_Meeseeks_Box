@@ -13,7 +13,7 @@
     <defName>CM_Meeseeks_Box_MentalState_MeeseeksKillCreator</defName>
     <stateClass>CM_Meeseeks_Box.MentalState_MeeseeksKillCreator</stateClass>
 	<workerClass>CM_Meeseeks_Box.MentalStateWorker_MeeseeksKillCreator</workerClass>
-    <label>murderous rage</label>
+    <label>Meeseeks snapped</label>
     <category>Aggro</category>
     <blockInteractionInitiationExcept>
       <li>Insult</li>
@@ -29,13 +29,15 @@
     <nameColor>(0.9,0.2,0.5)</nameColor>
     <blockNormalThoughts>true</blockNormalThoughts>
     <!--<recoveryMessage>{0} is no longer in a murderous rage.</recoveryMessage>-->
-    <beginLetter>{0} has flown into a murderous rage.\n\n[PAWN_pronoun] has decided to kill {1}.</beginLetter>
+    <beginLetter>{0} cannot take it anymore.\n\n[PAWN_pronoun] has decided to complete [PAWN_possessive] task by killing {1}.</beginLetter>
     <beginLetterDef>ThreatSmall</beginLetterDef>
-    <baseInspectLine>Mental state: Murderous rage</baseInspectLine>
+	<beginLetterLabel>Meeseeks snapped</beginLetterLabel>
+    <baseInspectLine>Mental state: Murdering creator</baseInspectLine>
     <allowBeatfire>true</allowBeatfire>
   </MentalStateDef>
 
   <!-- Mental breaks: minor -->
+  
   <MentalBreakDef>
     <defName>CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeks</defName>
     <mentalState>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeks</mentalState>

@@ -19,6 +19,8 @@ namespace CM_Meeseeks_Box
         private static SoundDef[] FinishTaskSounds = { MeeseeksDefOf.CM_Meeseeks_Box_Sound_All_Done };
         private static SoundDef[] GreetingSounds = { MeeseeksDefOf.CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks_Look_At_Me, MeeseeksDefOf.CM_Meeseeks_Box_Sound_Look_At_Me, MeeseeksDefOf.CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks, MeeseeksDefOf.CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks_2, MeeseeksDefOf.CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks_3 };
 
+        private static SoundDef[] CriticalBreakSounds = { MeeseeksDefOf.CM_Meeseeks_Box_Sound_I_Cant_Take_It_Anymore };
+
         public static TargetInfo GetTargetInfo(Thing target)
         {
             TargetInfo targetInfo = null;
@@ -50,6 +52,11 @@ namespace CM_Meeseeks_Box
         public static void PlayGreetingSound(Thing target, Voice voice)
         {
             PlayVoicedSound(target, voice, GreetingSounds.RandomElement());
+        }
+
+        public static void PlayCriticalBreakSound(Thing target, Voice voice)
+        {
+            PlayVoicedSound(target, voice, CriticalBreakSounds.RandomElement());
         }
 
         public static void PlayVoicedSound(Thing target, Voice voice, SoundDef soundDef)
@@ -106,7 +113,7 @@ namespace CM_Meeseeks_Box
             //   especially if another Meeseeks created us, so just don't do it in that case
             CompMeeseeksMemory creatorMemory = creator.GetComp<CompMeeseeksMemory>();
             if (creatorMemory == null)
-                MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.voice);
+                MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.Voice);
 
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
             GenSpawn.Spawn(smoke, summonPosition, map);

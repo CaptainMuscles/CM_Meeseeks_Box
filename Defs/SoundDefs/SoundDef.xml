@@ -312,4 +312,32 @@
     </subSounds>
   </SoundDef>
   
+  <SoundDef>
+    <defName>CM_Meeseeks_Box_Sound_I_Cant_Take_It_Anymore</defName>
+	<context>MapOnly</context>
+    <eventNames />  
+    <maxVoices>10</maxVoices>  
+    <maxSimultaneous>10</maxSimultaneous>  
+    <subSounds>
+      <li>
+	    <!--<onCamera>True</onCamera>-->
+        <grains>
+          <li Class="AudioGrain_Folder">
+            <clipPath>Meeseeks/ICantTakeItAnymore</clipPath>
+          </li>
+        </grains>      
+        <volumeRange>
+          <min>20</min>        
+          <max>30</max>
+        </volumeRange>
+		<!--<pitchRange>
+		  <min>0.95</min>
+		  <max>1.05</max>
+	    </pitchRange>-->
+      </li>
+    </subSounds>
+  </SoundDef>
+  
+  
+  
 </Defs>

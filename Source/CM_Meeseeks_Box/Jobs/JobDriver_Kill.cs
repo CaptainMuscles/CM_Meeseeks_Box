@@ -43,13 +43,13 @@ namespace CM_Meeseeks_Box
             {
                 targetCheckTick = Find.TickManager.TicksGame;
 
-                if (pawn.equipment.Primary == null || pawn.equipment.Primary.def.IsMeleeWeapon)
-                    pawn.jobs.curDriver.JumpToToil(meleeLabel);
+                //if (pawn.equipment.Primary == null || pawn.equipment.Primary.def.IsMeleeWeapon)
+                //    pawn.jobs.curDriver.JumpToToil(meleeLabel);
             };
             yield return checkTargetToil;
 
             //Toil gotoCastPos = Toils_Combat.GotoCastPosition(TargetIndex.A, true, 0.95f).JumpIfDespawnedOrNull(TargetIndex.A, startCollectCorpseLabel).FailOn(() => Find.TickManager.TicksGame > jobStartTick + 5000);
-            Toil gotoCastPos = Toils_Combat.GotoCastPosition(TargetIndex.A, true, 0.95f)
+            Toil gotoCastPos = Toils_Combat.GotoCastPosition(TargetIndex.A, true, 4.0f)
                                            .JumpIfDespawnedOrNull(TargetIndex.A, startCollectCorpseLabel)
                                            .JumpIf(() => Find.TickManager.TicksGame > targetCheckTick + targetCheckInterval, checkTargetToil);
             yield return gotoCastPos;

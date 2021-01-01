@@ -74,7 +74,7 @@ namespace CM_Meeseeks_Box
                     CompMeeseeksMemory compMeeseeksMemory = ___pawn.GetComp<CompMeeseeksMemory>();
 
                     if (compMeeseeksMemory != null)
-                        compMeeseeksMemory.StartedJob(__instance.curJob);
+                        compMeeseeksMemory.StartedJob(__instance.curJob, __instance.curDriver);
                 }
             }
         }

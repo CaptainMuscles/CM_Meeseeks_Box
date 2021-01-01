@@ -35,5 +35,12 @@
 		<reportString>getting help.</reportString>
 		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
 	</JobDef>
+	
+	<JobDef>
+		<defName>CM_Meeseeks_Box_Job_ApproachTarget</defName>
+		<driverClass>CM_Meeseeks_Box.JobDriver_ApproachTarget</driverClass>
+		<reportString>moving.</reportString>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
 
 </Defs>

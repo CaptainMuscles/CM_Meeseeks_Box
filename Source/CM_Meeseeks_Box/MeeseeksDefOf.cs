@@ -2,6 +2,7 @@
 
 using RimWorld;
 using Verse;
+using Verse.AI;
 
 namespace CM_Meeseeks_Box
 {
@@ -10,6 +11,8 @@ namespace CM_Meeseeks_Box
     {
         public static PawnKindDef MeeseeksKind;
         public static ThingDef MeeseeksRace;
+
+        public static FactionDef CM_Meeseeks_Box_Faction_Hostile_Meeseeks;
 
         public static ThingDef CM_Meeseeks_Box_Thing_Meeseeks_Box;
 
@@ -26,10 +29,13 @@ namespace CM_Meeseeks_Box
         public static MentalBreakDef CM_Meeseeks_Box_MentalBreak_MeeseeksKillCreator;
         public static MentalBreakDef CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeks;
 
+        public static DutyDef CM_Meeseeks_Box_Duty_Kill_Creator;
+
         public static JobDef CM_Meeseeks_Box_Job_AcquireEquipment;
         public static JobDef CM_Meeseeks_Box_Job_EmbraceTheVoid;
         public static JobDef CM_Meeseeks_Box_Job_Kill;
         public static JobDef CM_Meeseeks_Box_Job_UseMeeseeksBox;
+        public static JobDef CM_Meeseeks_Box_Job_ApproachTarget;
 
         public static SoundDef CM_Meeseeks_Box_Poof_In;
         public static SoundDef CM_Meeseeks_Box_Poof_Out;
@@ -46,5 +52,7 @@ namespace CM_Meeseeks_Box
         public static SoundDef CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks;
         public static SoundDef CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks_2;
         public static SoundDef CM_Meeseeks_Box_Sound_Im_Mr_Meeseeks_3;
+
+        public static SoundDef CM_Meeseeks_Box_Sound_I_Cant_Take_It_Anymore;
     }
 }
