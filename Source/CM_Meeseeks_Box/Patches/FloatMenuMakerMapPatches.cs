@@ -16,6 +16,91 @@ namespace CM_Meeseeks_Box
     [StaticConstructorOnStartup]
     public static class FloatMenuMakerMapPatches
     {
+        [HarmonyPatch(typeof(FloatMenuMakerMap))]
+        [HarmonyPatch("ChoicesAtFor", MethodType.Normal)]
+        static class FloatMenuMakerMap_ChoicesAtFor_Patch
+        {
+            [HarmonyPostfix]
+            public static void Postfix(List<FloatMenuOption> __result, Vector3 clickPos, Pawn pawn)
+            {
+                if (pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null && compMeeseeksMemory.CanTakeOrders())
+                    {
+                        IntVec3 intVec = IntVec3.FromVector3(clickPos);
+                        FloatMenuOption guardOption = GuardLocationOption(compMeeseeksMemory, intVec, pawn);
+
+                        if (guardOption != null)
+                        {
+                            __result.Add(guardOption);
+                        }
+                    }
+                }
+            }
+
+            private static FloatMenuOption GuardLocationOption(CompMeeseeksMemory compMeeseeksMemory, IntVec3 clickCell, Pawn pawn)
+            {
+                int num = GenRadial.NumCellsInRadius(2.9f);
+                IntVec3 curLoc;
+                for (int i = 0; i < num; i++)
+                {
+                    curLoc = GenRadial.RadialPattern[i] + clickCell;
+                    if (!curLoc.Standable(pawn.Map))
+                    {
+                        continue;
+                    }
+                    if (curLoc != pawn.Position)
+                    {
+                        if (!pawn.CanReach(curLoc, PathEndMode.OnCell, Danger.Deadly))
+                        {
+                            return new FloatMenuOption("CannotGoNoPath".Translate(), null);
+                        }
+                        Action action = delegate
+                        {
+                            IntVec3 intVec = RCellFinder.BestOrderedGotoDestNear(curLoc, pawn);
+                            Job job = JobMaker.MakeJob(JobDefOf.Goto, intVec);
+                            job.playerForced = true;
+
+                            if (pawn.Map.exitMapGrid.IsExitCell(UI.MouseCell()))
+                            {
+                                job.exitMapOnArrival = true;
+                            }
+                            else if (!pawn.Map.IsPlayerHome && !pawn.Map.exitMapGrid.MapUsesExitGrid && CellRect.WholeMap(pawn.Map).IsOnEdge(UI.MouseCell(), 3) && pawn.Map.Parent.GetComponent<FormCaravanComp>() != null && MessagesRepeatAvoider.MessageShowAllowed("MessagePlayerTriedToLeaveMapViaExitGrid-" + pawn.Map.uniqueID, 60f))
+                            {
+                                if (pawn.Map.Parent.GetComponent<FormCaravanComp>().CanFormOrReformCaravanNow)
+                                {
+                                    Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CanReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
+                                }
+                                else
+                                {
+                                    Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CantReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
+                                }
+                            }
+
+                            pawn.drafter.Drafted = true;
+                            if (pawn.jobs.TryTakeOrderedJob(job))
+                            {
+                                MoteMaker.MakeStaticMote(intVec, pawn.Map, ThingDefOf.Mote_FeedbackGoto);
+                            }
+                            else
+                            {
+                                pawn.drafter.Drafted = false;
+                            }
+                        };
+                        return new FloatMenuOption("CM_Meeseeks_Box_GuardHere".Translate(), action, MenuOptionPriority.GoHere)
+                        {
+                            autoTakeable = false,
+                            autoTakeablePriority = 10f
+                        };
+                    }
+                    return null;
+                }
+                return null;
+            }
+        }
+
         //[HarmonyPatch(typeof(FloatMenuMakerMap))]
         //[HarmonyPatch("AddJobGiverWorkOrders_NewTmp", MethodType.Normal)]
         //static class FloatMenuMakerMap_AddJobGiverWorkOrders_NewTmp
