@@ -70,6 +70,8 @@
     <Compile Include="Comps\CompProperties_WornGizmos.cs" />
     <Compile Include="Comps\CompUseEffect_UseVerb.cs" />
     <Compile Include="Comps\CompWornGizmos.cs" />
+    <Compile Include="Effecters\MoteProgressBar_Colored.cs" />
+    <Compile Include="Effecters\SubEffecter_ProgressBar_Colored.cs" />
     <Compile Include="Jobs\JobDriver_ApproachTarget.cs" />
     <Compile Include="Jobs\JobDriver_UseMeeseeksBox.cs" />
     <Compile Include="Jobs\JobGiver_KillCreator.cs" />

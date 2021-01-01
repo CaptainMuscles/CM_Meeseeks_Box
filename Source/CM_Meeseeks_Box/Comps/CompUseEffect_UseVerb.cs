@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using UnityEngine;
 using RimWorld;
 using Verse;
 
@@ -17,6 +19,8 @@ namespace CM_Meeseeks_Box
         public ImplementOwnerTypeDef ImplementOwnerTypeDef => ImplementOwnerTypeDefOf.NativeVerb;
 
         public Thing ConstantCaster => null;
+
+        private Effecter progressBar = null;
 
         private VerbTracker verbTracker;
 
@@ -92,11 +96,43 @@ namespace CM_Meeseeks_Box
             base.CompTick();
             foreach (Verb verb in VerbTracker.AllVerbs)
             {
-                Verb_Cooldown verbCooldown = verb as Verb_Cooldown;
-
-                if (verbCooldown != null)
+                if (verb.GetType() == Props.verbClass && verb.verbProps.hasStandardCommand)
                 {
-                    verbCooldown.CooldownTick();
+                    Verb_Cooldown verbCooldown = verb as Verb_Cooldown;
+
+                    if (verbCooldown != null)
+                    {
+                        verbCooldown.CooldownTick();
+
+                        if (verbCooldown.CanCast)
+                        {
+                            if (progressBar != null)
+                            {
+                                progressBar.Cleanup();
+                                progressBar = null;
+                            }
+                        }
+                        else
+                        {
+                            if (progressBar == null)
+                            {
+                                EffecterDef progressBarDef = MeeseeksDefOf.CM_Meeseeks_Box_Effecter_Progress_Bar;
+                                progressBar = progressBarDef.Spawn();
+                            }
+                            else
+                            {
+                                progressBar.EffectTick(this.parent, TargetInfo.Invalid);
+
+                                MoteProgressBar_Colored mote = ((SubEffecter_ProgressBar_Colored)progressBar.children[0]).mote;
+                                if (mote != null)
+                                {
+                                    mote.SetFilledColor(new Color(0.95f, 0.10f, 0.15f));
+                                    mote.progress = Mathf.Clamp01(((float)verbCooldown.cooldownTicksRemaining / verbCooldown.cooldownTicksTotal));
+                                    mote.offsetZ = -0.5f;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

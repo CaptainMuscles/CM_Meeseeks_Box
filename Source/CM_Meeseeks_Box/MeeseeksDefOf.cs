@@ -37,6 +37,8 @@ namespace CM_Meeseeks_Box
         public static JobDef CM_Meeseeks_Box_Job_UseMeeseeksBox;
         public static JobDef CM_Meeseeks_Box_Job_ApproachTarget;
 
+        public static EffecterDef CM_Meeseeks_Box_Effecter_Progress_Bar;
+
         public static SoundDef CM_Meeseeks_Box_Poof_In;
         public static SoundDef CM_Meeseeks_Box_Poof_Out;
 
