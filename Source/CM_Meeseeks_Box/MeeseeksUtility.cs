@@ -161,6 +161,8 @@ namespace CM_Meeseeks_Box
             GenSpawn.Spawn(smoke, mrMeeseeksLookAtMe.PositionHeld, mrMeeseeksLookAtMe.MapHeld);
             MeeseeksUtility.PlayPoofOutSound(mrMeeseeksLookAtMe);
 
+            if (mrMeeseeksLookAtMe.carryTracker.CarriedThing != null)
+                mrMeeseeksLookAtMe.carryTracker.TryDropCarriedThing(mrMeeseeksLookAtMe.PositionHeld, ThingPlaceMode.Near, out Thing thing);
             mrMeeseeksLookAtMe.Strip();
 
             //ThingDef moteDef = DefDatabase<ThingDef>.GetNamedSilentFail("Mote_PsycastSkipOuterRingExit");
