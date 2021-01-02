@@ -247,6 +247,18 @@ namespace CM_Meeseeks_Box
         public void SortJobTargets()
         {
             jobTargets.Sort((a, b) => (int)(Meeseeks.PositionHeld.DistanceTo(a.Cell) - Meeseeks.PositionHeld.DistanceTo(b.Cell)));
+
+            // If it is a kill job, kill self last
+            if (savedJob != null && savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill)
+            {
+                int indexOfSelf = jobTargets.FirstIndexOf(target => target.Thing == Meeseeks);
+                if (indexOfSelf >= 0)
+                {
+                    LocalTargetInfo selfTarget = jobTargets[indexOfSelf];
+                    jobTargets.RemoveAt(indexOfSelf);
+                    jobTargets.Add(selfTarget);
+                }
+            }
         }
 
         public bool HasTimeToQueueNewJob()
