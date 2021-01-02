@@ -59,9 +59,17 @@ namespace CM_Meeseeks_Box
         public static class MeeseeksStartJob
         {
             [HarmonyPrefix]
-            public static void Prefix(Pawn_JobTracker __instance)
+            public static void Prefix(Pawn_JobTracker __instance, Job newJob, Pawn ___pawn)
             {
                 //Logger.MessageFormat(__instance, "StartJob Prefix");
+
+                if (___pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = ___pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null)
+                        compMeeseeksMemory.PreStartJob(newJob, __instance.curDriver);
+                }
             }
 
             [HarmonyPostfix]
@@ -74,7 +82,7 @@ namespace CM_Meeseeks_Box
                     CompMeeseeksMemory compMeeseeksMemory = ___pawn.GetComp<CompMeeseeksMemory>();
 
                     if (compMeeseeksMemory != null)
-                        compMeeseeksMemory.StartedJob(__instance.curJob, __instance.curDriver);
+                        compMeeseeksMemory.PostStartJob(newJob, __instance.curDriver);
                 }
             }
         }
@@ -165,7 +173,7 @@ namespace CM_Meeseeks_Box
             {
                 //Logger.MessageFormat(__instance, "TryTakeOrderedJob Postfix");
 
-                if (__result == true && ___pawn != null)
+                if (___pawn != null)
                 {
                     CompMeeseeksMemory compMeeseeksMemory = ___pawn.GetComp<CompMeeseeksMemory>();
 

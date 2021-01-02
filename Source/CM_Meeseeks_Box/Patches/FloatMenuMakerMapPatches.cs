@@ -20,6 +20,26 @@ namespace CM_Meeseeks_Box
         [HarmonyPatch("ChoicesAtFor", MethodType.Normal)]
         static class FloatMenuMakerMap_ChoicesAtFor_Patch
         {
+            [HarmonyPrefix]
+            public static void Prefix(Vector3 clickPos, Pawn pawn)
+            {
+                // Ok this is a bit ridiculous but lets try it anyway... 
+                //   We save all existing designations at this cell and remove them
+                //   Then for every thing here, we create all designations for them
+                //   So they should get flagged as a viable target for every possible job
+                //   Wish me luck.
+                if (pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null && compMeeseeksMemory.CanTakeOrders())
+                    {
+                        IntVec3 cell = IntVec3.FromVector3(clickPos);
+                        DesignatorUtility.ForceAllDesignationsOnCell(cell, pawn.MapHeld);
+                    }
+                }
+            }
+
             [HarmonyPostfix]
             public static void Postfix(List<FloatMenuOption> __result, Vector3 clickPos, Pawn pawn)
             {
@@ -38,6 +58,24 @@ namespace CM_Meeseeks_Box
                         }
                     }
                 }
+            }
+
+            [HarmonyFinalizer]
+            static Exception Finalizer(Exception __exception, Vector3 clickPos, Pawn pawn)
+            {
+                // Time to clean up our mess
+                if (pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null)
+                    {
+                        IntVec3 cell = IntVec3.FromVector3(clickPos);
+                        DesignatorUtility.RestoreDesignationsOnCell(cell, pawn.MapHeld);
+                    }
+                }
+
+                return __exception;
             }
 
             private static FloatMenuOption GuardLocationOption(CompMeeseeksMemory compMeeseeksMemory, IntVec3 clickCell, Pawn pawn)

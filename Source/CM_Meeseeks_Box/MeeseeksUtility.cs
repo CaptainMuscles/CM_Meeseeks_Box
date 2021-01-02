@@ -156,7 +156,9 @@ namespace CM_Meeseeks_Box
 
         public static void DespawnMeeseeks(Pawn mrMeeseeksLookAtMe)
         {
-            
+            CompMeeseeksMemory compMeeseeksMemory = mrMeeseeksLookAtMe.GetComp<CompMeeseeksMemory>();
+            compMeeseeksMemory.CleanupMemory();
+
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
             GenSpawn.Spawn(smoke, mrMeeseeksLookAtMe.PositionHeld, mrMeeseeksLookAtMe.MapHeld);
             MeeseeksUtility.PlayPoofOutSound(mrMeeseeksLookAtMe);

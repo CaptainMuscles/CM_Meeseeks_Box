@@ -163,33 +163,43 @@ namespace CM_Meeseeks_Box
         {
             Job job = null;
 
-            if (targetInfo.HasThing && !targetInfo.ThingDestroyed)
+            try
             {
-                // Special case for uninstall, the workgiver doesn't check to see if its already uninstalled
-                if (workGiverScanner as WorkGiver_Uninstall != null && !targetInfo.Thing.Spawned)
+                DesignatorUtility.ForceAllDesignationsOnCell(targetInfo.Cell, meeseeks.MapHeld);
+
+                if (targetInfo.HasThing && !targetInfo.ThingDestroyed)
                 {
-                    Logger.MessageFormat(this, "Target is inside {0}", targetInfo.Thing.ParentHolder);
-                    return null;
+                    // Special case for uninstall, the workgiver doesn't check to see if its already uninstalled
+                    if (workGiverScanner as WorkGiver_Uninstall != null && !targetInfo.Thing.Spawned)
+                    {
+                        Logger.MessageFormat(this, "Target is inside {0}", targetInfo.Thing.ParentHolder);
+                        DesignatorUtility.RestoreDesignationsOnCell(targetInfo.Cell, meeseeks.MapHeld);
+                        return null;
+                    }
+
+                    if (workGiverScanner.HasJobOnThing(meeseeks, targetInfo.Thing, true))
+                        job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
                 }
 
-                if (workGiverScanner.HasJobOnThing(meeseeks, targetInfo.Thing, true))
-                    job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
+                if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
+                    job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
+
+                if (job == null)
+                {
+                    var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
+                    foreach (Thing thing in thingsAtCell)
+                    {
+                        //Logger.MessageFormat(this, "Checking {0} for {1}.", thing.GetUniqueLoadID(), workGiverScanner.def.defName);
+                        if (workGiverScanner.HasJobOnThing(meeseeks, thing, true))
+                            job = workGiverScanner.JobOnThing(meeseeks, thing, true);
+                        if (job != null)
+                            break;
+                    }
+                }
             }
-
-            if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
-                job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
-
-            if (job == null)
+            finally
             {
-                var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
-                foreach (Thing thing in thingsAtCell)
-                {
-                    //Logger.MessageFormat(this, "Checking {0} for {1}.", thing.GetUniqueLoadID(), workGiverScanner.def.defName);
-                    if (workGiverScanner.HasJobOnThing(meeseeks, thing, true))
-                        job = workGiverScanner.JobOnThing(meeseeks, thing, true);
-                    if (job != null)
-                        break;
-                }
+                DesignatorUtility.RestoreDesignationsOnCell(targetInfo.Cell, meeseeks.MapHeld);
             }
 
             return job;

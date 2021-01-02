@@ -5,6 +5,7 @@ using UnityEngine;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using System;
 
 namespace CM_Meeseeks_Box
 {
@@ -19,6 +20,9 @@ namespace CM_Meeseeks_Box
         public static readonly Material DragHighlightCellMat = MaterialPool.MatFrom("UI/Overlays/DragHighlightCell", ShaderDatabase.MetaOverlay);
         public static readonly Material DragHighlightThingMat = MaterialPool.MatFrom("UI/Overlays/DragHighlightThing", ShaderDatabase.MetaOverlay);
 
+        private Dictionary<IntVec3, bool> cachedCellResults = new Dictionary<IntVec3, bool>();
+        private Dictionary<Thing, bool> cachedThingResults = new Dictionary<Thing, bool>();
+
         public Designator_AreaWorkMeeseeks(Pawn mrMeeseeksLookAtMe)
         {
             defaultLabel = "CM_Meeseeks_Box_SelectJobAreaLabel".Translate();
@@ -30,6 +34,8 @@ namespace CM_Meeseeks_Box
             soundSucceeded = SoundDefOf.Designate_Harvest;
             Meeseeks = mrMeeseeksLookAtMe;
             Memory = Meeseeks.GetComp<CompMeeseeksMemory>();
+
+            hasDesignateAllFloatMenuOption = true;
         }
 
         public override AcceptanceReport CanDesignateCell(IntVec3 cell)
@@ -39,6 +45,8 @@ namespace CM_Meeseeks_Box
                 return false;
             }
 
+            bool success = false;
+
             SavedJob savedJob = Memory.savedJob;
             if (savedJob != null)
             {
@@ -48,23 +56,92 @@ namespace CM_Meeseeks_Box
 
                     if (workGiverScanner != null)
                     {
-                        if (this.HasJobOnCell(workGiverScanner, cell))
-                            return true;
-
-                        foreach (Thing thing in cell.GetThingList(base.Map))
+                        bool prepared = false;
+                        try
                         {
-                            if (HasJobOnThing(workGiverScanner, thing))
-                                return true;
+                            prepared = PrepareDesignations(savedJob, cell);
+
+                            success = this.HasJobOnCell(workGiverScanner, cell);
+                            cachedCellResults[cell] = success;
+
+                            if (!success)
+                            {
+                                foreach (Thing thing in cell.GetThingList(base.Map))
+                                {
+                                    success = HasJobOnThing(workGiverScanner, thing);
+                                    cachedThingResults[thing] = success;
+
+                                    if (success)
+                                        break;
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            if (prepared)
+                                RestoreDesignations(cell);
                         }
                     }
                 }
             }
 
-            return false;
+            return success;
+        }
+
+        private bool PrepareDesignations(SavedJob savedJob, IntVec3 cell)
+        {
+            bool result = false;
+
+            // Holy shit the things I do for plants - checking for plant cutting jobs that match normal designations - chop wood, harvest plants, cut plants
+            if (savedJob.def.driverClass.IsSubclassOf(typeof(JobDriver_PlantWork)))
+            {
+                if (Memory.jobTargets.Count > 0 && Memory.jobTargets[0].HasThing)
+                {
+                    Plant plant = Memory.jobTargets[0].Thing as Plant;
+                    if (plant != null)
+                    {
+                        if (plant.HarvestableNow)
+                        {
+                            if (plant.def.plant.IsTree)
+                            {
+                                DesignatorUtility.ForceDesignationOnThingsInCell(cell, base.Map, DesignationDefOf.HarvestPlant, ((Func<Thing, bool>)((Thing thing) => thing.def.plant?.IsTree ?? false)));
+                                //Logger.MessageFormat(this, "It's a tree harvest job...");
+                            }
+                            else
+                            {
+                                DesignatorUtility.ForceDesignationOnThingsInCell(cell, base.Map, DesignationDefOf.HarvestPlant, ((Func<Thing, bool>)((Thing thing) => !thing.def.plant?.IsTree ?? false)));
+                                //Logger.MessageFormat(this, "It's a plant harvest job...");
+                            }
+
+                            result = true;
+                        }
+                        else
+                        {
+                            DesignatorUtility.ForceDesignationOnThingsInCell(cell, base.Map, DesignationDefOf.CutPlant, ((Func<Thing, bool>)((Thing thing) => thing.def.plant != null)));
+                            //Logger.MessageFormat(this, "It's a plant cut job...");
+                            result = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                DesignatorUtility.ForceAllDesignationsOnCell(cell, base.Map);
+                result = true;
+            }
+
+            return result;
+        }
+
+        private void RestoreDesignations(IntVec3 cell)
+        {
+            DesignatorUtility.RestoreDesignationsOnCell(cell, base.Map);
         }
 
         public override AcceptanceReport CanDesignateThing(Thing thing)
         {
+            bool success = false;
+
             SavedJob savedJob = Memory.savedJob;
             if (savedJob != null)
             {
@@ -74,13 +151,24 @@ namespace CM_Meeseeks_Box
 
                     if (workGiverScanner != null)
                     {
-                        if (HasJobOnThing(workGiverScanner, thing))
-                            return true;
+                        bool prepared = false;
+                        try
+                        {
+                            prepared = PrepareDesignations(savedJob, thing.PositionHeld);
+
+                            if (HasJobOnThing(workGiverScanner, thing))
+                                success = true;
+                        }
+                        finally
+                        {
+                            if (prepared)
+                                RestoreDesignations(thing.PositionHeld);
+                        }
                     }
                 }
             }
 
-            return false;
+            return success;
         }
 
         public override void DesignateSingleCell(IntVec3 cell)
@@ -94,12 +182,12 @@ namespace CM_Meeseeks_Box
 
                     if (workGiverScanner != null)
                     {
-                        if (this.HasJobOnCell(workGiverScanner, cell))
+                        if (cachedCellResults.ContainsKey(cell) && cachedCellResults[cell] == true)
                             Memory.AddJobTarget(cell, workGiverScanner.def);
 
                         foreach (Thing thing in cell.GetThingList(base.Map))
                         {
-                            if (HasJobOnThing(workGiverScanner, thing))
+                            if (cachedThingResults.ContainsKey(thing) && cachedThingResults[thing] == true)
                                 DesignateThing(thing);
                         }
                     }
@@ -160,10 +248,14 @@ namespace CM_Meeseeks_Box
         public override void SelectedUpdate()
         {
             GenUI.RenderMouseoverBracket();
+
+            cachedCellResults.Clear();
+            cachedThingResults.Clear();
         }
 
         public override void RenderHighlight(List<IntVec3> dragCells)
         {
+
             RenderHighlightOverSelectableCells(dragCells);
         }
 
@@ -178,7 +270,7 @@ namespace CM_Meeseeks_Box
 
                     foreach(IntVec3 cell in dragCells)
                     {
-                        if (this.HasJobOnCell(workGiverScanner, cell))
+                        if (cachedCellResults.ContainsKey(cell) && cachedCellResults[cell] == true)
                         {
                             RenderHighlightOverCell(cell);
                         }
@@ -186,7 +278,7 @@ namespace CM_Meeseeks_Box
                         {
                             foreach (Thing thing in cell.GetThingList(base.Map))
                             {
-                                if (HasJobOnThing(workGiverScanner, thing))
+                                if (cachedThingResults.ContainsKey(thing) && cachedThingResults[thing] == true)
                                 {
                                     RenderHighlightOverThing(thing);
                                     break;

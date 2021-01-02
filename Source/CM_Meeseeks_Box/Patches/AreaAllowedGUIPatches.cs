@@ -17,7 +17,7 @@ namespace CM_Meeseeks_Box
     {
         [HarmonyPatch(typeof(AreaAllowedGUI))]
         [HarmonyPatch("DoAreaSelector", MethodType.Normal)]
-        public class AreaAllowedGUIPatches_DoAreaSelector
+        public class AreaAllowedGUI_DoAreaSelector
         {
             [HarmonyPrefix]
             public static bool Prefix(Pawn p, Area area)

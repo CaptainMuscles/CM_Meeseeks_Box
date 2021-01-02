@@ -143,6 +143,13 @@ namespace CM_Meeseeks_Box
             }
         }
 
+        public void CleanupMemory()
+        {
+            jobList = new List<string>();
+            jobResults = new List<string>();
+            jobTargets = new List<LocalTargetInfo>();
+        }
+
         public override void CompTick()
         {
             base.CompTick();
@@ -313,7 +320,13 @@ namespace CM_Meeseeks_Box
             }
         }
 
-        public void StartedJob(Job job, JobDriver driver)
+        public void PreStartJob(Job job, JobDriver driver)
+        {
+            if (job != null)
+                job.ignoreDesignations = true;
+        }
+
+        public void PostStartJob(Job job, JobDriver driver)
         {
             if (job == null)
             {
