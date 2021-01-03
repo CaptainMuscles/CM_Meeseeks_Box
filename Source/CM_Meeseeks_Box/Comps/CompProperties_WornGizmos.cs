@@ -12,7 +12,7 @@ namespace CM_Meeseeks_Box
 
         public bool displayGizmoWhileDrafted = true;
 
-        public int coolDownTicks = 600;
+        public int coolDownTicksBase = 600;
 
         public KeyBindingDef hotKey;
 

@@ -35,7 +35,7 @@ namespace CM_Meeseeks_Box
             GizmoResult result = base.GizmoOnGUI(topLeft, maxWidth);
             if (verbCooldown.cooldownTicksRemaining > 0)
             {
-                float num = Mathf.InverseLerp(verbCooldown.cooldownTicksTotal, 0f, verbCooldown.cooldownTicksRemaining);
+                float num = Mathf.InverseLerp(verbCooldown.CooldownTicksTotal, 0f, verbCooldown.cooldownTicksRemaining);
                 Widgets.FillableBar(rect, Mathf.Clamp01(num), cooldownBarTex, null, doBorder: false);
                 Text.Font = GameFont.Tiny;
                 Text.Anchor = TextAnchor.UpperCenter;

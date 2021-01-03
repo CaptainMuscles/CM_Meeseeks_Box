@@ -9,7 +9,7 @@ namespace CM_Meeseeks_Box
     {
         public Type verbClass = typeof(Verb);
 
-        public int coolDownTicks = 600;
+        public int coolDownTicksBase = 600;
 
         public CompProperties_UseEffectUseVerb()
         {

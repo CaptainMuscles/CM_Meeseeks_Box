@@ -14,8 +14,10 @@ namespace CM_Meeseeks_Box
     public class Verb_Cooldown : Verb
     {
         // Unfortunately, VerbTick cannot be overridden, so these will need to be altered by an outside ticking object
-        public int cooldownTicksTotal = 600;
+        public int cooldownTicksTotalBase = 600;
         public int cooldownTicksRemaining = 0;
+
+        public virtual int CooldownTicksTotal => cooldownTicksTotalBase;
 
         public virtual bool CanCast => cooldownTicksRemaining <= 0;
 
@@ -26,7 +28,7 @@ namespace CM_Meeseeks_Box
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref cooldownTicksTotal, "cooldownTicksTotal", 0);
+            Scribe_Values.Look(ref cooldownTicksTotalBase, "cooldownTicksTotalBase", 0);
             Scribe_Values.Look(ref cooldownTicksRemaining, "cooldownTicksRemaining", 0);
         }
 

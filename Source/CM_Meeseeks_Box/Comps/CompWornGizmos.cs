@@ -58,7 +58,7 @@ namespace CM_Meeseeks_Box
 
                 if (verb_Cooldown != null)
                 {
-                    verb_Cooldown.cooldownTicksTotal = this.Props.coolDownTicks;
+                    verb_Cooldown.cooldownTicksTotalBase = this.Props.coolDownTicksBase;
                 }
             }
         }

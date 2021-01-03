@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
+using UnityEngine;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -74,11 +76,19 @@ namespace CM_Meeseeks_Box
 
         }
 
-        public static void SpawnMeeseeks(Pawn creator, Thing creatingThing, Map map, int skillLevel)
+        public static void SpawnMeeseeks(Pawn creator, ThingWithComps creatingThing, Map map)
         {
             PawnKindDef pawnKindDef = MeeseeksDefOf.MeeseeksKind;
 
             Pawn mrMeeseeksLookAtMe = PawnGenerator.GeneratePawn(pawnKindDef, Faction.OfPlayer);
+
+            QualityCategory boxQuality = QualityCategory.Normal;
+            creatingThing.TryGetQuality(out boxQuality);
+
+            int qualityInt = (int)boxQuality;
+
+            float multiplier = ((float)qualityInt + 1.0f) / ((int)QualityCategory.Legendary + 1);
+            int skillLevel = Mathf.RoundToInt(multiplier * multiplier * 20.0f);
 
             // Enable all work types
             foreach (WorkTypeDef item in from w in DefDatabase<WorkTypeDef>.AllDefs
@@ -107,6 +117,7 @@ namespace CM_Meeseeks_Box
             GenSpawn.Spawn(mrMeeseeksLookAtMe, summonPosition, map);
 
             CompMeeseeksMemory compMeeseeksMemory = mrMeeseeksLookAtMe.GetComp<CompMeeseeksMemory>();
+            compMeeseeksMemory.SetQuality(boxQuality);
             compMeeseeksMemory.SetCreator(creator);
 
             // The voices for greeting and task acceptance can overlap depending on the speed the game is running,

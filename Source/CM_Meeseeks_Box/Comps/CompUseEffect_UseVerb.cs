@@ -80,7 +80,7 @@ namespace CM_Meeseeks_Box
 
                 if (verb_Cooldown != null)
                 {
-                    verb_Cooldown.cooldownTicksTotal = this.Props.coolDownTicks;
+                    verb_Cooldown.cooldownTicksTotalBase = this.Props.coolDownTicksBase;
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace CM_Meeseeks_Box
                                 if (mote != null)
                                 {
                                     mote.SetFilledColor(new Color(0.95f, 0.10f, 0.15f));
-                                    mote.progress = Mathf.Clamp01(((float)verbCooldown.cooldownTicksRemaining / verbCooldown.cooldownTicksTotal));
+                                    mote.progress = Mathf.Clamp01(((float)verbCooldown.cooldownTicksRemaining / verbCooldown.CooldownTicksTotal));
                                     mote.offsetZ = -0.5f;
                                 }
                             }

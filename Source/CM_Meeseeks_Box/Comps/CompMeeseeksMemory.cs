@@ -37,6 +37,11 @@ namespace CM_Meeseeks_Box
 
         private bool playedAcceptSound = false;
 
+        private QualityCategory quality = QualityCategory.Awful;
+        public QualityCategory Quality => quality;
+        public int QualityInt => (int)quality;
+        public int QualityPlusOneInt => ((int)quality + 1);
+
         private List<string> jobList = new List<string>();
         private List<string> jobResults = new List<string>();
         
@@ -113,7 +118,8 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look<bool>(ref this.playedAcceptSound, "playedAcceptSound", false);
 
             Scribe_References.Look(ref this.creator, "creator");
-            
+            Scribe_Values.Look(ref this.quality, "quality");
+
             Scribe_Values.Look<int>(ref this.givenTaskTick, "givenTaskTick", -1);
             Scribe_Values.Look<int>(ref this.acquiredEquipmentTick, "acquiredWeaponTick", -1);
 
@@ -141,6 +147,19 @@ namespace CM_Meeseeks_Box
             {
                 voice = new Voice();
             }
+        }
+
+        public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
+        {
+            base.PostPreApplyDamage(dinfo, out absorbed);
+
+            // Awful quality -> take normal damage, Legendary -> take a quarter
+            float IncomingDamageDivisor = (1.0f + ((float)(QualityInt) * 0.5f));
+            float damageAmount = dinfo.Amount / IncomingDamageDivisor;
+
+            //Logger.MessageFormat(this, "Incoming damaged divided: {0} / {1} = {2}", dinfo.Amount, IncomingDamageDivisor, damageAmount);
+
+            dinfo.SetAmount(damageAmount);
         }
 
         public void CleanupMemory()
@@ -179,6 +198,11 @@ namespace CM_Meeseeks_Box
             base.PostDeSpawn(map);
 
             Logger.MessageFormat(this, "Meeseeks despawned \n{0}", this.GetDebugInfo());
+        }
+
+        public void SetQuality(QualityCategory setQuality)
+        {
+            quality = setQuality;
         }
 
         public void SetCreator(Pawn creatingPawn)
@@ -246,12 +270,15 @@ namespace CM_Meeseeks_Box
 
         public void SortJobTargets()
         {
+            if (jobTargets.Count == 0)
+                return;
+
             jobTargets.Sort((a, b) => (int)(Meeseeks.PositionHeld.DistanceTo(a.Cell) - Meeseeks.PositionHeld.DistanceTo(b.Cell)));
 
             // If it is a kill job, kill self last
             if (savedJob != null && savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill)
             {
-                int indexOfSelf = jobTargets.FirstIndexOf(target => target.Thing == Meeseeks);
+                int indexOfSelf = jobTargets.FindIndex(target => target.Thing == Meeseeks);
                 if (indexOfSelf >= 0)
                 {
                     LocalTargetInfo selfTarget = jobTargets[indexOfSelf];
