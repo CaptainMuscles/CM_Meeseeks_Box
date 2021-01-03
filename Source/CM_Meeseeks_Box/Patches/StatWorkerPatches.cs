@@ -36,7 +36,7 @@ namespace CM_Meeseeks_Box
                         if (compMeeseeksMemory != null)
                         {
                             //Log.Message("Forcing Meeseeks pain shock threshold");
-                            val = Mathf.Max(val, 500.0f);
+                            val = Mathf.Max(val, 5.0f);
                         }
                     }
                 }
