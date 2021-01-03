@@ -171,7 +171,9 @@ namespace CM_Meeseeks_Box
                 return;
             }
 
-            List<Designation> allDesignations = map.designationManager.allDesignations.Where(designation => designation.target.Cell != cell).ToList();
+            // Take of designations on cell, but also designations on buildings that intersect the cell
+            List<Thing> thingsHere = cell.GetThingList(map);
+            List<Designation> allDesignations = map.designationManager.allDesignations.Where(designation => designation.target.Cell != cell && (!designation.target.HasThing || !thingsHere.Contains(designation.target.Thing))).ToList();
             allDesignations.AddRange(savedDesignations);
             map.designationManager.allDesignations = allDesignations;
 
