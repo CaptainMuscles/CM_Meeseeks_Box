@@ -260,8 +260,6 @@ namespace CM_Meeseeks_Box
         {
             if (target.HasThing && taskIsConstruction)
             {
-                SavedTargetInfo newTarget = new SavedTargetInfo(target.Cell);
-
                 ThingDef thingDefToBuild = null;
                 TerrainDef terrainDefToBuild = null;
                 ThingDef stuffDefToUse = null;
@@ -284,17 +282,18 @@ namespace CM_Meeseeks_Box
 
                 if (thingDefToBuild != null)
                 {
-                    newTarget.blueprintThingDef = thingDefToBuild;
+                    target.blueprintThingDef = thingDefToBuild;
                 }
                 else if (terrainDefToBuild != null)
                 {
-                    newTarget.blueprintTerrainDef = terrainDefToBuild;
+                    target.blueprintTerrainDef = terrainDefToBuild;
                 }
 
-                newTarget.blueprintStuff = stuffDefToUse;
-                newTarget.blueprintRotation = target.Thing.Rotation;
+                target.blueprintStuff = stuffDefToUse;
+                target.blueprintRotation = target.Thing.Rotation;
 
-                target = newTarget;
+                // Redirect job to the cell so that we can continue various construction phases and replace blueprint if needed
+                target.target = target.Cell;
             }
 
             if (!jobTargets.Contains(target))
@@ -377,31 +376,15 @@ namespace CM_Meeseeks_Box
             }
         }
 
+        // This sometimes can get called out of order from normal flow, by Achtung mod for example
         public void PostTryTakeOrderedJob(bool success, Job job)
         {
             // If he didn't take the job and hasn't been officially given one, clear out the saved job
             if (!success && !givenTask)
-            {
                 savedJob = null;
-            }
 
-            if (success && !givenTask && job.playerForced && !freeJobs.Contains(job.def))
-            {
-                givenTask = true;
-                givenTaskTick = Find.TickManager.TicksGame;
-                playedAcceptSound = true;
-                MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
-                // This may have been updated (the workGiverDef certainly was by us)
-                savedJob = new SavedJob(job);
-
-                //Logger.MessageFormat(this, "Checking for construction job");
-
-                if (job.workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
-                {
-                    //Logger.MessageFormat(this, "Found construction job");
-                    taskIsConstruction = true;
-                }
-            }
+            if (success)
+                JobStarted(job);
         }
 
         public void PreStartJob(Job job, JobDriver driver)
@@ -427,44 +410,38 @@ namespace CM_Meeseeks_Box
 
             jobList.Add(jobName);
 
-            //Logger.MessageFormat(this, "Meeseeks has started job: {0}, driver: {1}, jobGiver: {2}", jobName, driver, job.jobGiver);
+            JobStarted(job);
+        }
 
-            // We don't check for givenTask here because we want further forced jobs as given by the Achtung mod to become the new current saved job
-            if (job.playerForced && !freeJobs.Contains(job.def))
+        private void JobStarted(Job job)
+        {
+            if (givenTask || !job.playerForced || freeJobs.Contains(job.def))
+                return;
+
+            givenTask = true;
+            startedTask = true;
+            givenTaskTick = Find.TickManager.TicksGame;
+
+            if (!playedAcceptSound)
             {
-                if (!startedTask)
-                {
-                    startedTask = true;
-                    givenTask = true;
-                    givenTaskTick = Find.TickManager.TicksGame;
+                MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+                playedAcceptSound = true;
+            }
 
-                    if (job.workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
-                    {
-                        //Logger.MessageFormat(this, "Found construction job");
-                        taskIsConstruction = true;
-                    }
+            savedJob = new SavedJob(job);
 
-                    if (!playedAcceptSound)
-                    {
-                        MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
-                        playedAcceptSound = true;
-                    }
+            if (job.workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                taskIsConstruction = true;
 
-                    TargetIndex targetIndex = GetJobPrimaryTarget(job);
+            TargetIndex targetIndex = GetJobPrimaryTarget(job);
 
-                    if (targetIndex != TargetIndex.None)
-                    {
-                        AddJobTarget(job.GetTarget(targetIndex));
-                    }
-                    else
-                    {
-                        Logger.MessageFormat(this, "No target found for {0}", job.def.defName);
-                    }
-
-                    savedJob = new SavedJob(job);
-                }
-
-                //Logger.MessageFormat(this, "Meeseeks has accepted task: {0}", savedJob.def.defName);
+            if (targetIndex != TargetIndex.None)
+            {
+                AddJobTarget(job.GetTarget(targetIndex));
+            }
+            else
+            {
+                Logger.MessageFormat(this, "No target found for {0}", job.def.defName);
             }
         }
 
