@@ -151,26 +151,28 @@
 		<statBases>
 			<MarketValue>0</MarketValue>
 			<MoveSpeed>3.00</MoveSpeed>
-			<Flammability>0.2</Flammability>
-			<PsychicSensitivity>0.3</PsychicSensitivity>
+			<Flammability>0.7</Flammability>
+			<PsychicSensitivity>0.5</PsychicSensitivity>
 			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
 			<ComfyTemperatureMax>100</ComfyTemperatureMax>
 			<PainShockThreshold>5</PainShockThreshold>
-			<ToxicSensitivity>0.3</ToxicSensitivity>
+			<ToxicSensitivity>0</ToxicSensitivity>
 			<MentalBreakThreshold>0.3</MentalBreakThreshold>
-			<GlobalLearningFactor>0.8</GlobalLearningFactor>
-			<WorkSpeedGlobal>0.55</WorkSpeedGlobal>
+			<GlobalLearningFactor>0</GlobalLearningFactor>
+			<WorkSpeedGlobal>0.50</WorkSpeedGlobal>
 			<ImmunityGainSpeed>10</ImmunityGainSpeed>
 			<LeatherAmount>0</LeatherAmount>
 			<MeatAmount>0</MeatAmount>
-			<SocialImpact>0.7</SocialImpact>
-			<ArmorRating_Blunt>0.10</ArmorRating_Blunt>
+			<SocialImpact>0.5</SocialImpact>
+			<!--<ArmorRating_Blunt>0.10</ArmorRating_Blunt>
 			<ArmorRating_Sharp>0.15</ArmorRating_Sharp>
+			<ArmorRating_Heat>0.10</ArmorRating_Heat>
 			<FoodPoisonChance>0.4</FoodPoisonChance>
 			<ButcheryFleshEfficiency>0.6</ButcheryFleshEfficiency>
 			<MedicalTendQuality>0.4</MedicalTendQuality>
-			<MedicalSurgerySuccessChance>0.6</MedicalSurgerySuccessChance>
-			<Mass>32.5</Mass>
+			<MedicalSurgerySuccessChance>0.6</MedicalSurgerySuccessChance> -->
+			<Mass>40</Mass>
+			<RoyalFavorValue>0</RoyalFavorValue>
 		</statBases>
 		<tools>
 			<li>
@@ -179,13 +181,13 @@
 					<li>Blunt</li>
 				</capacities>
 				<power>3</power>
-				<cooldownTime>1.2</cooldownTime>
+				<cooldownTime>2</cooldownTime>
 				<linkedBodyPartsGroup>RightHand</linkedBodyPartsGroup>
 				<surpriseAttack>
 					<extraMeleeDamages>
 						<li>
 							<def>Stun</def>
-							<amount>22</amount>
+							<amount>6</amount>
 						</li>
 					</extraMeleeDamages>
 				</surpriseAttack>
@@ -196,25 +198,36 @@
 					<li>Blunt</li>
 				</capacities>
 				<power>3</power>
-				<cooldownTime>1.2</cooldownTime>
+				<cooldownTime>2</cooldownTime>
 				<linkedBodyPartsGroup>LeftHand</linkedBodyPartsGroup>
 				<surpriseAttack>
 					<extraMeleeDamages>
 						<li>
 							<def>Stun</def>
-							<amount>22</amount>
+							<amount>6</amount>
 						</li>
 					</extraMeleeDamages>
 				</surpriseAttack>
 			</li>
-
+			<li>
+				<label>teeth</label>
+				<capacities>
+					<li>Bite</li>
+				</capacities>
+				<power>3</power>
+				<cooldownTime>2</cooldownTime>
+				<linkedBodyPartsGroup>Teeth</linkedBodyPartsGroup>
+				<chanceFactor>0.07</chanceFactor>
+				<soundMeleeHit>Pawn_Melee_HumanBite_Hit</soundMeleeHit>
+				<soundMeleeMiss>Pawn_Melee_HumanBite_Miss</soundMeleeMiss>
+			</li>
 			<li>
 				<label>head</label>
 				<capacities>
 					<li>Blunt</li>
 				</capacities>
-				<power>3</power>
-				<cooldownTime>1.2</cooldownTime>
+				<power>1</power>
+				<cooldownTime>2</cooldownTime>
 				<linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
 				<chanceFactor>0.2</chanceFactor>
 			</li>
