@@ -23,6 +23,8 @@ namespace CM_Meeseeks_Box
         private Dictionary<IntVec3, bool> cachedCellResults = new Dictionary<IntVec3, bool>();
         private Dictionary<Thing, bool> cachedThingResults = new Dictionary<Thing, bool>();
 
+        private string designateAllOnMapLabel = null;
+
         public Designator_AreaWorkMeeseeks(Pawn mrMeeseeksLookAtMe)
         {
             defaultLabel = "CM_Meeseeks_Box_SelectJobAreaLabel".Translate();
@@ -36,6 +38,8 @@ namespace CM_Meeseeks_Box
             Memory = Meeseeks.GetComp<CompMeeseeksMemory>();
 
             hasDesignateAllFloatMenuOption = true;
+            designateAllLabel = "CM_Meeseeks_Box_Select_All_Additional_Targets".Translate();
+            designateAllOnMapLabel = "CM_Meeseeks_Box_Select_All_Additional_Targets_In_Home".Translate();
         }
 
         public override AcceptanceReport CanDesignateCell(IntVec3 cell)
@@ -268,7 +272,7 @@ namespace CM_Meeseeks_Box
                 {
                     WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
 
-                    foreach(IntVec3 cell in dragCells)
+                    foreach (IntVec3 cell in dragCells)
                     {
                         if (cachedCellResults.ContainsKey(cell) && cachedCellResults[cell] == true)
                         {
@@ -302,6 +306,38 @@ namespace CM_Meeseeks_Box
             Vector3 drawPos = thing.DrawPos;
             drawPos.y = AltitudeLayer.MetaOverlays.AltitudeFor();
             Graphics.DrawMesh(MeshPool.plane10, drawPos, Quaternion.identity, DragHighlightThingMat, 0);
+        }
+
+        public override IEnumerable<FloatMenuOption> RightClickFloatMenuOptions
+        {
+            get
+            {
+                //foreach (FloatMenuOption rightClickFloatMenuOption in base.RightClickFloatMenuOptions)
+                //{
+                //    yield return rightClickFloatMenuOption;
+                //}
+
+                if (hasDesignateAllFloatMenuOption)
+                {
+                    yield return new FloatMenuOption(designateAllLabel, delegate
+                    {
+                        foreach(IntVec3 cell in Map.AllCells)
+                        {
+                            if (!cell.Fogged(Map) && CanDesignateCell(cell).Accepted)
+                                DesignateSingleCell(cell);
+                        }
+                    });
+
+                    yield return new FloatMenuOption(designateAllOnMapLabel, delegate
+                    {
+                        foreach (IntVec3 cell in Map.areaManager.Home.ActiveCells)
+                        {
+                            if (!cell.Fogged(Map) && CanDesignateCell(cell).Accepted)
+                                DesignateSingleCell(cell);
+                        }
+                    });
+                }
+            }
         }
     }
 }
