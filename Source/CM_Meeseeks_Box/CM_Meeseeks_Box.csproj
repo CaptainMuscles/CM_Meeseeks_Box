@@ -112,6 +112,7 @@
     <Compile Include="Patches\WorldPawnGCPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavedJob.cs" />
+    <Compile Include="SavedTargetInfo.cs" />
     <Compile Include="ThinkNode_MeeseeksCompleteTask.cs" />
     <Compile Include="Verb_Cooldown.cs" />
     <Compile Include="Verb_SpawnMeeseeks.cs" />

@@ -17,6 +17,7 @@ namespace CM_Meeseeks_Box
         public bool givenTask = false;
         public bool startedTask = false;
         public bool taskCompleted = false;
+        public bool taskIsConstruction = false;
 
         public SavedJob savedJob = null;
         public JobDef lastStartedJobDef = null;
@@ -25,7 +26,7 @@ namespace CM_Meeseeks_Box
 
         public bool jobStuck = false;
 
-        public List<LocalTargetInfo> jobTargets = new List<LocalTargetInfo>();
+        public List<SavedTargetInfo> jobTargets = new List<SavedTargetInfo>();
 
         public int givenTaskTick = -1;
         public int acquiredEquipmentTick = -1;
@@ -115,6 +116,7 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look<bool>(ref this.givenTask, "givenTask", false);
             Scribe_Values.Look<bool>(ref this.startedTask, "startedTask", false);
             Scribe_Values.Look<bool>(ref this.taskCompleted, "taskCompleted", false);
+            Scribe_Values.Look<bool>(ref this.taskIsConstruction, "taskIsConstruction", false);
             Scribe_Values.Look<bool>(ref this.playedAcceptSound, "playedAcceptSound", false);
 
             Scribe_References.Look(ref this.creator, "creator");
@@ -132,7 +134,7 @@ namespace CM_Meeseeks_Box
 
             Scribe_Collections.Look(ref jobList, "jobList");
             Scribe_Collections.Look(ref jobResults, "jobResult");
-            Scribe_Collections.Look(ref jobTargets, "jobTargets", LookMode.LocalTargetInfo);
+            Scribe_Collections.Look(ref jobTargets, "jobTargets", LookMode.Deep);
 
             Scribe_Collections.Look(ref createdMeeseeks, "createdMeeseeks", LookMode.Reference);
 
@@ -141,7 +143,7 @@ namespace CM_Meeseeks_Box
             if (jobResults == null)
                 jobResults = new List<string>();
             if (jobTargets == null)
-                jobTargets = new List<LocalTargetInfo>();
+                jobTargets = new List<SavedTargetInfo>();
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit && voice == null)
             {
@@ -166,7 +168,7 @@ namespace CM_Meeseeks_Box
         {
             jobList = new List<string>();
             jobResults = new List<string>();
-            jobTargets = new List<LocalTargetInfo>();
+            jobTargets = new List<SavedTargetInfo>();
         }
 
         public override void CompTick()
@@ -223,7 +225,7 @@ namespace CM_Meeseeks_Box
 
         public void CopyJobDataFrom(CompMeeseeksMemory otherMemory)
         {
-            jobTargets = new List<LocalTargetInfo>(otherMemory.jobTargets);
+            jobTargets = new List<SavedTargetInfo>(otherMemory.jobTargets);
 
             givenTask = otherMemory.givenTask;
             startedTask = otherMemory.startedTask;
@@ -236,9 +238,9 @@ namespace CM_Meeseeks_Box
             MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
         }
 
-        public void ForceNewJob(Job newJob, LocalTargetInfo targetInfo)
+        public void ForceNewJob(Job newJob, SavedTargetInfo targetInfo)
         {
-            jobTargets = new List<LocalTargetInfo> { targetInfo };
+            jobTargets = new List<SavedTargetInfo> { targetInfo };
 
             givenTask = true;
             startedTask = true;
@@ -249,23 +251,56 @@ namespace CM_Meeseeks_Box
             givenTaskTick = Find.TickManager.TicksGame;
         }
 
-        public void AddJobTarget(LocalTargetInfo target, WorkGiverDef workGiverDef)
-        {
-            // Construction jobs need to track the cell in order to advance to the next stage when searching for jobs later
-            if (target.HasThing && workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(workGiverDef))
-            {
-                AddJobTarget(target.Cell);
-            }
-            else
-            {
-                AddJobTarget(target);
-            }
-        }
-
         public void AddJobTarget(LocalTargetInfo target)
         {
+            AddJobTarget(new SavedTargetInfo(target));
+        }
+
+        public void AddJobTarget(SavedTargetInfo target)
+        {
+            if (target.HasThing && taskIsConstruction)
+            {
+                SavedTargetInfo newTarget = new SavedTargetInfo(target.Cell);
+
+                ThingDef thingDefToBuild = null;
+                TerrainDef terrainDefToBuild = null;
+                ThingDef stuffDefToUse = null;
+
+                Blueprint_Build blueprint = target.Thing as Blueprint_Build;
+                Frame frame = target.Thing as Frame;
+
+                if (blueprint != null)
+                {
+                    thingDefToBuild = blueprint.def.entityDefToBuild as ThingDef;
+                    terrainDefToBuild = blueprint.def.entityDefToBuild as TerrainDef;
+                    stuffDefToUse = blueprint.stuffToUse;
+                }
+                else if (frame != null)
+                {
+                    thingDefToBuild = frame.def.entityDefToBuild as ThingDef;
+                    terrainDefToBuild = frame.def.entityDefToBuild as TerrainDef;
+                    stuffDefToUse = frame.Stuff;
+                }
+
+                if (thingDefToBuild != null)
+                {
+                    newTarget.blueprintThingDef = thingDefToBuild;
+                }
+                else if (terrainDefToBuild != null)
+                {
+                    newTarget.blueprintTerrainDef = terrainDefToBuild;
+                }
+
+                newTarget.blueprintStuff = stuffDefToUse;
+                newTarget.blueprintRotation = target.Thing.Rotation;
+
+                target = newTarget;
+            }
+
             if (!jobTargets.Contains(target))
+            {
                 jobTargets.Add(target);
+            }
         }
 
         public void SortJobTargets()
@@ -281,7 +316,7 @@ namespace CM_Meeseeks_Box
                 int indexOfSelf = jobTargets.FindIndex(target => target.Thing == Meeseeks);
                 if (indexOfSelf >= 0)
                 {
-                    LocalTargetInfo selfTarget = jobTargets[indexOfSelf];
+                    SavedTargetInfo selfTarget = jobTargets[indexOfSelf];
                     jobTargets.RemoveAt(indexOfSelf);
                     jobTargets.Add(selfTarget);
                 }
@@ -356,6 +391,16 @@ namespace CM_Meeseeks_Box
                 givenTaskTick = Find.TickManager.TicksGame;
                 playedAcceptSound = true;
                 MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+                // This may have been updated (the workGiverDef certainly was by us)
+                savedJob = new SavedJob(job);
+
+                //Logger.MessageFormat(this, "Checking for construction job");
+
+                if (job.workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                {
+                    //Logger.MessageFormat(this, "Found construction job");
+                    taskIsConstruction = true;
+                }
             }
         }
 
@@ -393,6 +438,12 @@ namespace CM_Meeseeks_Box
                     givenTask = true;
                     givenTaskTick = Find.TickManager.TicksGame;
 
+                    if (job.workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                    {
+                        //Logger.MessageFormat(this, "Found construction job");
+                        taskIsConstruction = true;
+                    }
+
                     if (!playedAcceptSound)
                     {
                         MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
@@ -403,7 +454,7 @@ namespace CM_Meeseeks_Box
 
                     if (targetIndex != TargetIndex.None)
                     {
-                        AddJobTarget(job.GetTarget(targetIndex), job.workGiverDef);
+                        AddJobTarget(job.GetTarget(targetIndex));
                     }
                     else
                     {

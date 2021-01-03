@@ -99,7 +99,7 @@ namespace CM_Meeseeks_Box
                                     if (targetCString != null) stringBuilder.AppendLine(targetCString);
                                 }
 
-                                foreach (LocalTargetInfo jobTarget in meeseeksMemory.jobTargets)
+                                foreach (SavedTargetInfo jobTarget in meeseeksMemory.jobTargets)
                                     stringBuilder.AppendLine(jobTarget.ToString());
 
                                 stringBuilder.AppendLine("");

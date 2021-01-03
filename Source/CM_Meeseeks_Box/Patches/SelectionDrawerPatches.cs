@@ -41,12 +41,12 @@ namespace CM_Meeseeks_Box
                         if (memory == null)
                             continue;
 
-                        foreach(LocalTargetInfo target in memory.jobTargets)
+                        foreach(SavedTargetInfo target in memory.jobTargets)
                         {
-                            if (currentView.Contains(target.Cell))
+                            if (currentView.Contains(target.target.Cell))
                             {
                                 Matrix4x4 matrix = new Matrix4x4();
-                                Vector3 position = new Vector3(target.Cell.x + 0.25f, Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead), target.Cell.z + 0.75f);
+                                Vector3 position = new Vector3(target.Cell.x + 0.25f, Altitudes.AltitudeFor(AltitudeLayer.MoteOverhead), target.target.Cell.z + 0.75f);
                                 Vector3 scale = new Vector3(0.5f, 1.0f, 0.5f);
                                 matrix.SetTRS(position, Quaternion.identity, scale);
 

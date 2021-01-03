@@ -117,7 +117,7 @@ namespace CM_Meeseeks_Box
         public static class Pawn_JobTracker_TryTakeOrderedJobPrioritizedWork
         {
             [HarmonyPrefix]
-            public static void Prefix(Pawn_JobTracker __instance, Job job, WorkGiver giver, Pawn ___pawn)
+            public static void Prefix(Pawn_JobTracker __instance, ref Job job, WorkGiver giver, Pawn ___pawn)
             {
                 //Logger.MessageFormat(__instance, "TryTakeOrderedJobPrioritizedWork Prefix");
 
@@ -129,6 +129,7 @@ namespace CM_Meeseeks_Box
                     {
                         // I don't see any reason why this shouldn't always be the case, but we'll only do it for Meeseeks just to minimize potential impact
                         job.workGiverDef = giver.def;
+                        //Logger.MessageFormat(__instance, "Assigned workgiver def");
                     }
                 }
             }

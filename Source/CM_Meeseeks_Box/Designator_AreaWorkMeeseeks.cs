@@ -180,45 +180,24 @@ namespace CM_Meeseeks_Box
             SavedJob savedJob = Memory.savedJob;
             if (savedJob != null)
             {
-                if (savedJob.workGiverDef != null)
+                if (cachedCellResults.ContainsKey(cell) && cachedCellResults[cell] == true)
+                    Memory.AddJobTarget(new SavedTargetInfo(cell));
+
+                foreach (Thing thing in cell.GetThingList(base.Map))
                 {
-                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
-
-                    if (workGiverScanner != null)
-                    {
-                        if (cachedCellResults.ContainsKey(cell) && cachedCellResults[cell] == true)
-                            Memory.AddJobTarget(cell, workGiverScanner.def);
-
-                        foreach (Thing thing in cell.GetThingList(base.Map))
-                        {
-                            if (cachedThingResults.ContainsKey(thing) && cachedThingResults[thing] == true)
-                                DesignateThing(thing);
-                        }
-                    }
+                    if (cachedThingResults.ContainsKey(thing) && cachedThingResults[thing] == true)
+                        DesignateThing(thing);
                 }
             }
         }
 
         public override void DesignateThing(Thing thing)
         {
-            bool didIt = false;
             SavedJob savedJob = Memory.savedJob;
             if (savedJob != null)
             {
-                if (savedJob.workGiverDef != null)
-                {
-                    WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
-
-                    if (workGiverScanner != null)
-                    {
-                        Memory.AddJobTarget(thing, workGiverScanner.def);
-                        didIt = true;
-                    }
-                }
+                Memory.AddJobTarget(new SavedTargetInfo(thing));
             }
-
-            if (!didIt)
-                Memory.AddJobTarget(thing);
         }
 
         private bool HasJobOnCell(WorkGiver_Scanner workGiverScanner, IntVec3 cell)

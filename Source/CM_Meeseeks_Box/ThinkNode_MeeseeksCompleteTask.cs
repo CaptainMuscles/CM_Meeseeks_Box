@@ -63,11 +63,12 @@ namespace CM_Meeseeks_Box
 
             Logger.MessageFormat(this, "Job target count: {0}", compMeeseeksMemory.jobTargets.Count);
 
-            LocalTargetInfo jobTarget = null;
+            SavedTargetInfo jobTarget = null;
+            Map map = meeseeks.MapHeld;
 
             compMeeseeksMemory.SortJobTargets();
 
-            List<LocalTargetInfo> delayedTargets = new List<LocalTargetInfo>();
+            List<SavedTargetInfo> delayedTargets = new List<SavedTargetInfo>();
 
             while (compMeeseeksMemory.jobTargets.Count > 0 && jobTarget == null)
             {
@@ -85,6 +86,28 @@ namespace CM_Meeseeks_Box
                             foreach(WorkGiver_Scanner scanner in workGivers)
                             {
                                 nextJob = this.GetJobOnTarget(meeseeks, jobTarget, scanner);
+
+                                if (nextJob == null && jobTarget.IsConstruction)
+                                {
+                                    ConstructionStatus status = jobTarget.TargetConstructionStatus(map);
+
+                                    Logger.MessageFormat(this, "Checking for blocker, construction status: {0}", status);
+
+                                    if (status == ConstructionStatus.None)
+                                    {
+                                        BuildableDef buildableDef = jobTarget.BuildableDef;
+
+                                        if (buildableDef != null)
+                                        {
+                                            GenConstruct.PlaceBlueprintForBuild(buildableDef, jobTarget.Cell, map, jobTarget.blueprintRotation, meeseeks.Faction, jobTarget.blueprintStuff);
+                                            nextJob = this.GetJobOnTarget(meeseeks, jobTarget, scanner);
+                                        }
+                                    }
+                                    else if (status == ConstructionStatus.Blocked)
+                                    {
+                                        nextJob = GetDeconstructingJob(meeseeks, jobTarget, map);
+                                    }
+                                }
 
                                 if (nextJob != null)
                                 {
@@ -106,10 +129,14 @@ namespace CM_Meeseeks_Box
                             if (nextJob == null)
                             {
                                 // Special case for construction jobs, resource delivery can block the job
-                                if (TargetIsBeingConstructed(meeseeks, jobTarget, workGiverScanner))
+                                if (jobTarget.IsConstruction)
                                 {
-                                    delayedTargets.Add(jobTarget);
-                                    Logger.MessageFormat(this, "Delaying construction job for {0}.", jobTarget.ToString());
+                                    ConstructionStatus status = jobTarget.TargetConstructionStatus(map);
+                                    if (status != ConstructionStatus.Complete)
+                                    {
+                                        delayedTargets.Add(jobTarget);
+                                        Logger.MessageFormat(this, "Delaying construction job for {0}, construction status: {1].", jobTarget.ToString(), status);
+                                    }
                                 }
                                 else
                                 {
@@ -159,7 +186,7 @@ namespace CM_Meeseeks_Box
             return nextJob;
         }
 
-        private Job GetJobOnTarget(Pawn meeseeks, LocalTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)
+        private Job GetJobOnTarget(Pawn meeseeks, SavedTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)
         {
             Job job = null;
 
@@ -205,28 +232,23 @@ namespace CM_Meeseeks_Box
             return job;
         }
 
-        private bool TargetIsBeingConstructed(Pawn meeseeks, LocalTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)
+        private Job GetDeconstructingJob(Pawn meeseeks, SavedTargetInfo jobTarget, Map map)
         {
-            bool constructionWork = WorkerDefUtility.constructionDefs.Contains(workGiverScanner.def);
-            if (constructionWork)
+            BuildableDef buildableDef = jobTarget.BuildableDef;
+            if (buildableDef == null)
+                return null;
+
+            CellRect cellRect = GenAdj.OccupiedRect(jobTarget.Cell, jobTarget.blueprintRotation, buildableDef.Size);
+            foreach (IntVec3 cell in cellRect)
             {
-                if (targetInfo.HasThing)
+                foreach(Thing thing in cell.GetThingList(map))
                 {
-                    if (!targetInfo.ThingDestroyed && ((targetInfo.Thing as Blueprint) != null || (targetInfo.Thing as Frame) != null))
-                        return true;
-                }
-                else
-                {
-                    var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
-                    foreach (Thing thing in thingsAtCell)
-                    {
-                        if ((thing as Blueprint) != null || (thing as Frame) != null)
-                            return true;
-                    }
+                    if (!GenConstruct.CanPlaceBlueprintOver(buildableDef, thing.def))
+                        return JobMaker.MakeJob(JobDefOf.Deconstruct, thing);
                 }
             }
 
-            return false;
+            return null;
         }
     }
 }
