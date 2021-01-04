@@ -24,6 +24,8 @@ namespace CM_Meeseeks_Box
 
         private VerbTracker verbTracker;
 
+        public int cooldownTicksRemaining = 0;
+
         public VerbTracker VerbTracker
         {
             get
@@ -69,6 +71,11 @@ namespace CM_Meeseeks_Box
             return true;
         }
 
+        public override void Notify_SignalReceived(Signal signal)
+        {
+            base.Notify_SignalReceived(signal);
+        }
+
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
@@ -89,6 +96,8 @@ namespace CM_Meeseeks_Box
         {
             base.PostExposeData();
             Scribe_Deep.Look(ref verbTracker, "verbTracker", this);
+            // Had to move this down here because the values saved in Verb_Cooldown weren't surviving load/save
+            Scribe_Values.Look(ref cooldownTicksRemaining, "cooldownTicksRemaining", 0);
         }
 
         public override void CompTick()

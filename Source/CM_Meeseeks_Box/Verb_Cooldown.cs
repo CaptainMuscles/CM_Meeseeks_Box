@@ -15,7 +15,35 @@ namespace CM_Meeseeks_Box
     {
         // Unfortunately, VerbTick cannot be overridden, so these will need to be altered by an outside ticking object
         public int cooldownTicksTotalBase = 600;
-        public int cooldownTicksRemaining = 0;
+        //public int cooldownTicksRemaining = 0;
+
+        private CompUseEffect_UseVerb owner = null;
+
+        // This is dumb but I need to rework this whole thing after finding out the saved cooldown was being recognized on load
+        private CompUseEffect_UseVerb Owner
+        {
+            get
+            {
+                if (owner == null)
+                {
+                    owner = (DirectOwner as ThingComp).parent.GetComp<CompUseEffect_UseVerb>();
+                }
+
+                return owner;
+            }
+        }
+
+        public int cooldownTicksRemaining
+        {
+            get
+            {
+                return Owner.cooldownTicksRemaining;
+            }
+            set
+            {
+                Owner.cooldownTicksRemaining = value;
+            }
+        }
 
         public virtual int CooldownTicksTotal => cooldownTicksTotalBase;
 
@@ -23,13 +51,15 @@ namespace CM_Meeseeks_Box
 
         public void CooldownTick()
         {
-            cooldownTicksRemaining -= 1;
+            Owner.cooldownTicksRemaining -= 1;
         }
 
         public override void ExposeData()
         {
+            base.ExposeData();
+
             Scribe_Values.Look(ref cooldownTicksTotalBase, "cooldownTicksTotalBase", 0);
-            Scribe_Values.Look(ref cooldownTicksRemaining, "cooldownTicksRemaining", 0);
+            
         }
 
         protected override bool TryCastShot()
