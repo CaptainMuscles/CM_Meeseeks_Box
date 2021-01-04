@@ -149,7 +149,7 @@ namespace CM_Meeseeks_Box
                                     if (status != ConstructionStatus.Complete)
                                     {
                                         delayedTargets.Add(jobTarget);
-                                        Logger.MessageFormat(this, "Delaying construction job for {0}, construction status: {1].", jobTarget.ToString(), status);
+                                        Logger.MessageFormat(this, "Delaying construction job for {0}, construction status: {1}.", jobTarget.ToString(), status);
                                     }
                                 }
                                 else
@@ -313,14 +313,38 @@ namespace CM_Meeseeks_Box
             {
                 IBillGiver billGiver = jobTarget.Thing as IBillGiver;
 
-                List<ThingCount> chosenIngredients = new List<ThingCount>();
-                // Screw you I need this function
-                bool result = (bool)typeof(WorkGiver_DoBill).GetMethod("TryFindBestBillIngredients", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { bill, meeseeks, jobTarget.Thing, chosenIngredients });
-
-                if (result)
+                Bill_ProductionWithUft bill_ProductionWithUft = bill as Bill_ProductionWithUft;
+                if (bill_ProductionWithUft != null)
                 {
-                    Job haulOffJob;
-                    job = WorkGiver_DoBill.TryStartNewDoBillJob(meeseeks, bill, billGiver, chosenIngredients, out haulOffJob);
+                    if (bill_ProductionWithUft.BoundUft != null)
+                    {
+                        if (bill_ProductionWithUft.BoundUft.Creator.kindDef == MeeseeksDefOf.MeeseeksKind && meeseeks.CanReserveAndReach(bill_ProductionWithUft.BoundUft, PathEndMode.Touch, Danger.Deadly))
+                        {
+                            job = FinishUftJob(meeseeks, bill_ProductionWithUft.BoundUft, bill_ProductionWithUft, billGiver);
+                        }
+                    }
+                    else
+                    {
+                        Predicate<Thing> validator = (Thing t) => ((UnfinishedThing)t).Recipe == bill.recipe && ((UnfinishedThing)t).Creator.kindDef == MeeseeksDefOf.MeeseeksKind && ((UnfinishedThing)t).ingredients.TrueForAll((Thing x) => bill.IsFixedOrAllowedIngredient(x.def)) && meeseeks.CanReserve(t);
+                        UnfinishedThing unfinishedThing = (UnfinishedThing)GenClosest.ClosestThingReachable(meeseeks.Position, meeseeks.Map, ThingRequest.ForDef(bill.recipe.unfinishedThingDef), PathEndMode.InteractionCell, TraverseParms.For(meeseeks), 9999f, validator);
+                        if (unfinishedThing != null)
+                        {
+                            job = FinishUftJob(meeseeks, unfinishedThing, bill_ProductionWithUft, billGiver);
+                        }
+                    }
+                }
+
+                if (job == null)
+                {
+                    List<ThingCount> chosenIngredients = new List<ThingCount>();
+                    // Screw you I need this function
+                    bool result = (bool)typeof(WorkGiver_DoBill).GetMethod("TryFindBestBillIngredients", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { bill, meeseeks, jobTarget.Thing, chosenIngredients });
+
+                    if (result)
+                    {
+                        Job haulOffJob = null;
+                        job = WorkGiver_DoBill.TryStartNewDoBillJob(meeseeks, bill, billGiver, chosenIngredients, out haulOffJob);
+                    }
                 }
             }
             else
@@ -329,6 +353,26 @@ namespace CM_Meeseeks_Box
             }
 
             return job;
+        }
+
+        private static Job FinishUftJob(Pawn pawn, UnfinishedThing uft, Bill_ProductionWithUft bill, IBillGiver billGiver)
+        {
+            if (uft.Creator != pawn)
+            {
+                //Log.Error(string.Concat("Tried to get FinishUftJob for ", pawn, " finishing ", uft, " but its creator is ", uft.Creator));
+                return null;
+            }
+            Job job = WorkGiverUtility.HaulStuffOffBillGiverJob(pawn, billGiver, uft);
+            if (job != null && job.targetA.Thing != uft)
+            {
+                return job;
+            }
+            Job job2 = JobMaker.MakeJob(JobDefOf.DoBill, (Thing)billGiver);
+            job2.bill = bill;
+            job2.targetQueueB = new List<LocalTargetInfo> { uft };
+            job2.countQueue = new List<int> { 1 };
+            job2.haulMode = HaulMode.ToCellNonStorage;
+            return job2;
         }
 
         private Job GetJobOnTarget(Pawn meeseeks, SavedTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)

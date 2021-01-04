@@ -22,9 +22,8 @@ namespace CM_Meeseeks_Box
             public static bool Prefix(Bill __instance, ref bool __result)
             {
                 MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
-                Bill_Production originalBill = billStorage.GetBillOriginal(__instance) as Bill_Production;
 
-                if (originalBill != null)
+                if (billStorage.IsDuplicate(__instance))
                 {
                     __result = __instance.deleted;
                     return false;
