@@ -8,7 +8,7 @@ using Verse.AI;
 namespace CM_Meeseeks_Box
 {
     [StaticConstructorOnStartup]
-    class CompMeeseeksMemory : ThingComp
+    public class CompMeeseeksMemory : ThingComp
     {
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
         public static List<JobDef> noContinueJobs = new List<JobDef> { JobDefOf.Goto };
@@ -251,11 +251,6 @@ namespace CM_Meeseeks_Box
             givenTaskTick = Find.TickManager.TicksGame;
         }
 
-        public void AddJobTarget(LocalTargetInfo target)
-        {
-            AddJobTarget(new SavedTargetInfo(target));
-        }
-
         public void AddJobTarget(SavedTargetInfo target)
         {
             if (target.HasThing && taskIsConstruction)
@@ -294,6 +289,20 @@ namespace CM_Meeseeks_Box
 
                 // Redirect job to the cell so that we can continue various construction phases and replace blueprint if needed
                 target.target = target.Cell;
+            }
+            else if (target.HasThing && savedJob.bill != null)
+            {
+                WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
+                if (workGiverScanner != null)
+                {
+                    Job job = workGiverScanner.JobOnThing(Meeseeks, target.Thing, true);
+                    if (job != null && job.bill != null)
+                    {
+                        MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
+                        billStorage.SaveBill(job.bill);
+                        target.bill = billStorage.GetBillCopy(job.bill);//billStorage.AddMeeseeksToBill(job.bill, this);
+                    }
+                }
             }
 
             if (!jobTargets.Contains(target))
@@ -430,14 +439,17 @@ namespace CM_Meeseeks_Box
 
             savedJob = new SavedJob(job);
 
-            if (job.workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
-                taskIsConstruction = true;
+            if (job.workGiverDef != null)
+            {
+                if (WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
+                    taskIsConstruction = true;
+            }
 
             TargetIndex targetIndex = GetJobPrimaryTarget(job);
 
             if (targetIndex != TargetIndex.None)
             {
-                AddJobTarget(job.GetTarget(targetIndex));
+                AddJobTarget(new SavedTargetInfo(job.GetTarget(targetIndex)));
             }
             else
             {

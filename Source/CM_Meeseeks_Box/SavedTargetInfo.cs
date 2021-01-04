@@ -32,6 +32,7 @@ namespace CM_Meeseeks_Box
 
         public Rot4 blueprintRotation;
 
+        public Bill bill;
 
 
         public bool HasThing => target.HasThing;
@@ -166,8 +167,8 @@ namespace CM_Meeseeks_Box
             Scribe_Defs.Look(ref blueprintTerrainDef, "blueprintTerrainDef");
             Scribe_Defs.Look(ref blueprintThingDef, "blueprintThingDef");
             Scribe_Defs.Look(ref blueprintStuff, "blueprintStuff");
-            //Scribe_Deep.Look(ref blueprintRotation, "blueprintRotation");
             Scribe_Values.Look(ref blueprintRotation, "blueprintRotation");
+            Scribe_References.Look(ref bill, "bill");
         }
 
         public ConstructionStatus TargetConstructionStatus(Map map)

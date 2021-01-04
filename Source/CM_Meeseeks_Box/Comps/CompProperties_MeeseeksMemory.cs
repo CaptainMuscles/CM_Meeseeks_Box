@@ -6,7 +6,7 @@ using Verse.AI;
 
 namespace CM_Meeseeks_Box
 {
-    class CompProperties_MeeseeksMemory : CompProperties
+    public class CompProperties_MeeseeksMemory : CompProperties
     {
         public CompProperties_MeeseeksMemory()
         {

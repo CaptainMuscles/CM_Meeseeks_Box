@@ -42,5 +42,13 @@
 		<reportString>moving.</reportString>
 		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
 	</JobDef>
+	
+  <JobDef>
+    <defName>CM_Meeseeks_Box_Job_MeeseeksBill</defName>
+    <driverClass>CM_Meeseeks_Box.JobDriver_MeeseeksBill</driverClass>
+    <reportString>doing bill at TargetA.</reportString>
+    <suspendable>false</suspendable>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
 
 </Defs>

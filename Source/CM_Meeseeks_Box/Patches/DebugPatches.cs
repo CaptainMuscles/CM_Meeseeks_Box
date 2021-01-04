@@ -100,7 +100,32 @@ namespace CM_Meeseeks_Box
                                 }
 
                                 foreach (SavedTargetInfo jobTarget in meeseeksMemory.jobTargets)
-                                    stringBuilder.AppendLine(jobTarget.ToString());
+                                {
+                                    stringBuilder.AppendLine(jobTarget.target.ToString());
+                                    if (jobTarget.BuildableDef != null)
+                                    {
+                                        string nextLine = " - " + jobTarget.BuildableDef.defName;
+                                        if (jobTarget.blueprintStuff != null)
+                                            nextLine += " - " + jobTarget.blueprintStuff.defName;
+                                        stringBuilder.AppendLine(nextLine);
+                                    }
+                                    if (jobTarget.bill != null)
+                                    {
+                                        Bill_Production billProduction = jobTarget.bill as Bill_Production;
+
+                                        if (billProduction != null)
+                                        {
+                                            string nextLine = " - " + billProduction.ToString();
+                                            if (billProduction.repeatMode == BillRepeatModeDefOf.RepeatCount)
+                                                nextLine += " - x" + billProduction.repeatCount;
+                                            else if (billProduction.repeatMode == BillRepeatModeDefOf.RepeatCount)
+                                                nextLine += " - until " + billProduction.targetCount;
+                                            else
+                                                nextLine += " - forever";
+                                            stringBuilder.AppendLine(nextLine);
+                                        }
+                                    }
+                                }
 
                                 stringBuilder.AppendLine("");
                             }
