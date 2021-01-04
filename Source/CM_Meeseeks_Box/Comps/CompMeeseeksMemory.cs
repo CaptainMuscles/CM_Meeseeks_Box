@@ -300,7 +300,8 @@ namespace CM_Meeseeks_Box
                     {
                         MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
                         billStorage.SaveBill(job.bill);
-                        target.bill = billStorage.GetBillCopy(job.bill);//billStorage.AddMeeseeksToBill(job.bill, this);
+                        target.bill = billStorage.GetBillCopy(job.bill);
+                        target.bill.billStack.billGiver = target.Thing as IBillGiver;
                     }
                 }
             }

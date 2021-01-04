@@ -255,6 +255,7 @@ namespace CM_Meeseeks_Box
                         {
                             Job haulOffJob;
                             job = WorkGiver_DoBill.TryStartNewDoBillJob(meeseeks, bill, targetPawn, chosenIngredients, out haulOffJob);
+                            bill.billStack.billGiver = targetPawn as IBillGiver;
                         }
                     }
                 }
@@ -281,12 +282,20 @@ namespace CM_Meeseeks_Box
             }
             else if (bill.repeatMode == BillRepeatModeDefOf.TargetCount)
             {
-                int productCount = bill.recipe.WorkerCounter.CountProducts(bill);
-                if (productCount >= bill.targetCount)
+                // Might be here without a billgiver (after a save?) so try to set the current target
+                if (bill.billStack.billGiver == null && jobTarget.Thing != null)
+                    bill.billStack.billGiver = jobTarget.Thing as IBillGiver;
+
+                // Otherwise count them later I guess :P
+                if (bill.Map != null)
                 {
-                    bill.deleted = true;
-                    jobAvailabilty = JobAvailability.Complete;
-                    return null;
+                    int productCount = bill.recipe.WorkerCounter.CountProducts(bill);
+                    if (productCount >= bill.targetCount)
+                    {
+                        bill.deleted = true;
+                        jobAvailabilty = JobAvailability.Complete;
+                        return null;
+                    }
                 }
             }
 
@@ -312,6 +321,7 @@ namespace CM_Meeseeks_Box
             if (workStationValid)
             {
                 IBillGiver billGiver = jobTarget.Thing as IBillGiver;
+                bill.billStack.billGiver = billGiver;
 
                 Bill_ProductionWithUft bill_ProductionWithUft = bill as Bill_ProductionWithUft;
                 if (bill_ProductionWithUft != null)

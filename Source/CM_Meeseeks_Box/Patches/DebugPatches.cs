@@ -118,7 +118,7 @@ namespace CM_Meeseeks_Box
                                             string nextLine = " - " + billProduction.ToString();
                                             if (billProduction.repeatMode == BillRepeatModeDefOf.RepeatCount)
                                                 nextLine += " - x" + billProduction.repeatCount;
-                                            else if (billProduction.repeatMode == BillRepeatModeDefOf.RepeatCount)
+                                            else if (billProduction.repeatMode == BillRepeatModeDefOf.TargetCount)
                                                 nextLine += " - until " + billProduction.targetCount;
                                             else
                                                 nextLine += " - forever";

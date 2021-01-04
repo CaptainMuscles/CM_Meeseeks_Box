@@ -14,6 +14,8 @@ namespace CM_Meeseeks_Box
     public class MeeseeksBillStorage : GameComponent
     {
         private List<Bill> bills = new List<Bill>();
+        // Keeping a Billstack for each bill will keep a whole bunch of stuff from going haywire or requiring extensive coding
+        private List<BillStack> billStacks = new List<BillStack>();
         // Original as key, duplicate as value
         private Dictionary<Bill, Bill> originalBills = new Dictionary<Bill, Bill>();
         // Duplicate as key, original as value
@@ -30,16 +32,27 @@ namespace CM_Meeseeks_Box
             if (Scribe.mode == LoadSaveMode.Saving)
             {
                 // Remove finished bills before saving
+                billStacks = billStacks.Where(billStack => billStack.Bills.Count > 0 && !billStack.Bills[0].deleted).ToList();
                 bills = bills.Where(bill => !bill.deleted).ToList();
+                
 
                 originalBills = originalBills.Where(kvp => !kvp.Key.deleted && !kvp.Value.DeletedOrDereferenced).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
                 duplicateBills = duplicateBills.Where(kvp => !kvp.Key.DeletedOrDereferenced && !kvp.Value.deleted).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
 
             Scribe_Collections.Look(ref bills, "bills", LookMode.Deep);
+            Scribe_Collections.Look(ref billStacks, "billStacks", LookMode.Deep);
             Scribe_Collections.Look(ref originalBills, "originalBills", LookMode.Reference, LookMode.Reference);
             Scribe_Collections.Look(ref duplicateBills, "duplicateBills", LookMode.Reference, LookMode.Reference);
             //Scribe_Collections.Look(ref meeseeksOnBills, "meeseeksOnBills", LookMode.Reference, LookMode.Reference);
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                foreach(Bill bill in bills)
+                {
+
+                }
+            }
         }
 
         public bool IsDuplicate(Bill bill)
@@ -54,7 +67,12 @@ namespace CM_Meeseeks_Box
                 return;
 
             Bill newBill = bill.Clone();
+            newBill.InitializeAfterClone();
             bills.Add(newBill);
+
+            BillStack newBillStack = new BillStack(bill.billStack.billGiver);
+            billStacks.Add(newBillStack);
+            newBill.billStack = newBillStack;
 
             originalBills[newBill] = bill;
             duplicateBills[bill] = newBill;
