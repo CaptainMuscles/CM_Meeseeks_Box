@@ -395,11 +395,11 @@
           </subNodes>
         </li>
 
-				<!-- Final backup: If you're just here for no apparent reason, and not a colonist, leave the map
-						 e.g. This happens for pawns who are downed during combat, then later self-heal -->
-				<li Class="ThinkNode_ConditionalColonist">
-					<invert>true</invert>
-					<subNodes>
+		<!-- Final backup: If you're just here for no apparent reason, and not a colonist, leave the map
+			 e.g. This happens for pawns who are downed during combat, then later self-heal -->
+		<li Class="ThinkNode_ConditionalColonist">
+		  <invert>true</invert>
+		  <subNodes>
             <li Class="ThinkNode_Tagger">
               <tagToGive>Misc</tagToGive>
               <subNodes>
@@ -408,10 +408,10 @@
                 </li>
               </subNodes>
             </li>
-					</subNodes>
-				</li>
+		  </subNodes>
+		</li>
 
-				<!-- If you can't leave, just wander -->
+		<!-- If you can't leave, just wander -->
         <li Class="ThinkNode_Tagger">
           <tagToGive>Idle</tagToGive>
           <subNodes>
@@ -422,9 +422,9 @@
         </li>
 
         <li Class="JobGiver_IdleError" />
-			</subNodes>
-		</thinkRoot>
-	</ThinkTreeDef>
+	  </subNodes>
+	</thinkRoot>
+  </ThinkTreeDef>
   
 	<ThinkTreeDef>
 		<defName>MeeseeksConstantThinkTree</defName>
