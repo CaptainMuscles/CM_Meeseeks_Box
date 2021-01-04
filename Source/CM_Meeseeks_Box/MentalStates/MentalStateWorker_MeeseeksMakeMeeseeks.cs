@@ -22,7 +22,7 @@ namespace CM_Meeseeks_Box
 
             CompMeeseeksMemory memory = pawn.GetComp<CompMeeseeksMemory>();
 
-            if (memory == null || memory.jobTargets.Count < 2)
+            if (memory == null)
                 return false;
 
             Map map = pawn.MapHeld;
