@@ -72,10 +72,6 @@
     <Compile Include="Comps\CompMeeseeksMemory.cs" />
     <Compile Include="Comps\CompProperties_MeeseeksBox.cs" />
     <Compile Include="Comps\CompProperties_MeeseeksMemory.cs" />
-    <Compile Include="Comps\CompProperties_UseEffectUseVerb.cs" />
-    <Compile Include="Comps\CompProperties_WornGizmos.cs" />
-    <Compile Include="Comps\CompUseEffect_UseVerb.cs" />
-    <Compile Include="Comps\CompWornGizmos.cs" />
     <Compile Include="DesignatorUtility.cs" />
     <Compile Include="Effecters\MoteProgressBar_Colored.cs" />
     <Compile Include="Effecters\SubEffecter_ProgressBar_Colored.cs" />
@@ -123,8 +119,6 @@
     <Compile Include="SavedJob.cs" />
     <Compile Include="SavedTargetInfo.cs" />
     <Compile Include="ThinkNode_MeeseeksCompleteTask.cs" />
-    <Compile Include="Verb_Cooldown.cs" />
-    <Compile Include="Verb_SpawnMeeseeks.cs" />
     <Compile Include="Voice.cs" />
     <Compile Include="WorkerDefUtility.cs" />
     <Compile Include="Jobs\WorkGiver_Kill.cs" />
