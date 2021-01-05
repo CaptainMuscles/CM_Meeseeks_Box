@@ -41,7 +41,7 @@ namespace CM_Meeseeks_Box
             }
 
             Scribe_Collections.Look(ref bills, "bills", LookMode.Deep);
-            Scribe_Collections.Look(ref billStacks, "billStacks", LookMode.Deep);
+            Scribe_Collections.Look(ref billStacks, "billStacks", LookMode.Reference);
             Scribe_Collections.Look(ref originalBills, "originalBills", LookMode.Reference, LookMode.Reference);
             Scribe_Collections.Look(ref duplicateBills, "duplicateBills", LookMode.Reference, LookMode.Reference);
             //Scribe_Collections.Look(ref meeseeksOnBills, "meeseeksOnBills", LookMode.Reference, LookMode.Reference);
@@ -72,7 +72,7 @@ namespace CM_Meeseeks_Box
 
             BillStack newBillStack = new BillStack(bill.billStack.billGiver);
             billStacks.Add(newBillStack);
-            newBill.billStack = newBillStack;
+            newBillStack.AddBill(newBill);
 
             originalBills[newBill] = bill;
             duplicateBills[bill] = newBill;

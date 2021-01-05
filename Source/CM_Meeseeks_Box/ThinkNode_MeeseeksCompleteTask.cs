@@ -88,109 +88,34 @@ namespace CM_Meeseeks_Box
                 {
                     nextJob = GetDoBillJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
                 }
+                else if (jobTarget.IsConstruction)
+                {
+                    nextJob = GetConstructionJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+                }
                 else if (jobTarget != null && jobTarget.IsValid)
                 {
-                    if (savedJob.workGiverDef != null && savedJob.workGiverDef.Worker != null)
-                    {
-                        WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
-                        if (workGiverScanner != null)
-                        {
-                            List<WorkGiver_Scanner> workGivers = WorkerDefUtility.GetCombinedWorkGiverScanners(workGiverScanner);
-
-                            foreach(WorkGiver_Scanner scanner in workGivers)
-                            {
-                                nextJob = this.GetJobOnTarget(meeseeks, jobTarget, scanner);
-
-                                if (nextJob == null && jobTarget.IsConstruction)
-                                {
-                                    ConstructionStatus status = jobTarget.TargetConstructionStatus(map);
-
-                                    Logger.MessageFormat(this, "Checking for blocker, construction status: {0}", status);
-
-                                    if (status == ConstructionStatus.None)
-                                    {
-                                        BuildableDef buildableDef = jobTarget.BuildableDef;
-
-                                        if (buildableDef != null)
-                                        {
-                                            GenConstruct.PlaceBlueprintForBuild(buildableDef, jobTarget.Cell, map, jobTarget.blueprintRotation, meeseeks.Faction, jobTarget.blueprintStuff);
-                                            nextJob = this.GetJobOnTarget(meeseeks, jobTarget, scanner);
-                                        }
-                                    }
-                                    else if (status == ConstructionStatus.Blocked)
-                                    {
-                                        nextJob = GetDeconstructingJob(meeseeks, jobTarget, map);
-                                    }
-                                }
-
-                                if (nextJob != null)
-                                {
-                                    if (memory.JobStuckRepeat(nextJob))
-                                    {
-                                        Logger.ErrorFormat(this, "Stuck job detected and removed on {0}.", jobTarget);
-                                        nextJob = null;
-                                    }
-                                    else
-                                    {
-                                        Logger.MessageFormat(this, "Job WAS found for {0}.", scanner.def.defName);
-                                    }
-                                    break;
-                                }
-
-                                //Logger.MessageFormat(this, "No {0} job found.", scanner.def.defName);
-                            }
-
-                            if (nextJob == null)
-                            {
-                                // Special case for construction jobs, resource delivery can block the job
-                                if (jobTarget.IsConstruction)
-                                {
-                                    ConstructionStatus status = jobTarget.TargetConstructionStatus(map);
-                                    if (status != ConstructionStatus.Complete)
-                                    {
-                                        delayedTargets.Add(jobTarget);
-                                        Logger.MessageFormat(this, "Delaying construction job for {0}, construction status: {1}.", jobTarget.ToString(), status);
-                                    }
-                                }
-                                else
-                                {
-                                    //Logger.MessageFormat(this, "No job found for {0}.", jobTarget.ToString());
-                                }
-
-                                jobTarget = null;
-                            }
-                            else
-                            {
-                                bool reservationsMade = nextJob.TryMakePreToilReservations(meeseeks, false);
-                                if (!reservationsMade)
-                                {
-                                    delayedTargets.Add(jobTarget);
-                                    Logger.MessageFormat(this, "Delaying job for {0} because reservations could not be made.", jobTarget.ToString());
-
-                                    nextJob = null;
-                                    jobTarget = null;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Logger.MessageFormat(this, "No work scanner");
-                        }
-                    }
-                    else
-                    {
-                        Logger.MessageFormat(this, "Missing saved job workGiverDef or Worker for savedJob: {0}", savedJob.def.defName);
-                    }
+                    nextJob = ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
                 }
                 else
                 {
                     Logger.MessageFormat(this, "No jobTarget found.");
                 }
 
+                if (nextJob != null)
+                {
+                    bool reservationsMade = nextJob.TryMakePreToilReservations(meeseeks, false);
+                    if (!reservationsMade)
+                    {
+                        jobAvailabilty = JobAvailability.Delayed;
+                        Logger.MessageFormat(this, "Delaying job for {0} because reservations could not be made.", jobTarget.ToString());
+
+                        nextJob = null;
+                    }
+                }
+
                 if (jobAvailabilty == JobAvailability.Delayed)
                     delayedTargets.Add(jobTarget);
-
-                if (nextJob == null)
+                else if (nextJob == null)
                     jobTarget = null;
 
                 if (nextJob == null && (jobTarget == null || !jobTarget.IsValid))
@@ -257,6 +182,11 @@ namespace CM_Meeseeks_Box
                             job = WorkGiver_DoBill.TryStartNewDoBillJob(meeseeks, bill, targetPawn, chosenIngredients, out haulOffJob);
                             bill.billStack.billGiver = targetPawn as IBillGiver;
                         }
+
+                        if (job == null)
+                            jobAvailabilty = JobAvailability.Delayed;
+                        else
+                            jobAvailabilty = JobAvailability.Available;
                     }
                 }
             }
@@ -356,11 +286,13 @@ namespace CM_Meeseeks_Box
                         job = WorkGiver_DoBill.TryStartNewDoBillJob(meeseeks, bill, billGiver, chosenIngredients, out haulOffJob);
                     }
                 }
+
             }
-            else
-            {
+
+            if (job == null)
                 jobAvailabilty = JobAvailability.Delayed;
-            }
+            else
+                jobAvailabilty = JobAvailability.Available;
 
             return job;
         }
@@ -383,6 +315,112 @@ namespace CM_Meeseeks_Box
             job2.countQueue = new List<int> { 1 };
             job2.haulMode = HaulMode.ToCellNonStorage;
             return job2;
+        }
+
+        private Job GetConstructionJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
+        {
+            Job job = null;
+
+            ConstructionStatus status = jobTarget.TargetConstructionStatus(meeseeks.MapHeld);
+
+            Logger.MessageFormat(this, "Checking for blocker, construction status: {0}", status);
+
+            if (status == ConstructionStatus.None)
+            {
+                BuildableDef buildableDef = jobTarget.BuildableDef;
+
+                if (buildableDef != null && GenConstruct.PlaceBlueprintForBuild(buildableDef, jobTarget.Cell, meeseeks.MapHeld, jobTarget.blueprintRotation, meeseeks.Faction, jobTarget.blueprintStuff) != null)
+                    status = ConstructionStatus.InProgress;
+            }
+
+            if (status == ConstructionStatus.Blocked)
+            {
+                job = GetDeconstructingJob(meeseeks, jobTarget, meeseeks.MapHeld);
+                if (job == null)
+                    jobAvailabilty = JobAvailability.Delayed;
+                else
+                    jobAvailabilty = JobAvailability.Available;
+            }
+            else if (status == ConstructionStatus.InProgress)
+            {
+                job = ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+                if (job == null)
+                    jobAvailabilty = JobAvailability.Delayed;
+                else
+                    jobAvailabilty = JobAvailability.Available;
+            }
+            else if (status == ConstructionStatus.Complete)
+            {
+                jobAvailabilty = JobAvailability.Complete;
+            }
+
+            return job;
+        }
+
+        private Job GetDeconstructingJob(Pawn meeseeks, SavedTargetInfo jobTarget, Map map)
+        {
+            BuildableDef buildableDef = jobTarget.BuildableDef;
+            if (buildableDef == null)
+                return null;
+
+            CellRect cellRect = GenAdj.OccupiedRect(jobTarget.Cell, jobTarget.blueprintRotation, buildableDef.Size);
+            foreach (IntVec3 cell in cellRect)
+            {
+                foreach (Thing thing in cell.GetThingList(map))
+                {
+                    if (!GenConstruct.CanPlaceBlueprintOver(buildableDef, thing.def))
+                        return JobMaker.MakeJob(JobDefOf.Deconstruct, thing);
+                }
+            }
+
+            return null;
+        }
+
+        private Job ScanForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
+        {
+            Job job = null;
+
+            if (savedJob.workGiverDef != null && savedJob.workGiverDef.Worker != null)
+            {
+                WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
+                if (workGiverScanner != null)
+                {
+                    List<WorkGiver_Scanner> workGivers = WorkerDefUtility.GetCombinedWorkGiverScanners(workGiverScanner);
+
+                    foreach (WorkGiver_Scanner scanner in workGivers)
+                    {
+                        job = this.GetJobOnTarget(meeseeks, jobTarget, scanner);
+
+                        if (job != null)
+                        {
+                            if (memory.JobStuckRepeat(job))
+                            {
+                                Logger.ErrorFormat(this, "Stuck job detected and removed on {0}.", jobTarget);
+                                jobAvailabilty = JobAvailability.Delayed;
+                                job = null;
+                            }
+                            else
+                            {
+                                Logger.MessageFormat(this, "Job WAS found for {0}.", scanner.def.defName);
+                                jobAvailabilty = JobAvailability.Available;
+                                return job;
+                            }
+                        }
+
+                        //Logger.MessageFormat(this, "No {0} job found.", scanner.def.defName);
+                    }
+                }
+                else
+                {
+                    Logger.MessageFormat(this, "No work scanner");
+                }
+            }
+            else
+            {
+                Logger.MessageFormat(this, "Missing saved job workGiverDef or Worker for savedJob: {0}", savedJob.def.defName);
+            }
+
+            return job;
         }
 
         private Job GetJobOnTarget(Pawn meeseeks, SavedTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)
@@ -429,25 +467,6 @@ namespace CM_Meeseeks_Box
             }
 
             return job;
-        }
-
-        private Job GetDeconstructingJob(Pawn meeseeks, SavedTargetInfo jobTarget, Map map)
-        {
-            BuildableDef buildableDef = jobTarget.BuildableDef;
-            if (buildableDef == null)
-                return null;
-
-            CellRect cellRect = GenAdj.OccupiedRect(jobTarget.Cell, jobTarget.blueprintRotation, buildableDef.Size);
-            foreach (IntVec3 cell in cellRect)
-            {
-                foreach(Thing thing in cell.GetThingList(map))
-                {
-                    if (!GenConstruct.CanPlaceBlueprintOver(buildableDef, thing.def))
-                        return JobMaker.MakeJob(JobDefOf.Deconstruct, thing);
-                }
-            }
-
-            return null;
         }
 
         private bool ResolveBill(Pawn meeseeks, SavedTargetInfo jobTarget, SavedJob savedJob)
