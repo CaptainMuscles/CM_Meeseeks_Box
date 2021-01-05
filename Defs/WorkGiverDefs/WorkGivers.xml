@@ -15,5 +15,16 @@
       <li>Manipulation</li>
     </requiredCapacities>
   </WorkGiverDef>
+  
+  <WorkGiverDef>
+    <defName>CM_Meeseeks_Box_WorkGiver_PressButton</defName>
+    <label>press buttons</label>
+    <giverClass>CM_Meeseeks_Box.WorkGiver_PressButton</giverClass>
+    <workType>BasicWorker</workType>
+    <verb>press button on</verb>
+    <gerund>pressing button on</gerund>
+    <canBeDoneWhileDrafted>true</canBeDoneWhileDrafted>
+    <priorityInType>499</priorityInType>
+  </WorkGiverDef>
 
 </Defs>

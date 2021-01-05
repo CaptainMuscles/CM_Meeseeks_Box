@@ -24,30 +24,20 @@
 	  <li>
         <compClass>CompQuality</compClass>
       </li>
-      <li Class="CM_Meeseeks_Box.CompProperties_WornGizmos">
-        <hotKey>Misc4</hotKey>
-		<coolDownTicksBase>60000</coolDownTicksBase>
+	  <li Class="CM_Meeseeks_Box.CompProperties_HasButton">
+        <commandLabelKey>CM_Meeseeks_Box_PressButtonLabel</commandLabelKey>
+        <commandDescKey>CM_Meeseeks_Box_PressButtonDescription</commandDescKey>
+		<onSignal>CM_Meeseeks_Box_Use_Meeseeks_Box</onSignal>
+		<offSignal>CM_Meeseeks_Box_Use_Meeseeks_Box</offSignal>
+		<sendPresserSignal>true</sendPresserSignal>
+		<presserSignalPrefix>CM_Meeseeks_Box_Button_Presser</presserSignalPrefix>
+		<toggleable>false</toggleable>
       </li>
-	  <li Class="CompProperties_Usable">
-        <useJob>UseItem</useJob>
-        <useLabel>Press button</useLabel>
-      </li>
-      <li Class="CM_Meeseeks_Box.CompProperties_UseEffectUseVerb">
-		<verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
-		<coolDownTicksBase>60000</coolDownTicksBase>
+	  <li Class="CM_Meeseeks_Box.CompProperties_MeeseeksBox">
+		<useCompSignal>CM_Meeseeks_Box_Use_Meeseeks_Box</useCompSignal>
+		<cooldownTicksBase>60000</cooldownTicksBase>
       </li>
     </comps>
-    <verbs>
-      <li>
-        <verbClass>CM_Meeseeks_Box.Verb_SpawnMeeseeks</verbClass>
-        <label>CM_Meeseeks_Box_PressButton</label>
-        <violent>false</violent>
-        <hasStandardCommand>true</hasStandardCommand>
-        <targetable>false</targetable>
-        <nonInterruptingSelfCast>true</nonInterruptingSelfCast>
-        <onlyManualCast>True</onlyManualCast>
-      </li>
-    </verbs>
     <recipeMaker>
       <unfinishedThingDef>UnfinishedMeeseeksBox</unfinishedThingDef>
       <researchPrerequisite>AdvancedFabrication</researchPrerequisite>

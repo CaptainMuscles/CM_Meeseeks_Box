@@ -3,7 +3,8 @@
 	<CM_Meeseeks_Box_GuardHere>Guard here</CM_Meeseeks_Box_GuardHere>
 	<CM_Meeseeks_Box_SelectJobAreaLabel>Select additional targets</CM_Meeseeks_Box_SelectJobAreaLabel>
 	<CM_Meeseeks_Box_SelectJobAreaDescription>Select additional targets for the Meeseeks' given job.</CM_Meeseeks_Box_SelectJobAreaDescription>
-	<CM_Meeseeks_Box_PressButton>Press button</CM_Meeseeks_Box_PressButton>
+	<CM_Meeseeks_Box_PressButtonLabel>Press button</CM_Meeseeks_Box_PressButtonLabel>
+	<CM_Meeseeks_Box_PressButtonDescription>Press the button</CM_Meeseeks_Box_PressButtonDescription>
 	<CM_Meeseeks_Box_Select_All_Additional_Targets>Select all on map</CM_Meeseeks_Box_Select_All_Additional_Targets>
 	<CM_Meeseeks_Box_Select_All_Additional_Targets_In_Home>Select all in home area</CM_Meeseeks_Box_Select_All_Additional_Targets_In_Home>
 </LanguageData>

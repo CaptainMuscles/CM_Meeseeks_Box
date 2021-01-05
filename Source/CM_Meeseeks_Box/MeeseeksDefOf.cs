@@ -9,6 +9,10 @@ namespace CM_Meeseeks_Box
     [DefOf]
     public static class MeeseeksDefOf
     {
+        public static DesignationDef CM_Meeseeks_Box_Designation_PressButton;
+        public static JobDef CM_Meeseeks_Box_Job_PressButton;
+        public static WorkGiverDef CM_Meeseeks_Box_WorkGiver_PressButton;
+
         public static PawnKindDef MeeseeksKind;
         public static ThingDef MeeseeksRace;
 

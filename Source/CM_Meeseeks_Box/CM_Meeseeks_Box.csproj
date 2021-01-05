@@ -63,8 +63,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Button\CompHasButton.cs" />
+    <Compile Include="Button\CompProperties_HasButton.cs" />
+    <Compile Include="Button\JobDriver_PressButton.cs" />
+    <Compile Include="Button\WorkGiver_PressButton.cs" />
     <Compile Include="Command_VerbTargetWithCooldown.cs" />
+    <Compile Include="Comps\CompMeeseeksBox.cs" />
     <Compile Include="Comps\CompMeeseeksMemory.cs" />
+    <Compile Include="Comps\CompProperties_MeeseeksBox.cs" />
     <Compile Include="Comps\CompProperties_MeeseeksMemory.cs" />
     <Compile Include="Comps\CompProperties_UseEffectUseVerb.cs" />
     <Compile Include="Comps\CompProperties_WornGizmos.cs" />
@@ -123,5 +129,6 @@
     <Compile Include="WorkerDefUtility.cs" />
     <Compile Include="Jobs\WorkGiver_Kill.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

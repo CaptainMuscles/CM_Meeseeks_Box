@@ -32,7 +32,7 @@ namespace CM_Meeseeks_Box
 
             Map map = pawn.MapHeld;
 
-            Predicate<Thing> validator = (thing => (thing.def == MeeseeksDefOf.CM_Meeseeks_Box_Thing_Meeseeks_Box && (thing as ThingWithComps).GetComp<CompUseEffect_UseVerb>().OffCooldown() && ReservationUtility.CanReserve(pawn, thing)));
+            Predicate<Thing> validator = (thing => (thing.def == MeeseeksDefOf.CM_Meeseeks_Box_Thing_Meeseeks_Box && !(thing as ThingWithComps).GetComp<CompMeeseeksBox>().Coolingdown && ReservationUtility.CanReserve(pawn, thing)));
 
             Thing meeseeksBox = GenClosest.ClosestThingReachable(pawn.PositionHeld, pawn.MapHeld, ThingRequest.ForDef(MeeseeksDefOf.CM_Meeseeks_Box_Thing_Meeseeks_Box), PathEndMode.Touch, TraverseParms.For(pawn), 9999f, validator);
             if (meeseeksBox != null)
