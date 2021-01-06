@@ -20,6 +20,8 @@ namespace CM_Meeseeks_Box
         public string commandDescKey = "CM_Meeseeks_Box_PressButtonDescription";
 
 
+        public int useDuration = 100;
+
         [NoTranslate]
         // Signal to broadcast when turned 'on'
         public string onSignal = "CM_Meeseeks_Box_Button_On";

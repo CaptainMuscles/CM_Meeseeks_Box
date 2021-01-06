@@ -72,8 +72,8 @@ namespace CM_Meeseeks_Box
                 }
             }
 
-            [HarmonyPostfix]
-            public static void MonitorMeeseeksJob(Pawn_JobTracker __instance, Job newJob, Pawn ___pawn)
+            [HarmonyFinalizer]
+            public static void Finalizer(Pawn_JobTracker __instance, Job newJob, Pawn ___pawn)
             {
                 //Logger.MessageFormat(__instance, "StartJob Postfix");
 

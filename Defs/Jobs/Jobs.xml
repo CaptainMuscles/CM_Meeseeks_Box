@@ -57,5 +57,12 @@
     <reportString>pressing button.</reportString>
     <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
   </JobDef>
+  
+  <JobDef>
+    <defName>CM_Meeseeks_Box_Job_WaitNear</defName>
+    <driverClass>CM_Meeseeks_Box.JobDriver_WaitNear</driverClass>
+    <reportString>waiting near TargetA.</reportString>
+    <allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+  </JobDef>
 
 </Defs>

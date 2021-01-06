@@ -40,6 +40,7 @@ namespace CM_Meeseeks_Box
         public static JobDef CM_Meeseeks_Box_Job_Kill;
         public static JobDef CM_Meeseeks_Box_Job_UseMeeseeksBox;
         public static JobDef CM_Meeseeks_Box_Job_ApproachTarget;
+        public static JobDef CM_Meeseeks_Box_Job_WaitNear;
 
         public static EffecterDef CM_Meeseeks_Box_Effecter_Progress_Bar;
 

@@ -45,7 +45,8 @@ namespace CM_Meeseeks_Box
 
         private List<string> jobList = new List<string>();
         private List<string> jobResults = new List<string>();
-        
+
+        private Dictionary<WorkGiver, Thing> potentialTargetCache = new Dictionary<WorkGiver, Thing>();
 
         public CompProperties_MeeseeksMemory Props => (CompProperties_MeeseeksMemory)props;
 
@@ -249,6 +250,13 @@ namespace CM_Meeseeks_Box
             savedJob = new SavedJob(newJob);
 
             givenTaskTick = Find.TickManager.TicksGame;
+
+            potentialTargetCache.Clear();
+        }
+
+        public void AddToPotentialTargetCache(WorkGiver workGiver, Thing thing)
+        {
+            potentialTargetCache[workGiver] = thing;
         }
 
         public void AddJobTarget(SavedTargetInfo target)
@@ -400,7 +408,10 @@ namespace CM_Meeseeks_Box
         public void PreStartJob(Job job, JobDriver driver)
         {
             if (job != null)
+            {
                 job.ignoreDesignations = true;
+                job.ignoreForbidden = true;
+            }
         }
 
         public void PostStartJob(Job job, JobDriver driver)
@@ -428,6 +439,7 @@ namespace CM_Meeseeks_Box
             if (givenTask || !job.playerForced || freeJobs.Contains(job.def))
                 return;
 
+
             givenTask = true;
             startedTask = true;
             givenTaskTick = Find.TickManager.TicksGame;
@@ -446,16 +458,25 @@ namespace CM_Meeseeks_Box
                     taskIsConstruction = true;
             }
 
-            TargetIndex targetIndex = GetJobPrimaryTarget(job);
-
-            if (targetIndex != TargetIndex.None)
+            if (job.workGiverDef != null && job.workGiverDef.Worker != null && potentialTargetCache.ContainsKey(job.workGiverDef.Worker))
             {
-                AddJobTarget(new SavedTargetInfo(job.GetTarget(targetIndex)));
+                AddJobTarget(new SavedTargetInfo(potentialTargetCache[job.workGiverDef.Worker]));
             }
             else
             {
-                Logger.MessageFormat(this, "No target found for {0}", job.def.defName);
+                TargetIndex targetIndex = GetJobPrimaryTarget(job);
+
+                if (targetIndex != TargetIndex.None)
+                {
+                    AddJobTarget(new SavedTargetInfo(job.GetTarget(targetIndex)));
+                }
+                else
+                {
+                    Logger.MessageFormat(this, "No target found for {0}", job.def.defName);
+                }
             }
+
+            potentialTargetCache.Clear();
         }
 
         public bool JobStuckRepeat(Job newJob)

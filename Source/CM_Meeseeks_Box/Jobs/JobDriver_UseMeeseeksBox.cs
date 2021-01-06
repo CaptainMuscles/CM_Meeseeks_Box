@@ -23,7 +23,7 @@ namespace CM_Meeseeks_Box
         public override void Notify_Starting()
         {
             base.Notify_Starting();
-            useDuration = job.GetTarget(TargetIndex.A).Thing.TryGetComp<CompUsable>().Props.useDuration;
+            useDuration = job.GetTarget(TargetIndex.A).Thing.TryGetComp<CompHasButton>().Props.useDuration;
         }
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
@@ -35,25 +35,18 @@ namespace CM_Meeseeks_Box
         {
             this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+
             Toil toil = Toils_General.Wait(useDuration);
             toil.WithProgressBarToilDelay(TargetIndex.A);
             toil.FailOnDespawnedNullOrForbidden(TargetIndex.A);
             toil.FailOnCannotTouch(TargetIndex.A, PathEndMode.Touch);
-            if (job.targetB.IsValid)
-            {
-                toil.FailOnDespawnedOrNull(TargetIndex.B);
-                CompTargetable compTargetable = job.GetTarget(TargetIndex.A).Thing.TryGetComp<CompTargetable>();
-                if (compTargetable != null && compTargetable.Props.nonDownedPawnOnly)
-                {
-                    toil.FailOnDownedOrDead(TargetIndex.B);
-                }
-            }
             yield return toil;
+
             Toil use = new Toil();
             use.initAction = delegate
             {
                 Pawn actor = use.actor;
-                actor.CurJob.targetA.Thing.TryGetComp<CompUsable>().UsedBy(actor);
+                actor.CurJob.targetA.Thing.TryGetComp<CompHasButton>().DoPress(actor);
             };
             use.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return use;

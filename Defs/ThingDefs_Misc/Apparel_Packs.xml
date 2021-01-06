@@ -32,6 +32,7 @@
 		<sendPresserSignal>true</sendPresserSignal>
 		<presserSignalPrefix>CM_Meeseeks_Box_Button_Presser</presserSignalPrefix>
 		<toggleable>false</toggleable>
+		<useDuration>100</useDuration>
       </li>
 	  <li Class="CM_Meeseeks_Box.CompProperties_MeeseeksBox">
 		<useCompSignal>CM_Meeseeks_Box_Use_Meeseeks_Box</useCompSignal>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using RimWorld;
 using RimWorld.Planet;
@@ -117,6 +118,13 @@ namespace CM_Meeseeks_Box
         public WorkGiverDef workGiverDef;
 
         public Ability ability;
+
+        public WorkGiver_Scanner WorkGiverScanner => workGiverDef?.Worker as WorkGiver_Scanner;
+
+        public bool UsesWorkGiver<T>()
+        {
+            return (workGiverDef != null && workGiverDef.Worker != null && workGiverDef.Worker is T);
+        }
 
         public SavedJob()
         {
