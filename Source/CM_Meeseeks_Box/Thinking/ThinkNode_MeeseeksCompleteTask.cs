@@ -29,8 +29,10 @@ namespace CM_Meeseeks_Box
 
             jobSelectors.Add(new MeeseeksJobSelector_DoBill());
             jobSelectors.Add(new MeeseeksJobSelector_Construction());
+            jobSelectors.Add(new MeeseeksJobSelector_PressButton());
             jobSelectors.Add(new MeeseeksJobSelector_Tame());
             jobSelectors.Add(new MeeseeksJobSelector_Train());
+
             jobSelectors.Add(new MeeseeksJobSelector());
         }
         
