@@ -15,7 +15,7 @@ namespace CM_Meeseeks_Box
     {
         public override bool CanUse(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget)
         {
-            return savedJob.UsesWorkGiver<WorkGiver_Tame>();
+            return savedJob.IsTaming;
         }
 
         public override Job GetJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
