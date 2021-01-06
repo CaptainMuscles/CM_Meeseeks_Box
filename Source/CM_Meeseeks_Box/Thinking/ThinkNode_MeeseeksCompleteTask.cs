@@ -78,11 +78,11 @@ namespace CM_Meeseeks_Box
 
             if (memory.lastStartedJobDef != null && memory.lastStartedJobDef == savedJob.def)
             {
-                Logger.MessageFormat(this, "Wait a tick...");
+                //Logger.MessageFormat(this, "Wait a tick...");
                 return JobMaker.MakeJob(JobDefOf.Wait_MaintainPosture, 2);
             }
 
-            Logger.MessageFormat(this, "Job target count: {0}", memory.jobTargets.Count);
+            //Logger.MessageFormat(this, "Job target count: {0}", memory.jobTargets.Count);
 
             Map map = meeseeks.MapHeld;
 

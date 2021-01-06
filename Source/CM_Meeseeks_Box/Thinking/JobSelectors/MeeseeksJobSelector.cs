@@ -53,7 +53,7 @@ namespace CM_Meeseeks_Box
                             }
                             else
                             {
-                                Logger.MessageFormat(this, "Job WAS found for {0}.", scanner.def.defName);
+                                //Logger.MessageFormat(this, "Job WAS found for {0}.", scanner.def.defName);
                                 jobAvailabilty = JobAvailability.Available;
                                 return job;
                             }
@@ -64,12 +64,12 @@ namespace CM_Meeseeks_Box
                 }
                 else
                 {
-                    Logger.MessageFormat(this, "No work scanner");
+                    Logger.WarningFormat(this, "No work scanner");
                 }
             }
             else
             {
-                Logger.MessageFormat(this, "Missing saved job workGiverDef or Worker for savedJob: {0}", savedJob.def.defName);
+                Logger.WarningFormat(this, "Missing saved job workGiverDef or Worker for savedJob: {0}", savedJob.def.defName);
             }
 
             return job;
@@ -88,7 +88,7 @@ namespace CM_Meeseeks_Box
                     // Special case for uninstall, the workgiver doesn't check to see if its already uninstalled
                     if (workGiverScanner as WorkGiver_Uninstall != null && !targetInfo.Thing.Spawned)
                     {
-                        Logger.MessageFormat(this, "Target is inside {0}", targetInfo.Thing.ParentHolder);
+                        Logger.WarningFormat(this, "Target is inside {0}", targetInfo.Thing.ParentHolder);
                         DesignatorUtility.RestoreDesignationsOnCell(targetInfo.Cell, meeseeks.MapHeld);
                         return null;
                     }
