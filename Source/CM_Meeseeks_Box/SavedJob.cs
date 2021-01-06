@@ -121,6 +121,12 @@ namespace CM_Meeseeks_Box
 
         public WorkGiver_Scanner WorkGiverScanner => workGiverDef?.Worker as WorkGiver_Scanner;
 
+        public bool IsConstruction => (workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(workGiverDef));
+
+        public bool IsTaming => UsesWorkGiver<WorkGiver_Tame>();
+
+        public bool IsTraining => UsesWorkGiver<WorkGiver_Train>();
+
         public bool UsesWorkGiver<T>()
         {
             return (workGiverDef != null && workGiverDef.Worker != null && workGiverDef.Worker is T);

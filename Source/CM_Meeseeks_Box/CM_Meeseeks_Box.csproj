@@ -82,6 +82,7 @@
     <Compile Include="Jobs\JobGiver_UseMeeseeksBox.cs" />
     <Compile Include="Jobs\LordJob_MeeseeksKillCreator.cs" />
     <Compile Include="Jobs\LordToil_MeeseeksKillCreator.cs" />
+    <Compile Include="MeeseeksBillKnowledge.cs" />
     <Compile Include="MeeseeksBillStorage.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeks.cs" />
@@ -124,7 +125,8 @@
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Construction.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_DoBill.cs" />
-    <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_InteractAnimal.cs" />
+    <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Tame.cs" />
+    <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Train.cs" />
     <Compile Include="Thinking\ThinkNode_MeeseeksCompleteTask.cs" />
     <Compile Include="Voice.cs" />
     <Compile Include="WorkerDefUtility.cs" />

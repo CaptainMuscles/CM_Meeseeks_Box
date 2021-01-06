@@ -34,6 +34,8 @@ namespace CM_Meeseeks_Box
 
         public Bill bill;
 
+        public TrainableDef trainable;
+
 
         public bool HasThing => target.HasThing;
 

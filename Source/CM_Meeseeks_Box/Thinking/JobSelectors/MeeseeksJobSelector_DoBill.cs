@@ -102,7 +102,7 @@ namespace CM_Meeseeks_Box
             else if (bill.repeatMode == BillRepeatModeDefOf.TargetCount)
             {
                 // Might be here without a billgiver (after a save?) so try to set the current target
-                if (bill.billStack.billGiver == null && jobTarget.Thing != null)
+                if (jobTarget.Thing != null)
                     bill.billStack.billGiver = jobTarget.Thing as IBillGiver;
 
                 // Otherwise count them later I guess :P

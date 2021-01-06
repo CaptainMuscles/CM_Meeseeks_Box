@@ -74,8 +74,8 @@ namespace CM_Meeseeks_Box
 
                 MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
 
-                Bill_Production originalBill = billStorage.GetBillOriginal(__instance) as Bill_Production;
-                Bill_Production duplicateBill = billStorage.GetBillCopy(__instance) as Bill_Production;
+                Bill_Production originalBill = billStorage.GetOriginalBill(__instance) as Bill_Production;
+                Bill_Production duplicateBill = billStorage.GetDuplicateBill(__instance) as Bill_Production;
 
                 if (originalBill == null && duplicateBill == null)
                 {

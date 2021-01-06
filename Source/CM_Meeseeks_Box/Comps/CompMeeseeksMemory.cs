@@ -17,7 +17,6 @@ namespace CM_Meeseeks_Box
         public bool givenTask = false;
         public bool startedTask = false;
         public bool taskCompleted = false;
-        public bool taskIsConstruction = false;
 
         public SavedJob savedJob = null;
         public JobDef lastStartedJobDef = null;
@@ -117,7 +116,7 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look<bool>(ref this.givenTask, "givenTask", false);
             Scribe_Values.Look<bool>(ref this.startedTask, "startedTask", false);
             Scribe_Values.Look<bool>(ref this.taskCompleted, "taskCompleted", false);
-            Scribe_Values.Look<bool>(ref this.taskIsConstruction, "taskIsConstruction", false);
+
             Scribe_Values.Look<bool>(ref this.playedAcceptSound, "playedAcceptSound", false);
 
             Scribe_References.Look(ref this.creator, "creator");
@@ -261,7 +260,7 @@ namespace CM_Meeseeks_Box
 
         public void AddJobTarget(SavedTargetInfo target)
         {
-            if (target.HasThing && taskIsConstruction)
+            if (target.HasThing && savedJob.IsConstruction)
             {
                 ThingDef thingDefToBuild = null;
                 TerrainDef terrainDefToBuild = null;
@@ -308,10 +307,14 @@ namespace CM_Meeseeks_Box
                     {
                         MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
                         billStorage.SaveBill(job.bill);
-                        target.bill = billStorage.GetBillCopy(job.bill);
+                        target.bill = billStorage.GetDuplicateBill(job.bill);
                         target.bill.billStack.billGiver = target.Thing as IBillGiver;
                     }
                 }
+            }
+            else if (target.HasThing && savedJob.IsTraining)
+            {
+                target.trainable = (target.Thing as Pawn).training.NextTrainableToTrain();
             }
 
             if (!jobTargets.Contains(target))
@@ -451,12 +454,6 @@ namespace CM_Meeseeks_Box
             }
 
             savedJob = new SavedJob(job);
-
-            if (job.workGiverDef != null)
-            {
-                if (WorkerDefUtility.constructionDefs.Contains(job.workGiverDef))
-                    taskIsConstruction = true;
-            }
 
             if (job.workGiverDef != null && job.workGiverDef.Worker != null && potentialTargetCache.ContainsKey(job.workGiverDef.Worker))
             {
