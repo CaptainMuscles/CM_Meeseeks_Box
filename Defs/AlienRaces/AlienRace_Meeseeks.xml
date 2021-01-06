@@ -17,7 +17,7 @@
 						<chance>100</chance>
 					</li>
 				</forcedRaceTraitEntries>
-				<maleGenderProbability>2</maleGenderProbability>
+				<maleGenderProbability>0.5</maleGenderProbability>
 				<maxDamageForSocialfight>6</maxDamageForSocialfight>
 				<immuneToAge>true</immuneToAge>
 				<canLayDown>false</canLayDown>
