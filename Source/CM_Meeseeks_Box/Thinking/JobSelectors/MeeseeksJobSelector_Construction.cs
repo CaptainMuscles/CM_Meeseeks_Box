@@ -13,9 +13,9 @@ namespace CM_Meeseeks_Box
 {
     public class MeeseeksJobSelector_Construction : MeeseeksJobSelector
     {
-        public override bool CanUse(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget)
+        public override bool UseForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
         {
-            return jobTarget.IsConstruction;
+            return savedJob.IsConstruction;
         }
 
         public override Job GetJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)

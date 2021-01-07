@@ -13,7 +13,7 @@ namespace CM_Meeseeks_Box
 {
     public class MeeseeksJobSelector_Tame : MeeseeksJobSelector
     {
-        public override bool CanUse(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget)
+        public override bool UseForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
         {
             return savedJob.IsTaming;
         }

@@ -127,6 +127,7 @@
     <Compile Include="SavedJob.cs" />
     <Compile Include="SavedTargetInfo.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector.cs" />
+    <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_BuildRoof.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Construction.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_DoBill.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_PressButton.cs" />

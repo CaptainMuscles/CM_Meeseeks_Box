@@ -21,19 +21,19 @@ namespace CM_Meeseeks_Box
 
     public class ThinkNode_MeeseeksCompleteTask : ThinkNode
     {
+        private MeeseeksJobSelector defaultJobSelector = new MeeseeksJobSelector();
         private List<MeeseeksJobSelector> jobSelectors = new List<MeeseeksJobSelector>();
 
         public ThinkNode_MeeseeksCompleteTask()
         {
             jobSelectors = new List<MeeseeksJobSelector>();
 
+            jobSelectors.Add(new MeeseeksJobSelector_BuildRoof());
             jobSelectors.Add(new MeeseeksJobSelector_DoBill());
             jobSelectors.Add(new MeeseeksJobSelector_Construction());
             jobSelectors.Add(new MeeseeksJobSelector_PressButton());
             jobSelectors.Add(new MeeseeksJobSelector_Tame());
             jobSelectors.Add(new MeeseeksJobSelector_Train());
-
-            jobSelectors.Add(new MeeseeksJobSelector());
         }
         
         public override ThinkNode DeepCopy(bool resolve = true)
@@ -88,16 +88,26 @@ namespace CM_Meeseeks_Box
 
             Map map = meeseeks.MapHeld;
 
-            memory.SortJobTargets();
-
             List<SavedTargetInfo> delayedTargets = new List<SavedTargetInfo>();
+            MeeseeksJobSelector jobSelector = defaultJobSelector;
+
+            foreach (MeeseeksJobSelector eachJobSelector in jobSelectors)
+            {
+                if (eachJobSelector.UseForJob(meeseeks, memory, savedJob))
+                {
+                    jobSelector = eachJobSelector;
+                    break;
+                }
+            }
 
             try
             {
+                jobSelector.SortJobTargets(meeseeks, memory, savedJob);
+
                 while (memory.jobTargets.Count > 0 && nextJob == null)
-                {
+                { 
                     JobAvailability jobAvailabilty = JobAvailability.Invalid;
-                    SavedTargetInfo jobTarget = jobTarget = memory.jobTargets.FirstOrDefault();
+                    SavedTargetInfo jobTarget = memory.jobTargets.FirstOrDefault();
 
                     if (jobTarget == null || !jobTarget.IsValid)
                     {
@@ -106,18 +116,8 @@ namespace CM_Meeseeks_Box
                         continue;
                     }
 
-                    foreach (MeeseeksJobSelector jobSelector in jobSelectors)
-                    {
-                        if (!jobSelector.CanUse(meeseeks, memory, savedJob, jobTarget))
-                            continue;
-
-                        nextJob = jobSelector.GetJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
-
-                        //Logger.MessageFormat(this, "Job selector: {0}, result: {1}", jobSelector.GetType().ToString(), jobAvailabilty.ToString());
-
-                        if (jobAvailabilty != JobAvailability.Invalid)
-                            break;
-                    }
+                    nextJob = jobSelector.GetJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+                    //Logger.MessageFormat(this, "Job selector: {0}, result: {1}", jobSelector.GetType().ToString(), jobAvailabilty.ToString());
 
                     if (nextJob != null)
                     {
@@ -144,16 +144,7 @@ namespace CM_Meeseeks_Box
 
                 if (delayedTargets.Count > 0 && nextJob == null)
                 {
-                    foreach (MeeseeksJobSelector jobSelector in jobSelectors)
-                    {
-                        if (!jobSelector.CanUse(meeseeks, memory, savedJob, delayedTargets[0]))
-                            continue;
-
-                        nextJob = jobSelector.GetJobDelayed(meeseeks, memory, savedJob, delayedTargets[0]);
-
-                        if (nextJob != null)
-                            break;
-                    }
+                    nextJob = jobSelector.GetJobDelayed(meeseeks, memory, savedJob, delayedTargets[0]);
                 }
             }
             finally

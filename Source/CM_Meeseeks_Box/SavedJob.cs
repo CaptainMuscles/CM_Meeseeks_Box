@@ -123,6 +123,8 @@ namespace CM_Meeseeks_Box
 
         public bool IsConstruction => (workGiverDef != null && WorkerDefUtility.constructionDefs.Contains(workGiverDef));
 
+        public bool IsDoBill => UsesWorkGiver<WorkGiver_DoBill>();
+
         public bool IsTaming => UsesWorkGiver<WorkGiver_Tame>();
 
         public bool IsTraining => UsesWorkGiver<WorkGiver_Train>();

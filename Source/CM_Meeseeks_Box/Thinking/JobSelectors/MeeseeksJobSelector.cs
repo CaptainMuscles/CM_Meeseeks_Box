@@ -13,9 +13,14 @@ namespace CM_Meeseeks_Box
 {
     public class MeeseeksJobSelector
     {
-        public virtual bool CanUse(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget)
+        public virtual bool UseForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
         {
             return true;
+        }
+
+        public virtual void SortJobTargets(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
+        {
+            memory.SortJobTargets();
         }
 
         public virtual Job GetJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
