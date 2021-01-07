@@ -54,7 +54,7 @@ namespace CM_Meeseeks_Box
                 }
                 else
                 {
-                    MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
+                    MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
                     BillStack billStack = targetPawn.BillStack;
 
                     jobAvailabilty = JobAvailability.Delayed;

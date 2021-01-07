@@ -6,22 +6,28 @@ using System.Text;
 using UnityEngine;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using Verse.AI;
 
 namespace CM_Meeseeks_Box
 {
-    public class MeeseeksBillStorage : GameComponent
+    public class MeeseeksBillStorage : WorldComponent
     {
         List<MeeseeksBillKnowledge> bills = new List<MeeseeksBillKnowledge>();
 
-        public MeeseeksBillStorage(Game game)
+        public MeeseeksBillStorage(World world) : base(world)
         {
 
         }
 
         public override void ExposeData()
         {
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                bills = bills.Where(bill => bill.duplicateBill != null && !bill.duplicateBill.deleted).ToList();
+            }
+
             Scribe_Collections.Look(ref bills, "bills", LookMode.Deep);
         }
 
@@ -69,13 +75,13 @@ namespace CM_Meeseeks_Box
             bills.Add(newBillKnowledge);
         }
 
-        public Bill GetOriginalBill(Bill duplicateBill)
+        public Bill GetOriginalBillFromDuplicate(Bill duplicateBill)
         {
             Bill originalBill = bills.Find(b => b.duplicateBill == duplicateBill)?.originalBill;
             return originalBill;
         }
 
-        public Bill GetDuplicateBill(Bill originalBill)
+        public Bill GetDuplicateBillFromOriginal(Bill originalBill)
         {
             Bill duplicateBill = bills.Find(b => b.originalBill == originalBill)?.duplicateBill;
             return duplicateBill;

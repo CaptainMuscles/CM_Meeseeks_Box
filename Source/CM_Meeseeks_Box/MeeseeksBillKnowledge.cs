@@ -31,6 +31,12 @@ namespace CM_Meeseeks_Box
 
         public void ExposeData()
         {
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                if (originalBill.DeletedOrDereferenced)
+                    originalBill = null;
+            }
+
             Scribe_References.Look(ref originalBill, "originalBill");
 
             Scribe_References.Look(ref billGiver, "billGiver");

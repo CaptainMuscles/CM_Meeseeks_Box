@@ -308,9 +308,9 @@ namespace CM_Meeseeks_Box
                     Job job = workGiverScanner.JobOnThing(Meeseeks, target.Thing, true);
                     if (job != null && job.bill != null)
                     {
-                        MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
+                        MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
                         billStorage.SaveBill(job.bill);
-                        target.bill = billStorage.GetDuplicateBill(job.bill);
+                        target.bill = billStorage.GetDuplicateBillFromOriginal(job.bill);
                         target.bill.billStack.billGiver = target.Thing as IBillGiver;
                     }
                 }

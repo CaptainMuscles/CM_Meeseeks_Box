@@ -21,7 +21,7 @@ namespace CM_Meeseeks_Box
             [HarmonyPrefix]
             public static bool Prefix(Bill __instance, ref bool __result)
             {
-                MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
+                MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
 
                 if (billStorage.IsDuplicate(__instance))
                 {
@@ -67,15 +67,15 @@ namespace CM_Meeseeks_Box
             private static bool recursing = false;
 
             [HarmonyPostfix]
-            public static bool Prefix(ref Bill_Production __instance, Pawn billDoer, List<Thing> ingredients)
+            public static void Postfix(ref Bill_Production __instance, Pawn billDoer, List<Thing> ingredients)
             {
                 if (recursing == true)
-                    return true;
+                    return;// true;
 
-                MeeseeksBillStorage billStorage = Current.Game.GetComponent<MeeseeksBillStorage>();
+                MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
 
-                Bill_Production originalBill = billStorage.GetOriginalBill(__instance) as Bill_Production;
-                Bill_Production duplicateBill = billStorage.GetDuplicateBill(__instance) as Bill_Production;
+                Bill_Production originalBill = billStorage.GetOriginalBillFromDuplicate(__instance) as Bill_Production;
+                Bill_Production duplicateBill = billStorage.GetDuplicateBillFromOriginal(__instance) as Bill_Production;
 
                 if (originalBill == null && duplicateBill == null)
                 {
@@ -85,12 +85,12 @@ namespace CM_Meeseeks_Box
                 else if (duplicateBill != null)
                 {
                     UpdateBill(duplicateBill);
-                    return true;
+                    return;// true;
                 }
                 // The finished iteration was on a duplicate bill, copy the result to the original, if it exists and make sure the duplicate is properly updated and check for deletion
                 else if (billStorage.IsDuplicate(__instance))
                 {
-                    UpdateBill(__instance);
+                    UpdateBill(__instance, false);
 
                     if (originalBill != null)
                     {
@@ -104,9 +104,11 @@ namespace CM_Meeseeks_Box
                             recursing = false;
                         }
                     }
+
+                    //return false;
                 }
 
-                return false;
+                //return true;
             }
 
             private static void UpdateBill(Bill_Production bill, bool decrement = true)
