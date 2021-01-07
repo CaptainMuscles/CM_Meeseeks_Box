@@ -17,7 +17,17 @@ namespace CM_Meeseeks_Box
         public BillStack billStack = null;
         public Thing billGiver = null;
 
-        public Bill duplicateBill => billStack?.Bills?[0];
+        public Bill duplicateBill
+        {
+            get
+            {
+                if (billStack != null && billStack.Bills != null && billStack.Bills.Count > 0)
+                    return billStack.Bills[0];
+
+                else
+                    return null
+            }
+        }
 
         public void ExposeData()
         {
