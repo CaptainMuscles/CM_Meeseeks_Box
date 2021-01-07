@@ -25,7 +25,7 @@ namespace CM_Meeseeks_Box
                     return billStack.Bills[0];
 
                 else
-                    return null
+                    return null;
             }
         }
 
