@@ -17,7 +17,7 @@
 						<chance>100</chance>
 					</li>
 				</forcedRaceTraitEntries>
-				<maleGenderProbability>0.5</maleGenderProbability>
+				<maleGenderProbability>1</maleGenderProbability>
 				<maxDamageForSocialfight>6</maxDamageForSocialfight>
 				<immuneToAge>true</immuneToAge>
 				<canLayDown>false</canLayDown>
@@ -26,6 +26,11 @@
 					<alienbodytypes>
 						<li>Thin</li>
 					</alienbodytypes>
+					<aliencrowntypes>
+						<li>Male_1</li>
+						<li>Male_2</li>
+					</aliencrowntypes>
+					<useGenderedHeads>false</useGenderedHeads>
 					<customHeadDrawSize>(1.00, 1.00)</customHeadDrawSize>
 					<customPortraitHeadDrawSize>(1.00, 1.00)</customPortraitHeadDrawSize>
 					<colorChannels>
@@ -56,11 +61,14 @@
 			</generalSettings>
 			<graphicPaths>
 				<li>
-					<head>Things/Meeseeks/Head/</head>
+					<head>Things/Pawn/Meeseeks/Head/</head>
 				</li>
 			</graphicPaths>
 			<hairSettings>
-				<hasHair>false</hasHair>
+              <hasHair>true</hasHair>
+              <hairTags>
+                <li>MeeseeksHair</li>
+              </hairTags>
 			</hairSettings>
 			<thoughtSettings>
 				<cannotReceiveThoughtsAtAll>false</cannotReceiveThoughtsAtAll>
