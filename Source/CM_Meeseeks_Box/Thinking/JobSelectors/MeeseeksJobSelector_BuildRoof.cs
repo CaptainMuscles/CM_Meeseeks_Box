@@ -18,74 +18,68 @@ namespace CM_Meeseeks_Box
             return savedJob.UsesWorkGiver<WorkGiver_BuildRoof>();
         }
 
-        public override Job GetJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
+        public override void SortAndFilterJobTargets(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
         {
-            Job job = null;
-            bool wantToBuild = savedJob.UsesWorkGiver<WorkGiver_BuildRoof>();
-            IntVec3 cell = jobTarget.Cell;
             Map map = meeseeks.MapHeld;
+            WorkGiver_BuildRoof scanner = savedJob.workGiverDef.Worker as WorkGiver_BuildRoof;
 
-            if (jobTarget != null)
+            SavedTargetInfo bestTarget = null;
+            float bestDistanceSquared = float.MaxValue;
+
+            for (int i = memory.jobTargets.Count - 1; i >= 0; --i)
             {
-                bool roofedHere = cell.Roofed(map);
-                bool inNoRoofZone = map.areaManager.NoRoof[cell];
-                bool inYesRoofZone = map.areaManager.BuildRoof[cell];
-
-                if (wantToBuild && !inNoRoofZone)
+                SavedTargetInfo target = memory.jobTargets[i];
+                if (target.Cell.Roofed(map))
                 {
-                    bool withinRoofRange = RoofCollapseUtility.WithinRangeOfRoofHolder(cell, map);
-                    bool connectedToRoof = RoofCollapseUtility.ConnectedToRoofHolder(cell, map, assumeRoofAtRoot: true);
-
-                    if (withinRoofRange && connectedToRoof && !roofedHere)
-                        job = ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+                    CollectNewTargets(meeseeks, memory, target.Cell, map);
+                    memory.jobTargets.RemoveAt(i);
                 }
             }
-            else
-            {
-                Logger.WarningFormat(this, "Unable to get scanner or target for job.");
-            }
 
-            if (job == null)
+            foreach (SavedTargetInfo target in memory.jobTargets)
             {
-                Logger.MessageFormat(this, "Checking for nearby roof tiles");
-                foreach (IntVec3 nearCell in GenAdjFast.AdjacentCellsCardinal(cell))
+                if (meeseeks.CanReach(target.Cell, scanner.PathEndMode, Danger.Deadly) && meeseeks.CanReserve(target.Cell, 1, -1, ReservationLayerDefOf.Ceiling, false))
                 {
-                    Logger.MessageFormat(this, "Checking cell {0}", nearCell);
+                    float distanceSquared = (target.Cell - meeseeks.Position).LengthHorizontalSquared;
 
-                    if (wantToBuild && CellWantsRoofBuilt(nearCell, map))
+                    if (distanceSquared < bestDistanceSquared)
                     {
-                        memory.AddJobTarget(nearCell);
-                        Logger.MessageFormat(this, "Marking cell {0} to build roof", cell);
+                        bestTarget = target;
+                        bestDistanceSquared = distanceSquared;
                     }
                 }
             }
+
+            if (bestTarget != null)
+            {
+                memory.jobTargets.Remove(bestTarget);
+                memory.jobTargets.Insert(0, bestTarget);
+            }
+        }
+
+        private void CollectNewTargets(Pawn meeseeks, CompMeeseeksMemory memory, IntVec3 cell, Map map)
+        {
+            foreach (IntVec3 nearCell in GenAdjFast.AdjacentCellsCardinal(cell))
+            {
+                if (nearCell.InBounds(map) && !nearCell.Roofed(map) && map.areaManager.BuildRoof[nearCell])
+                {
+                    memory.AddJobTarget(nearCell);
+                }
+            }
+        }
+
+        public override Job GetJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
+        {
+            Map map = meeseeks.MapHeld;
+            Job job = ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+
+            // Mark them now because building a roof will cover most if them, and we will need a chance to check their neighbors
+            CollectNewTargets(meeseeks, memory, jobTarget.Cell, map);
 
             if (job != null)
                 jobAvailabilty = JobAvailability.Available;
 
             return job;
-        }
-
-        private bool CellWantsRoofBuilt(IntVec3 cell, Map map)
-        {
-            if (!cell.InBounds(map))
-                return false;
-
-            bool roofedHere = cell.Roofed(map);
-            bool inNoRoofZone = map.areaManager.NoRoof[cell];
-
-            return !roofedHere && !inNoRoofZone;
-        }
-
-        private bool CellWantsRoofRemoved(IntVec3 cell, Map map)
-        {
-            if (!cell.InBounds(map))
-                return false;
-
-            bool roofedHere = cell.Roofed(map);
-            bool inYesRoofZone = map.areaManager.BuildRoof[cell];
-
-            return roofedHere && !inYesRoofZone;
         }
     }
 }

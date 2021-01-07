@@ -32,6 +32,7 @@ namespace CM_Meeseeks_Box
             jobSelectors.Add(new MeeseeksJobSelector_DoBill());
             jobSelectors.Add(new MeeseeksJobSelector_Construction());
             jobSelectors.Add(new MeeseeksJobSelector_PressButton());
+            jobSelectors.Add(new MeeseeksJobSelector_RemoveRoof());
             jobSelectors.Add(new MeeseeksJobSelector_Tame());
             jobSelectors.Add(new MeeseeksJobSelector_Train());
         }
@@ -102,7 +103,7 @@ namespace CM_Meeseeks_Box
 
             try
             {
-                jobSelector.SortJobTargets(meeseeks, memory, savedJob);
+                jobSelector.SortAndFilterJobTargets(meeseeks, memory, savedJob);
 
                 while (memory.jobTargets.Count > 0 && nextJob == null)
                 { 

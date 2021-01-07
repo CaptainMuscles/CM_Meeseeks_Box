@@ -131,6 +131,7 @@
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Construction.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_DoBill.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_PressButton.cs" />
+    <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_RemoveRoof.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Tame.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Train.cs" />
     <Compile Include="Thinking\ThinkNode_MeeseeksCompleteTask.cs" />

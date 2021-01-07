@@ -260,6 +260,9 @@ namespace CM_Meeseeks_Box
 
         public void AddJobTarget(SavedTargetInfo target)
         {
+            if (jobTargets.Contains(target))
+                return;
+
             if (target.HasThing && savedJob.IsConstruction)
             {
                 ThingDef thingDefToBuild = null;
@@ -317,10 +320,7 @@ namespace CM_Meeseeks_Box
                 target.trainable = (target.Thing as Pawn).training.NextTrainableToTrain();
             }
 
-            if (!jobTargets.Contains(target))
-            {
-                jobTargets.Add(target);
-            }
+            jobTargets.Add(target);
         }
 
         public void SortJobTargets()
@@ -328,7 +328,7 @@ namespace CM_Meeseeks_Box
             if (jobTargets.Count == 0)
                 return;
 
-            jobTargets.Sort((a, b) => (int)(Meeseeks.PositionHeld.DistanceTo(a.Cell) - Meeseeks.PositionHeld.DistanceTo(b.Cell)));
+            jobTargets.Sort((a, b) => (int)(Meeseeks.PositionHeld.DistanceToSquared(a.Cell) - Meeseeks.PositionHeld.DistanceToSquared(b.Cell)));
 
             // If it is a kill job, kill self last
             if (savedJob != null && savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill)

@@ -18,7 +18,7 @@ namespace CM_Meeseeks_Box
             return true;
         }
 
-        public virtual void SortJobTargets(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
+        public virtual void SortAndFilterJobTargets(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
         {
             memory.SortJobTargets();
         }
