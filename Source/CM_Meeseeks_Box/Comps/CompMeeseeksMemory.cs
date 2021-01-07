@@ -175,7 +175,7 @@ namespace CM_Meeseeks_Box
         {
             base.CompTick();
 
-            if (Meeseeks.Downed)
+            if (Meeseeks.Downed && !destroyed)
             {
                 destroyed = true;
                 Logger.MessageFormat(this, "Meeseeks downed. Vanishing.");
