@@ -4,6 +4,7 @@ using System.Linq;
 
 using UnityEngine;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using Verse.Sound;
 
@@ -63,6 +64,8 @@ namespace CM_Meeseeks_Box
 
         public static void PlayVoicedSound(Thing target, Voice voice, SoundDef soundDef)
         {
+            if (!MeeseeksMod.settings.meeseeksSpeaks)
+                return;
             //Logger.MessageFormat(target, "{0} playing sound {2} with voice: {1}", target, soundDef.defName, voice);
 
             SoundInfo soundInfo = GetTargetInfo(target);
@@ -123,7 +126,8 @@ namespace CM_Meeseeks_Box
             // The voices for greeting and task acceptance can overlap depending on the speed the game is running,
             //   especially if another Meeseeks created us, so just don't do it in that case
             CompMeeseeksMemory creatorMemory = creator.GetComp<CompMeeseeksMemory>();
-            if (creatorMemory == null)
+            bool creatorIsMeeseeks = creatorMemory != null;
+            if (!creatorIsMeeseeks)
                 MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.Voice);
 
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
@@ -136,12 +140,16 @@ namespace CM_Meeseeks_Box
 
             //GenExplosion.DoExplosion(mrMeeseeksLookAtMe.PositionHeld, mrMeeseeksLookAtMe.MapHeld, 1.0f, DamageDefOf.Smoke, null, -1, -1f, MeeseeksDefOf.CM_Meeseeks_Box_Poof_In, null, null, null, ThingDefOf.Gas_Smoke, 1f);
 
-            bool jumpCamera = (creator.IsColonistPlayerControlled);
-            if (jumpCamera)
-            {
-                LookTargets otherSideTarget = new LookTargets(mrMeeseeksLookAtMe);
-                CameraJumper.TrySelect(otherSideTarget.TryGetPrimaryTarget());
-            }
+            GlobalTargetInfo meeseeksGlobalTarget = new GlobalTargetInfo(mrMeeseeksLookAtMe);
+
+            if (!creatorIsMeeseeks && creator.IsColonistPlayerControlled && MeeseeksMod.settings.cameraJumpOnCreation)
+                CameraJumper.TryJump(meeseeksGlobalTarget);
+
+            if (!creatorIsMeeseeks && MeeseeksMod.settings.autoSelectOnCreation)
+                CameraJumper.TrySelect(meeseeksGlobalTarget);
+
+            if (!creatorIsMeeseeks && MeeseeksMod.settings.autoPauseOnCreation)
+                Find.TickManager.Pause();
         }
 
         static private IntVec3 FindSpawnPosition(Thing spawningThing)

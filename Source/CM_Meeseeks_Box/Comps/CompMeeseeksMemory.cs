@@ -360,9 +360,10 @@ namespace CM_Meeseeks_Box
             if (!givenTask)
                 return true;
 
-            bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && HasTimeToQueueNewJob());
+            return false;
 
-            return canQueueNewJob;
+            //bool canQueueNewJob = (KeyBindingDefOf.QueueOrder.IsDownEvent && HasTimeToQueueNewJob());
+            //return canQueueNewJob;
         }
 
         public bool CreatedByMeeseeks()
