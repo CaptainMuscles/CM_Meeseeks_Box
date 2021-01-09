@@ -51,7 +51,7 @@
       <effectWorking>Smith</effectWorking>
       <soundWorking>Recipe_Machining</soundWorking>
       <skillRequirements>
-        <Crafting>4</Crafting>
+        <Crafting>0</Crafting>
       </skillRequirements>
     </recipeMaker>
     <costList>
