@@ -38,6 +38,8 @@ namespace CM_Meeseeks_Box
             if (meeseeksBox != null)
                 return JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_UseMeeseeksBox, meeseeksBox);
 
+            if (pawn.MentalState != null)
+                pawn.MentalState.RecoverFromState();
 
             return null;
         }
