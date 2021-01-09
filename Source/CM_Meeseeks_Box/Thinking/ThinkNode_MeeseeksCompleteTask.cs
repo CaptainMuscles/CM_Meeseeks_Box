@@ -62,7 +62,7 @@ namespace CM_Meeseeks_Box
                     nextJob = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_EmbraceTheVoid);
 
                 if (nextJob != null)
-                    return new ThinkResult(nextJob, this, null, fromQueue: false);
+                    return new ThinkResult(nextJob, this, JobTag.MiscWork, fromQueue: false);
             }
 
             return ThinkResult.NoJob;
