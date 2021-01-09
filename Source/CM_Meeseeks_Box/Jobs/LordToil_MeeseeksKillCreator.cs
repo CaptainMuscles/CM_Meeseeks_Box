@@ -21,6 +21,7 @@ namespace CM_Meeseeks_Box
                 if (ownedPawn.mindState.duty == null || ownedPawn.mindState.duty.def != MeeseeksDefOf.CM_Meeseeks_Box_Duty_Kill_Creator)
                 {
                     ownedPawn.mindState.duty = new PawnDuty(MeeseeksDefOf.CM_Meeseeks_Box_Duty_Kill_Creator);
+                    ownedPawn.mindState.duty.locomotion = LocomotionUrgency.Jog;
                     Logger.MessageFormat(this, "Adding Kill Creator duty to {0}", ownedPawn);
                     if (ownedPawn.jobs.curJob != null)
                     {

@@ -52,6 +52,7 @@ namespace CM_Meeseeks_Box
                 return null;
 
             Pawn creator = killCreatorLordJob.Target;
+            Thing target = creator.SpawnedParentOrMe;
 
             Job job = null;
 
@@ -62,29 +63,55 @@ namespace CM_Meeseeks_Box
                 job = ExitMap(pawn);
 
             if (job == null)
-                job = TryMeleeAttackCreatorJob(pawn, creator.SpawnedParentOrMe);
+                job = TryMeleeAttackTargetJob(pawn, target);
 
             if (job == null)
-                job = TryRangedAttackCreatorJob(pawn, creator.SpawnedParentOrMe);
+                job = TryRangedAttackTargetJob(pawn, target);
 
             if (job == null)
                 job = TryMeleeAttackAdjacentJob(pawn);
 
             if (job == null)
-            {
-                Thing selectedEquipment = JobDriver_AcquireEquipment.FindEquipment(pawn);
+                job = TryGetEquipmentJob(pawn, target);
 
-                if (selectedEquipment != null && pawn.PositionHeld.DistanceTo(selectedEquipment.PositionHeld) < pawn.PositionHeld.DistanceTo(creator.PositionHeld))
-                    job = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_AcquireEquipment, selectedEquipment);
+            if (job == null)
+            {
+                if (pawn.CanReach(target, PathEndMode.Touch, Danger.Deadly, canBash: true))
+                {
+                    using (PawnPath pawnPath = pawn.Map.pathFinder.FindPath(pawn.Position, target.Position, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.PassDoors)))
+                    {
+                        if (!pawnPath.Found)
+                        {
+                            Logger.MessageFormat("Somehow no path was found to {0}", target);
+                            return null;
+                        }
+                        IntVec3 cellBefore;
+                        Thing blocker = pawnPath.FirstBlockingBuilding(out cellBefore, pawn);
+                        if (blocker != null)
+                        {
+                            job = TryMeleeAttackTargetJob(pawn, blocker);
+                            if (job == null)
+                                job = TryRangedAttackTargetJob(pawn, blocker);
+                            if (job == null)
+                                job = GoToTarget(pawn, cellBefore);
+                        }
+                    }
+                }
             }
 
             if (job == null)
-                job = GoNearCreator(pawn, creator.SpawnedParentOrMe);
+                job = GoNearTarget(pawn, target);
+
+            if (job != null)
+            {
+                job.locomotionUrgency = PawnUtility.ResolveLocomotion(pawn, LocomotionUrgency.Sprint, LocomotionUrgency.Walk);
+                
+            }
 
             return job;
         }
 
-        private Job TryMeleeAttackCreatorJob(Pawn pawn, Thing creator)
+        private Job TryMeleeAttackTargetJob(Pawn pawn, Thing target)
         {
             Job newJob = null;
 
@@ -99,9 +126,9 @@ namespace CM_Meeseeks_Box
 
                 foreach (Thing thing in thingList)
                 {
-                    if (thing == creator)
+                    if (thing == target)
                     {
-                        newJob = JobMaker.MakeJob(JobDefOf.AttackMelee, creator);
+                        newJob = JobMaker.MakeJob(JobDefOf.AttackMelee, target);
                         newJob.maxNumMeleeAttacks = 1;
                         newJob.killIncappedTarget = true;
                         newJob.collideWithPawns = true;
@@ -115,15 +142,15 @@ namespace CM_Meeseeks_Box
             return null;
         }
 
-        private Job TryRangedAttackCreatorJob(Pawn pawn, Thing creator)
+        private Job TryRangedAttackTargetJob(Pawn pawn, Thing target)
         {
             Job newJob = null;
 
             Verb verb = pawn.CurrentEffectiveVerb;
 
-            if (pawn.equipment.Primary != null && !pawn.equipment.Primary.def.IsMeleeWeapon && pawn.Position.DistanceTo(creator.Position) < verb.verbProps.range && AttackTargetFinder.CanSee(pawn, creator))
+            if (pawn.equipment.Primary != null && !pawn.equipment.Primary.def.IsMeleeWeapon && pawn.Position.DistanceTo(target.Position) < verb.verbProps.range && AttackTargetFinder.CanSee(pawn, target))
             {
-                newJob = JobMaker.MakeJob(JobDefOf.AttackStatic, creator);
+                newJob = JobMaker.MakeJob(JobDefOf.AttackStatic, target);
                 newJob.maxNumStaticAttacks = 1;
                 newJob.collideWithPawns = true;
                 newJob.expiryInterval = recheckInterval;
@@ -165,9 +192,46 @@ namespace CM_Meeseeks_Box
             return null;
         }
 
-        private Job GoNearCreator(Pawn pawn, Thing creator)
+        private Job TryGetEquipmentJob(Pawn pawn, Thing target)
         {
-            Job newJob = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_ApproachTarget, creator);
+            Job newJob = null;
+            Thing selectedEquipment = JobDriver_AcquireEquipment.FindEquipment(pawn);
+
+            if (selectedEquipment != null && pawn.PositionHeld.DistanceTo(selectedEquipment.PositionHeld) < pawn.PositionHeld.DistanceTo(target.Position))
+            {
+                if (pawn.CanReach(selectedEquipment, PathEndMode.Touch, Danger.Deadly, canBash: true))
+                {
+                    using (PawnPath pawnPath = pawn.Map.pathFinder.FindPath(pawn.Position, selectedEquipment, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.PassDoors)))
+                    {
+                        if (!pawnPath.Found)
+                        {
+                            Logger.MessageFormat("Somehow no path was found to {0}", selectedEquipment);
+                            return null;
+                        }
+                        IntVec3 cellBefore;
+                        Thing blocker = pawnPath.FirstBlockingBuilding(out cellBefore, pawn);
+                        if (blocker != null)
+                        {
+                            newJob = TryMeleeAttackTargetJob(pawn, blocker);
+                            if (newJob == null)
+                                newJob = TryRangedAttackTargetJob(pawn, blocker);
+                            if (newJob == null)
+                                newJob = GoToTarget(pawn, cellBefore);
+                        }
+                        else
+                        {
+                            newJob = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_AcquireEquipment, selectedEquipment);
+                        }
+                    }
+                }
+            }
+
+            return newJob;
+        }
+
+        private Job GoNearTarget(Pawn pawn, Thing target)
+        {
+            Job newJob = JobMaker.MakeJob(MeeseeksDefOf.CM_Meeseeks_Box_Job_ApproachTarget, target);
             newJob.checkOverrideOnExpire = true;
             newJob.expiryInterval = recheckInterval;
             newJob.collideWithPawns = true;
@@ -175,9 +239,9 @@ namespace CM_Meeseeks_Box
             return newJob;
         }
 
-        private Job GoToCreator(Pawn pawn, Thing creator)
+        private Job GoToTarget(Pawn pawn, LocalTargetInfo target)
         {
-            Job newJob = JobMaker.MakeJob(JobDefOf.Goto, creator);
+            Job newJob = JobMaker.MakeJob(JobDefOf.Goto, target);
             newJob.checkOverrideOnExpire = true;
             newJob.expiryInterval = recheckInterval;
             newJob.collideWithPawns = true;
@@ -212,7 +276,6 @@ namespace CM_Meeseeks_Box
             Job job2 = JobMaker.MakeJob(JobDefOf.Goto, dest);
             job2.exitMapOnArrival = true;
             job2.failIfCantJoinOrCreateCaravan = false;
-            job2.locomotionUrgency = PawnUtility.ResolveLocomotion(pawn, LocomotionUrgency.Sprint, LocomotionUrgency.Jog);
             job2.expiryInterval = recheckInterval;
             job2.canBash = true;
             return job2;
