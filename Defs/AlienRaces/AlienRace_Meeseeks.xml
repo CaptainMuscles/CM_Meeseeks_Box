@@ -158,14 +158,14 @@
 
 		<statBases>
 			<MarketValue>0</MarketValue>
-			<MoveSpeed>3.00</MoveSpeed>
+			<MoveSpeed>3.0</MoveSpeed>
 			<Flammability>0.7</Flammability>
 			<PsychicSensitivity>0.5</PsychicSensitivity>
 			<ComfyTemperatureMin>-100</ComfyTemperatureMin>
 			<ComfyTemperatureMax>100</ComfyTemperatureMax>
 			<PainShockThreshold>5</PainShockThreshold>
 			<ToxicSensitivity>0</ToxicSensitivity>
-			<MentalBreakThreshold>0.3</MentalBreakThreshold>
+			<MentalBreakThreshold>0.5</MentalBreakThreshold>
 			<GlobalLearningFactor>0</GlobalLearningFactor>
 			<WorkSpeedGlobal>0.50</WorkSpeedGlobal>
 			<ImmunityGainSpeed>10</ImmunityGainSpeed>

@@ -23,9 +23,9 @@ namespace CM_Meeseeks_Box
                   "Binging_DrugMajor", "BedroomTantrum", "SadisticRage", "CorpseObsession",
                   "Binging_Food", "Wander_OwnRoom"};
 
-            // Maybe just allow these two for now
+            // Maybe just allow these for now
             private static List<string> allowedMentalBreakNames = new List<string>
-            { "CM_Meeseeks_Box_MentalBreak_MeeseeksKillCreator", "CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeks" };
+            { "CM_Meeseeks_Box_MentalBreak_MeeseeksKillCreator", "CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeks", "CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeksMajor" }; 
 
             [HarmonyPostfix]
             public static void Postfix(MentalBreakWorker __instance, ref bool __result, Pawn pawn)

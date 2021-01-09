@@ -71,12 +71,14 @@ namespace CM_Meeseeks_Box
                         if (newCreatedMemory != null)
                         {
                             newCreatedMemory.CopyJobDataFrom(compMeeseeksMemory);
-                            newestCreated.jobs.EndCurrentJob(JobCondition.InterruptForced);
+                            newestCreated.jobs.EndCurrentJob(JobCondition.InterruptOptional);
                         }
                     }
                 }
 
-                pawn.MentalState.RecoverFromState();
+                MentalState_MeeseeksMakeMeeseeks mentalState = pawn.MentalState as MentalState_MeeseeksMakeMeeseeks;
+                if (mentalState != null && mentalState.doOnce)
+                    pawn.MentalState.RecoverFromState();
             };
             request.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return request;

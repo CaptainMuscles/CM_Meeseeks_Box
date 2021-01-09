@@ -16,7 +16,7 @@ namespace CM_Meeseeks_Box
         protected override ThoughtState CurrentStateInternal(Pawn pawn)
         {
             float painTotal = pawn.health.hediffSet.PainTotal;
-            int stage = (int)(painTotal * 10.0f);
+            int stage = Mathf.RoundToInt(painTotal * 10.0f);
             return ThoughtState.ActiveAtStage(stage);
         }
     }

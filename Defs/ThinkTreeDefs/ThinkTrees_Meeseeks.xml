@@ -74,18 +74,6 @@
         <!-- Do a queued job -->
         <li Class="ThinkNode_QueuedJob" />
 		
-        <!-- Wait if drafted -->
-        <li Class="ThinkNode_ConditionalColonist">
-          <subNodes>
-            <li Class="ThinkNode_Tagger">
-              <tagToGive>DraftedOrder</tagToGive>
-              <subNodes>
-                <li Class="JobGiver_Orders" />
-              </subNodes>
-            </li>
-          </subNodes>
-        </li>
-        
         <!-- Lord directives (high priority) -->
         <li Class="ThinkNode_JoinVoluntarilyJoinableLord">
           <dutyHook>HighPriority</dutyHook>
@@ -104,6 +92,17 @@
 		<!-- Fulfill our purpose so we can go away -->
         <li Class="CM_Meeseeks_Box.ThinkNode_MeeseeksCompleteTask" />
 
+		<!-- Wait if drafted -->
+        <li Class="ThinkNode_ConditionalColonist">
+          <subNodes>
+            <li Class="ThinkNode_Tagger">
+              <tagToGive>DraftedOrder</tagToGive>
+              <subNodes>
+                <li Class="JobGiver_Orders" />
+              </subNodes>
+            </li>
+          </subNodes>
+        </li>
         
         <!-- Prisoner -->
         <li Class="ThinkNode_ConditionalPrisoner">
@@ -474,13 +473,28 @@
     <thinkRoot Class="ThinkNode_Tagger">
       <tagToGive>InMentalState</tagToGive>
       <subNodes>
+	    <li Class="ThinkNode_ConditionalMentalState">
+          <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksMajor</state>
+          <subNodes>
+            <li Class="ThinkNode_Priority">
+              <subNodes>
+                <li Class="CM_Meeseeks_Box.JobGiver_UseMeeseeksBox" />
+                <li Class="JobGiver_WanderCurrentRoom">
+                  <maxDanger>Deadly</maxDanger>
+                </li>
+                </subNodes>
+            </li>
+          </subNodes>
+        </li>
         <li Class="ThinkNode_ConditionalMentalState">
           <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeks</state>
           <subNodes>
             <li Class="ThinkNode_Priority">
               <subNodes>
                 <li Class="CM_Meeseeks_Box.JobGiver_UseMeeseeksBox" />
-                <li Class="JobGiver_StandAndBeSociallyActive" />
+                <li Class="JobGiver_WanderCurrentRoom">
+                  <maxDanger>Deadly</maxDanger>
+                </li>
                 </subNodes>
             </li>
           </subNodes>
