@@ -13,6 +13,11 @@ namespace CM_Meeseeks_Box
 
         public Pawn Target => target;
 
+        public LordJob_MeeseeksKillCreator()
+        {
+
+        }
+
         public LordJob_MeeseeksKillCreator(Pawn creator)
         {
             this.useAvoidGridSmart = true;
