@@ -21,6 +21,10 @@ namespace CM_Meeseeks_Box
         public override Job GetJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
         {
             Bill bill = jobTarget.bill;
+
+            if (bill == null)
+                return ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+
             if (bill.deleted)
             {
                 jobAvailabilty = JobAvailability.Complete;
