@@ -170,7 +170,7 @@ namespace CM_Meeseeks_Box
             Scribe_Defs.Look(ref blueprintThingDef, "blueprintThingDef");
             Scribe_Defs.Look(ref blueprintStuff, "blueprintStuff");
             Scribe_Values.Look(ref blueprintRotation, "blueprintRotation");
-            Scribe_References.Look(ref bill, "bill");
+            Scribe_References.Look(ref bill, "bill", false);
 
             Scribe_Defs.Look(ref trainable, "trainable");
         }
