@@ -109,7 +109,7 @@ namespace CM_Meeseeks_Box
 
         private void SpawnMeeseeks(Pawn creator)
         {
-            if (!Prefs.DevMode)
+            //if (!Prefs.DevMode)
                 cooldownTicksRemaining = cooldownTicksTotal;
 
             MeeseeksUtility.SpawnMeeseeks(creator, parent, creator.MapHeld);
