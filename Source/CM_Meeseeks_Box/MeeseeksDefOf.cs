@@ -29,9 +29,11 @@ namespace CM_Meeseeks_Box
 
         public static MentalStateDef CM_Meeseeks_Box_MentalState_MeeseeksKillCreator;
         public static MentalStateDef CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeks;
+        public static MentalStateDef CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksMajor;
 
         public static MentalBreakDef CM_Meeseeks_Box_MentalBreak_MeeseeksKillCreator;
         public static MentalBreakDef CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeks;
+        public static MentalBreakDef CM_Meeseeks_Box_MentalBreak_MeeseeksMakeMeeseeksMajor;
 
         public static DutyDef CM_Meeseeks_Box_Duty_Kill_Creator;
 
