@@ -263,7 +263,22 @@ namespace CM_Meeseeks_Box
             if (jobTargets.Contains(target))
                 return;
 
-            if (target.HasThing && savedJob.IsConstruction)
+            if (target.HasThing && savedJob.bill != null)
+            {
+                WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
+                if (workGiverScanner != null)
+                {
+                    Job job = workGiverScanner.JobOnThing(Meeseeks, target.Thing, true);
+                    if (job != null && job.bill != null)
+                    {
+                        MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
+                        billStorage.SaveBill(job.bill);
+                        target.bill = billStorage.GetDuplicateBillFromOriginal(job.bill);
+                        target.bill.billStack.billGiver = target.Thing as IBillGiver;
+                    }
+                }
+            }
+            else if (target.HasThing && savedJob.IsConstruction)
             {
                 ThingDef thingDefToBuild = null;
                 TerrainDef terrainDefToBuild = null;
@@ -299,21 +314,6 @@ namespace CM_Meeseeks_Box
 
                 // Redirect job to the cell so that we can continue various construction phases and replace blueprint if needed
                 target.target = target.Cell;
-            }
-            else if (target.HasThing && savedJob.bill != null)
-            {
-                WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
-                if (workGiverScanner != null)
-                {
-                    Job job = workGiverScanner.JobOnThing(Meeseeks, target.Thing, true);
-                    if (job != null && job.bill != null)
-                    {
-                        MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
-                        billStorage.SaveBill(job.bill);
-                        target.bill = billStorage.GetDuplicateBillFromOriginal(job.bill);
-                        target.bill.billStack.billGiver = target.Thing as IBillGiver;
-                    }
-                }
             }
             else if (target.HasThing && savedJob.IsTraining)
             {
@@ -615,55 +615,6 @@ namespace CM_Meeseeks_Box
             //Logger.MessageFormat(this, "Meeseeks has finished job: {0}, {1}", job.def.defName, condition.ToString());
 
             jobResults.Add(condition.ToString());
-
-            if (givenTask)
-            {
-                if (job.def.defName == savedJob.def.defName)
-                {
-                    //switch (condition)
-                    //{
-                    //    case JobCondition.Incompletable:
-                    //        JobIncompletable(job);
-                    //        break;
-                    //}
-                }
-            }
-        }
-
-        private void JobIncompletable(Job job)
-        {
-            if (Meeseeks != null)
-            {
-                if (job.targetA != null)
-                {
-                    // If the primary target was a pawn
-                    Pawn targetPawn = job.targetA.Pawn;
-                    if (targetPawn != null)
-                    {
-                        // If its dead, we will consider ourselves successful
-                        if (targetPawn.Dead)
-                        {
-                            //JobSucceeded(job);
-                        }
-                        // If it is not on this map, then lets leave the map
-                        else if (targetPawn.MapHeld != Meeseeks.MapHeld)
-                        {
-                            IntVec3 exitSpot;
-                            if (RCellFinder.TryFindBestExitSpot(Meeseeks, out exitSpot, TraverseMode.ByPawn))
-                            {
-                                Job leaveMapJob = JobMaker.MakeJob(JobDefOf.Goto, exitSpot);
-                                leaveMapJob.exitMapOnArrival = true;
-                                leaveMapJob.failIfCantJoinOrCreateCaravan = false;
-                                leaveMapJob.locomotionUrgency = PawnUtility.ResolveLocomotion(Meeseeks, LocomotionUrgency.Walk, LocomotionUrgency.Jog);
-                                leaveMapJob.expiryInterval = 99999;
-                                leaveMapJob.canBash = true;
-
-                                Meeseeks.jobs.jobQueue.EnqueueFirst(leaveMapJob);
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         public string GetSummary()
