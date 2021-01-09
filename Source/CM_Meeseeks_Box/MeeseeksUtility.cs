@@ -24,6 +24,8 @@ namespace CM_Meeseeks_Box
 
         private static SoundDef[] CriticalBreakSounds = { MeeseeksDefOf.CM_Meeseeks_Box_Sound_I_Cant_Take_It_Anymore };
 
+        public static Pawn lastCreatedMeeseeks = null;
+
         public static TargetInfo GetTargetInfo(Thing target)
         {
             TargetInfo targetInfo = null;
@@ -84,6 +86,7 @@ namespace CM_Meeseeks_Box
             PawnKindDef pawnKindDef = MeeseeksDefOf.MeeseeksKind;
 
             Pawn mrMeeseeksLookAtMe = PawnGenerator.GeneratePawn(pawnKindDef, Faction.OfPlayer);
+            lastCreatedMeeseeks = mrMeeseeksLookAtMe;
 
             QualityCategory boxQuality = QualityCategory.Normal;
             creatingThing.TryGetQuality(out boxQuality);
@@ -102,11 +105,10 @@ namespace CM_Meeseeks_Box
                 mrMeeseeksLookAtMe.workSettings.SetPriority(item, 3);
             }
 
-            // Give minor passion in all skills
             foreach (SkillRecord skill in mrMeeseeksLookAtMe.skills.skills)
             {
                 skill.Level = skillLevel;
-                skill.passion = Passion.Minor;
+                skill.passion = Passion.None;
             }
 
             // Max out needs
