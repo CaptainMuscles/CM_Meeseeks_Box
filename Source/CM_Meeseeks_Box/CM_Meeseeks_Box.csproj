@@ -90,8 +90,10 @@
     <Compile Include="MeeseeksModSettings.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeks.cs" />
+    <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeksMajor.cs" />
     <Compile Include="MentalStates\MentalState_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeks.cs" />
+    <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeksMajor.cs" />
     <Compile Include="Patches\AreaAllowedGUIPatches.cs" />
     <Compile Include="Patches\BillPatches.cs" />
     <Compile Include="Patches\CaravanFormingUtilityPatches.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Tame.cs" />
     <Compile Include="Thinking\JobSelectors\MeeseeksJobSelector_Train.cs" />
     <Compile Include="Thinking\ThinkNode_MeeseeksCompleteTask.cs" />
+    <Compile Include="ThoughtWorker_MeeseeksPain.cs" />
     <Compile Include="Voice.cs" />
     <Compile Include="WorkerDefUtility.cs" />
     <Compile Include="Jobs\WorkGiver_Kill.cs" />
