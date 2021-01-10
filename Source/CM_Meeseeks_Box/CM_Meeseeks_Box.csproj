@@ -90,10 +90,10 @@
     <Compile Include="MeeseeksModSettings.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeks.cs" />
-    <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeksMajor.cs" />
+    <Compile Include="MentalStates\MentalStateWorker_MeeseeksMakeMeeseeksMultiple.cs" />
     <Compile Include="MentalStates\MentalState_MeeseeksKillCreator.cs" />
     <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeks.cs" />
-    <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeksMajor.cs" />
+    <Compile Include="MentalStates\MentalState_MeeseeksMakeMeeseeksMultiple.cs" />
     <Compile Include="Patches\AreaAllowedGUIPatches.cs" />
     <Compile Include="Patches\BillPatches.cs" />
     <Compile Include="Patches\CaravanFormingUtilityPatches.cs" />
@@ -115,6 +115,7 @@
     <Compile Include="MeeseeksDefOf.cs" />
     <Compile Include="MeeseeksMod.cs" />
     <Compile Include="MeeseeksUtility.cs" />
+    <Compile Include="Patches\MentalBreakerPatches.cs" />
     <Compile Include="Patches\MentalBreakWorkerPatches.cs" />
     <Compile Include="Patches\PawnDiedOrDownedThoughtsUtilityPatches.cs" />
     <Compile Include="Patches\PawnGeneratorPatches.cs" />

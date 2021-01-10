@@ -7,7 +7,7 @@ using Verse.AI;
 
 namespace CM_Meeseeks_Box
 {
-    public class MentalStateWorker_MeeseeksMakeMeeseeksMajor : MentalStateWorker_MeeseeksMakeMeeseeks
+    public class MentalStateWorker_MeeseeksMakeMeeseeksMultiple : MentalStateWorker_MeeseeksMakeMeeseeks
     {
 
     }

@@ -464,17 +464,8 @@
             </li>
           </subNodes>
         </li>
-      </subNodes>
-    </thinkRoot>
-  </ThinkTreeDef>
-  
-  <ThinkTreeDef>
-    <defName>Meeseeks_MentalStateNonCritical</defName>
-    <thinkRoot Class="ThinkNode_Tagger">
-      <tagToGive>InMentalState</tagToGive>
-      <subNodes>
-	    <li Class="ThinkNode_ConditionalMentalState">
-          <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksMajor</state>
+		<li Class="ThinkNode_ConditionalMentalState">
+          <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksMultipleExtreme</state>
           <subNodes>
             <li Class="ThinkNode_Priority">
               <subNodes>
@@ -487,6 +478,54 @@
           </subNodes>
         </li>
         <li Class="ThinkNode_ConditionalMentalState">
+          <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksMultipleMajor</state>
+          <subNodes>
+            <li Class="ThinkNode_Priority">
+              <subNodes>
+                <li Class="CM_Meeseeks_Box.JobGiver_UseMeeseeksBox" />
+                <li Class="JobGiver_WanderCurrentRoom">
+                  <maxDanger>Deadly</maxDanger>
+                </li>
+                </subNodes>
+            </li>
+          </subNodes>
+        </li>
+      </subNodes>
+    </thinkRoot>
+  </ThinkTreeDef>
+  
+  <ThinkTreeDef>
+    <defName>Meeseeks_MentalStateNonCritical</defName>
+    <thinkRoot Class="ThinkNode_Tagger">
+      <tagToGive>InMentalState</tagToGive>
+	   <subNodes>
+	    <li Class="ThinkNode_ConditionalMentalState">
+          <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksExtreme</state>
+          <subNodes>
+            <li Class="ThinkNode_Priority">
+              <subNodes>
+                <li Class="CM_Meeseeks_Box.JobGiver_UseMeeseeksBox" />
+                <li Class="JobGiver_WanderCurrentRoom">
+                  <maxDanger>Deadly</maxDanger>
+                </li>
+                </subNodes>
+            </li>
+          </subNodes>
+        </li>
+        <li Class="ThinkNode_ConditionalMentalState">
+          <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeksMajor</state>
+          <subNodes>
+            <li Class="ThinkNode_Priority">
+              <subNodes>
+                <li Class="CM_Meeseeks_Box.JobGiver_UseMeeseeksBox" />
+                <li Class="JobGiver_WanderCurrentRoom">
+                  <maxDanger>Deadly</maxDanger>
+                </li>
+                </subNodes>
+            </li>
+          </subNodes>
+        </li>
+		<li Class="ThinkNode_ConditionalMentalState">
           <state>CM_Meeseeks_Box_MentalState_MeeseeksMakeMeeseeks</state>
           <subNodes>
             <li Class="ThinkNode_Priority">
