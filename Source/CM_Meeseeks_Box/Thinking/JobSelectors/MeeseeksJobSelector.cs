@@ -13,6 +13,8 @@ namespace CM_Meeseeks_Box
 {
     public class MeeseeksJobSelector
     {
+        public virtual bool WaitBeforeRepeat => true;
+
         public virtual bool UseForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob)
         {
             return true;

@@ -11,7 +11,7 @@ namespace CM_Meeseeks_Box
     public class CompMeeseeksMemory : ThingComp
     {
         private static List<JobDef> freeJobs = new List<JobDef>();//{ JobDefOf.Equip, JobDefOf.Goto };
-        public static List<JobDef> noContinueJobs = new List<JobDef> { JobDefOf.Goto };
+        public static List<JobDef> noContinueJobs = new List<JobDef>();// { JobDefOf.Goto };
         private static int maxQueueOrderTicks = 300;
 
         public bool givenTask = false;
@@ -56,6 +56,8 @@ namespace CM_Meeseeks_Box
         public List<Pawn> CreatedMeeseeks => createdMeeseeks;
 
         public bool GivenTask => givenTask;
+
+        public IntVec3 guardPosition = IntVec3.Invalid;
 
         private Pawn meeseeks = null;
         public Pawn Meeseeks
@@ -235,6 +237,10 @@ namespace CM_Meeseeks_Box
 
             givenTaskTick = Find.TickManager.TicksGame;
 
+            guardPosition = otherMemory.guardPosition;
+            if (guardPosition.IsValid)
+                ((Pawn)parent).drafter.Drafted = true;
+
             MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
         }
 
@@ -258,20 +264,28 @@ namespace CM_Meeseeks_Box
             potentialTargetCache[workGiver] = thing;
         }
 
-        public void AddJobTarget(SavedTargetInfo target)
+        public void AddJobTarget(SavedTargetInfo target, bool firstTarget = false)
         {
             if (jobTargets.Contains(target))
                 return;
 
             if (target.HasThing && savedJob.bill != null)
             {
+                MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
+
+                if (firstTarget)
+                {
+                    billStorage.SaveBill(savedJob.bill);
+                    savedJob.bill = billStorage.GetDuplicateBillFromOriginal(savedJob.bill);
+                    savedJob.bill.billStack.billGiver = target.Thing as IBillGiver;
+                }
+
                 WorkGiver_Scanner workGiverScanner = savedJob.workGiverDef.Worker as WorkGiver_Scanner;
                 if (workGiverScanner != null)
                 {
                     Job job = workGiverScanner.JobOnThing(Meeseeks, target.Thing, true);
                     if (job != null && job.bill != null)
                     {
-                        MeeseeksBillStorage billStorage = Current.Game.World.GetComponent<MeeseeksBillStorage>();
                         billStorage.SaveBill(job.bill);
                         target.bill = billStorage.GetDuplicateBillFromOriginal(job.bill);
                         target.bill.billStack.billGiver = target.Thing as IBillGiver;
@@ -458,7 +472,7 @@ namespace CM_Meeseeks_Box
 
             if (job.workGiverDef != null && job.workGiverDef.Worker != null && potentialTargetCache.ContainsKey(job.workGiverDef.Worker))
             {
-                AddJobTarget(new SavedTargetInfo(potentialTargetCache[job.workGiverDef.Worker]));
+                AddJobTarget(new SavedTargetInfo(potentialTargetCache[job.workGiverDef.Worker]), true);
             }
             else
             {
@@ -466,7 +480,7 @@ namespace CM_Meeseeks_Box
 
                 if (targetIndex != TargetIndex.None)
                 {
-                    AddJobTarget(new SavedTargetInfo(job.GetTarget(targetIndex)));
+                    AddJobTarget(new SavedTargetInfo(job.GetTarget(targetIndex)), true);
                 }
                 else
                 {

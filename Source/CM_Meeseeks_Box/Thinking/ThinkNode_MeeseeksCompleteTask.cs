@@ -28,6 +28,8 @@ namespace CM_Meeseeks_Box
         {
             jobSelectors = new List<MeeseeksJobSelector>();
 
+            jobSelectors.Add(new MeeseeksJobSelector_Guard());
+
             jobSelectors.Add(new MeeseeksJobSelector_BuildRoof());
             jobSelectors.Add(new MeeseeksJobSelector_DoBill());
             jobSelectors.Add(new MeeseeksJobSelector_Construction());
@@ -45,7 +47,7 @@ namespace CM_Meeseeks_Box
 
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
-            //Logger.MessageFormat(this, "Checking for saved job on Meeseeks.");
+            Logger.MessageFormat(this, "Checking for saved job on Meeseeks.");
 
             CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
 
@@ -79,10 +81,10 @@ namespace CM_Meeseeks_Box
                 return null;
             }
 
-            if (memory.lastStartedJobDef != null && memory.lastStartedJobDef == savedJob.def)
+            if (memory.jobStuck)
             {
                 //Logger.MessageFormat(this, "Wait a tick...");
-                return JobMaker.MakeJob(JobDefOf.Wait_MaintainPosture, 2);
+                return JobMaker.MakeJob(JobDefOf.Wait_MaintainPosture, 1);
             }
 
             //Logger.MessageFormat(this, "Job target count: {0}", memory.jobTargets.Count);

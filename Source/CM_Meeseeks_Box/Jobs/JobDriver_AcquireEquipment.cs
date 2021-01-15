@@ -154,7 +154,7 @@ namespace CM_Meeseeks_Box
             }
 
             duration = (int)(TargetApparel.GetStatValue(StatDefOf.EquipDelay) * 60f);
-            
+
             List<Apparel> wornApparel = pawn.apparel.WornApparel;
             for (int num = wornApparel.Count - 1; num >= 0; num--)
             {
@@ -249,7 +249,7 @@ namespace CM_Meeseeks_Box
 
             // For some reason the entry for melee doesn't seem to get read for the kill job, so we'll do it manually...
             bool killJob = (compMeeseeksMemory.savedJob.def == MeeseeksDefOf.CM_Meeseeks_Box_Job_Kill);
-            bool combatJob = (killJob || pawn.Drafted);
+            bool combatJob = (killJob || pawn.Drafted || compMeeseeksMemory.guardPosition.IsValid);
 
             if (compMeeseeksMemory.savedJob.def == JobDefOf.AttackMelee || combatJob)
                 relevantSkills.Add(SkillDefOf.Melee);
@@ -293,7 +293,7 @@ namespace CM_Meeseeks_Box
             if (isWeapon)
             {
                 AddDebugLine("scanning for weapons...");
-                availableEquipment = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Weapon).Where(t => CanEquipThis(combatJob, pawn, t, relevantSkills)).ToList();
+                availableEquipment = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Weapon).Where(t => CanEquipThis(combatJob, pawn, compMeeseeksMemory, t, relevantSkills)).ToList();
             }
 
             if (availableEquipment.Count == 0)
@@ -301,7 +301,7 @@ namespace CM_Meeseeks_Box
                 // If the weapon search fails, default to an apparel search
                 isWeapon = false;
                 AddDebugLine("scanning for apparel...");
-                availableEquipment = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Apparel).Where(t => CanWearThis(pawn, t, relevantSkills)).ToList();
+                availableEquipment = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Apparel).Where(t => CanWearThis(pawn, compMeeseeksMemory, t, relevantSkills)).ToList();
             }
 
             AddDebugLine("availableEquipment: " + availableEquipment.Count.ToString());
@@ -353,7 +353,7 @@ namespace CM_Meeseeks_Box
             AddDebugLine("BEST: " + selectedEquipment);
 
             if (DebugViewSettings.debugApparelOptimize)
-            {    
+            {
                 Log.Message(debugSb.ToString());
                 debugSb = null;
             }
@@ -374,7 +374,7 @@ namespace CM_Meeseeks_Box
             }
         }
 
-        private static bool CanEquipThis(bool combat, Pawn pawn, Thing weapon, List<SkillDef> relevantSkills)
+        private static bool CanEquipThis(bool combat, Pawn pawn, CompMeeseeksMemory compMeeseeksMemory, Thing weapon, List<SkillDef> relevantSkills)
         {
             if (weapon.IsForbidden(pawn))
             {
@@ -405,7 +405,7 @@ namespace CM_Meeseeks_Box
             return true;
         }
 
-        private static bool CanWearThis(Pawn pawn, Thing apparel, List<SkillDef> relevantSkills)
+        private static bool CanWearThis(Pawn pawn, CompMeeseeksMemory compMeeseeksMemory, Thing apparel, List<SkillDef> relevantSkills)
         {
             if (apparel.IsForbidden(pawn))
                 return false;
@@ -428,7 +428,7 @@ namespace CM_Meeseeks_Box
                 }
             }
 
-            if (pawn.Drafted)
+            if (pawn.Drafted || compMeeseeksMemory.guardPosition.IsValid)
             {
                 if (!armor)
                     return false;

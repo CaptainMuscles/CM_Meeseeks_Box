@@ -89,6 +89,23 @@
           <insertTag>Humanlike_PostDuty</insertTag>
         </li>
 		
+		<!--<li Class="CM_Meeseeks_Box.JobGiver_Guard" />-->
+		
+		<li Class="CM_Meeseeks_Box.ThingNode_ConditionalDrafted">
+		  <subNodes>
+			<li Class="ThinkNode_Priority">
+			  <subNodes>
+				<li Class="JobGiver_MoveToStandable"/>
+				<li Class="JobGiver_AIFightEnemies">
+				  <targetAcquireRadius>200</targetAcquireRadius>
+				  <targetKeepRadius>32</targetKeepRadius>
+				</li>
+				<!--<li Class="JobGiver_AIGotoNearestHostile" />-->
+			  </subNodes>
+			</li>
+		  </subNodes>
+		</li>
+		
 		<!-- Fulfill our purpose so we can go away -->
         <li Class="CM_Meeseeks_Box.ThinkNode_MeeseeksCompleteTask" />
 
