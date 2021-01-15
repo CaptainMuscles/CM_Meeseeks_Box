@@ -30,13 +30,7 @@ namespace CM_Meeseeks_Box
         public override void DoSettingsWindowContents(Rect inRect)
         {
             base.DoSettingsWindowContents(inRect);
-            Listing_Standard listing_Standard = new Listing_Standard();
-            listing_Standard.Begin(inRect);
-            listing_Standard.CheckboxLabeled("CM_Meeseeks_Box_SettingAutoSelectOnCreationLabel".Translate(), ref settings.autoSelectOnCreation, "CM_Meeseeks_Box_SettingAutoSelectOnCreationDescription".Translate());
-            listing_Standard.CheckboxLabeled("CM_Meeseeks_Box_SettingJumpCameraOnCreationLabel".Translate(), ref settings.cameraJumpOnCreation, "CM_Meeseeks_Box_SettingJumpCameraOnCreationDescription".Translate());
-            listing_Standard.CheckboxLabeled("CM_Meeseeks_Box_SettingAutoPauseOnCreationLabel".Translate(), ref settings.autoPauseOnCreation, "CM_Meeseeks_Box_SettingAutoPauseOnCreationDescription".Translate());
-            listing_Standard.CheckboxLabeled("CM_Meeseeks_Box_SettingMeeseeksSpeaksLabel".Translate(), ref settings.meeseeksSpeaks, "CM_Meeseeks_Box_SettingMeeseeksSpeaksDescription".Translate());
-            listing_Standard.End();
+            settings.DoSettingsWindowContents(inRect);
         }
 
         public override void WriteSettings()
