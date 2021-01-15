@@ -120,6 +120,7 @@ namespace CM_Meeseeks_Box
 
             IntVec3 summonPosition = MeeseeksUtility.FindSpawnPosition(creatingThing);
             GenSpawn.Spawn(mrMeeseeksLookAtMe, summonPosition, map);
+            mrMeeseeksLookAtMe.Rotation = Rot4.South;
 
             CompMeeseeksMemory compMeeseeksMemory = mrMeeseeksLookAtMe.GetComp<CompMeeseeksMemory>();
             compMeeseeksMemory.SetQuality(boxQuality);
@@ -156,6 +157,9 @@ namespace CM_Meeseeks_Box
 
         static private IntVec3 FindSpawnPosition(Thing spawningThing)
         {
+            if (Prefs.DevMode && MeeseeksMod.settings.screenShotDebug)
+                return spawningThing.Position + new IntVec3(-1, 0, 0);
+
             IntVec3 spawnPosition = spawningThing.Position;
             List<IntVec3> randomOffsets = GenAdj.AdjacentCells8WayRandomized();
             foreach (IntVec3 randomOffset in randomOffsets)
