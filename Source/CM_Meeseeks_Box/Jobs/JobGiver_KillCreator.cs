@@ -24,14 +24,14 @@ namespace CM_Meeseeks_Box
 
         protected override Job TryGiveJob(Pawn pawn)
         {
-            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
-            {
-                return null;
-            }
-            if (pawn.GetRegion() == null)
-            {
-                return null;
-            }
+            //if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+            //{
+            //    return null;
+            //}
+            //if (pawn.GetRegion() == null)
+            //{
+            //    return null;
+            //}
 
             CompMeeseeksMemory memory = pawn.GetComp<CompMeeseeksMemory>();
             if (memory == null)
