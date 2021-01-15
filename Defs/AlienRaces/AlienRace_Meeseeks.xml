@@ -27,8 +27,12 @@
 						<li>Thin</li>
 					</alienbodytypes>
 					<aliencrowntypes>
-						<li>Male_1</li>
-						<li>Male_2</li>
+						<!--<li>Male_Bliss</li>-->
+						<li>Male_Happy</li>
+						<!--<li>Male_Normal</li>
+						<li>Male_Sad</li>
+						<li>Male_Distressed</li>
+						<li>Male_Kirkland</li>-->
 					</aliencrowntypes>
 					<useGenderedHeads>false</useGenderedHeads>
 					<customHeadDrawSize>(1.00, 1.00)</customHeadDrawSize>
