@@ -97,30 +97,32 @@ namespace CM_Meeseeks_Box
                         }
                         Action action = delegate
                         {
-                            IntVec3 intVec = RCellFinder.BestOrderedGotoDestNear(curLoc, pawn);
-                            Job job = JobMaker.MakeJob(JobDefOf.Goto, intVec);
+                            //IntVec3 guardPosition = RCellFinder.BestOrderedGotoDestNear(curLoc, pawn);
+                            compMeeseeksMemory.guardPosition = curLoc;
+
+                            Job job = JobMaker.MakeJob(JobDefOf.Goto, curLoc);
                             job.playerForced = true;
 
-                            if (pawn.Map.exitMapGrid.IsExitCell(UI.MouseCell()))
-                            {
-                                job.exitMapOnArrival = true;
-                            }
-                            else if (!pawn.Map.IsPlayerHome && !pawn.Map.exitMapGrid.MapUsesExitGrid && CellRect.WholeMap(pawn.Map).IsOnEdge(UI.MouseCell(), 3) && pawn.Map.Parent.GetComponent<FormCaravanComp>() != null && MessagesRepeatAvoider.MessageShowAllowed("MessagePlayerTriedToLeaveMapViaExitGrid-" + pawn.Map.uniqueID, 60f))
-                            {
-                                if (pawn.Map.Parent.GetComponent<FormCaravanComp>().CanFormOrReformCaravanNow)
-                                {
-                                    Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CanReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
-                                }
-                                else
-                                {
-                                    Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CantReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
-                                }
-                            }
+                            //if (pawn.Map.exitMapGrid.IsExitCell(UI.MouseCell()))
+                            //{
+                            //    job.exitMapOnArrival = true;
+                            //}
+                            //else if (!pawn.Map.IsPlayerHome && !pawn.Map.exitMapGrid.MapUsesExitGrid && CellRect.WholeMap(pawn.Map).IsOnEdge(UI.MouseCell(), 3) && pawn.Map.Parent.GetComponent<FormCaravanComp>() != null && MessagesRepeatAvoider.MessageShowAllowed("MessagePlayerTriedToLeaveMapViaExitGrid-" + pawn.Map.uniqueID, 60f))
+                            //{
+                            //    if (pawn.Map.Parent.GetComponent<FormCaravanComp>().CanFormOrReformCaravanNow)
+                            //    {
+                            //        Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CanReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
+                            //    }
+                            //    else
+                            //    {
+                            //        Messages.Message("MessagePlayerTriedToLeaveMapViaExitGrid_CantReform".Translate(), pawn.Map.Parent, MessageTypeDefOf.RejectInput, historical: false);
+                            //    }
+                            //}
 
                             pawn.drafter.Drafted = true;
                             if (pawn.jobs.TryTakeOrderedJob(job))
                             {
-                                MoteMaker.MakeStaticMote(intVec, pawn.Map, ThingDefOf.Mote_FeedbackGoto);
+                                MoteMaker.MakeStaticMote(curLoc, pawn.Map, ThingDefOf.Mote_FeedbackGoto);
                             }
                             else
                             {
