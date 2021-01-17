@@ -28,8 +28,8 @@ namespace CM_Meeseeks_Box
                 DesignationManagerPatches.DesignationManager_DesignationOn.getFudged = fudgeTime;
             }
 
-            [HarmonyPostfix]
-            public static void Postfix()
+            [HarmonyFinalizer]
+            public static void Finalizer()
             {
                 fudgeTime = false;
                 DesignationManagerPatches.DesignationManager_DesignationOn.getFudged = fudgeTime;
