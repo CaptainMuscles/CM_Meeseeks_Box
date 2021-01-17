@@ -22,6 +22,8 @@ namespace CM_Meeseeks_Box
         {
             Bill bill = jobTarget.bill;
 
+            Logger.MessageFormat(this, "Checking for bill job...");
+
             if (bill == null)
                 return ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
 
@@ -97,6 +99,8 @@ namespace CM_Meeseeks_Box
             Bill_Production bill = jobTarget.bill as Bill_Production;
             Job job = null;
 
+            Logger.MessageFormat(this, "Checking for production bill job...");
+
             if (bill.repeatMode == BillRepeatModeDefOf.RepeatCount && bill.repeatCount < 1)
             {
                 bill.deleted = true;
@@ -122,12 +126,15 @@ namespace CM_Meeseeks_Box
                 }
             }
 
+            Logger.MessageFormat(this, "Checking workstations...");
+
             bool workStationValid = (jobTarget.HasThing && !jobTarget.ThingDestroyed &&
                meeseeks.CanReserve(jobTarget.Thing, 1, -1, null, false) &&
                ((jobTarget.Thing as IBillGiver).CurrentlyUsableForBills() || (jobTarget.Thing as IBillGiver).UsableForBillsAfterFueling()));
 
             if (!workStationValid)
             {
+                Logger.MessageFormat(this, "We think the workstation is invalid looking for new one");
                 List<Building> buildings = meeseeks.MapHeld.listerBuildings.allBuildingsColonist.Where(building => building is IBillGiver &&
                                                                                                        savedJob.workGiverDef.fixedBillGiverDefs.Contains(building.def) &&
                                                                                                        meeseeks.CanReserve(building, 1, -1, null, false) &&
@@ -135,10 +142,20 @@ namespace CM_Meeseeks_Box
 
                 if (buildings.Count > 0)
                 {
+                    Logger.MessageFormat(this, "Found new one");
+
                     buildings.Sort((a, b) => (int)(meeseeks.PositionHeld.DistanceTo(a.Position) - meeseeks.PositionHeld.DistanceTo(b.Position)));
                     jobTarget.target = buildings[0];
                     workStationValid = true;
                 }
+                else
+                {
+                    Logger.MessageFormat(this, "Found no alternate workstations...");
+                }
+            }
+            else
+            {
+                Logger.MessageFormat(this, "We think the workstation is valid...");
             }
 
             if (workStationValid)
