@@ -83,7 +83,7 @@ namespace CM_Meeseeks_Box
 
             if (memory.jobStuck)
             {
-                //Logger.MessageFormat(this, "Wait a tick...");
+                Logger.MessageFormat(this, "Wait a tick...");
                 return JobMaker.MakeJob(JobDefOf.Wait_MaintainPosture, 1);
             }
 
