@@ -6,9 +6,9 @@ namespace CM_Meeseeks_Box
 {
     public static class Logger
     {
-        public static bool WriteMeeseeksInfoToInspector = true;
+        public static bool WriteMeeseeksInfoToInspector = false;
 
-        public static bool MessageEnabled = true;
+        public static bool MessageEnabled = false;
         public static bool WarningEnabled = true;
         public static bool ErrorEnabled = true;
 
