@@ -24,7 +24,7 @@ namespace CM_Meeseeks_Box
             {
                 if (pawn != null && pawn.GetComp<CompMeeseeksMemory>() != null)
                 {
-                    Logger.WarningFormat(pawn, "Meeseeks {0} marked as non-essential to world during GC pass.", pawn.GetUniqueLoadID());
+                    Logger.MessageFormat(pawn, "Meeseeks {0} marked as non-essential to world during GC pass.", pawn.GetUniqueLoadID());
                     __result = null;
                 }
             }
