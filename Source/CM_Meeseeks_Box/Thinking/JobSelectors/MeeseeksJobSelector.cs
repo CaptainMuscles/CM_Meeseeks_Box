@@ -100,21 +100,65 @@ namespace CM_Meeseeks_Box
                         return null;
                     }
 
-                    if (workGiverScanner.HasJobOnThing(meeseeks, targetInfo.Thing, true))
-                        job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
+                    // Have to try-catch all these damn things because other mods arent't doing null checks :(
+                    try
+                    {
+                        Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, targetInfo.Thing);
+                        if (workGiverScanner.HasJobOnThing(meeseeks, targetInfo.Thing, true))
+                        {
+                            Logger.MessageFormat(this, "Getting {0} for job on {1}", workGiverScanner, targetInfo.Thing);
+                            job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                    finally
+                    {
+
+                    }
                 }
 
-                if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
-                    job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
+                // Have to try-catch all these damn things because other mods arent't doing null checks :(
+                try
+                {
+                    Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, targetInfo.Cell);
+                    if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
+                        job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
+                }
+                catch (Exception e)
+                {
+
+                }
+                finally
+                {
+
+                }
 
                 if (job == null)
                 {
                     var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
                     foreach (Thing thing in thingsAtCell)
                     {
-                        //Logger.MessageFormat(this, "Checking {0} for {1}.", thing.GetUniqueLoadID(), workGiverScanner.def.defName);
-                        if (workGiverScanner.HasJobOnThing(meeseeks, thing, true))
-                            job = workGiverScanner.JobOnThing(meeseeks, thing, true);
+                        //Logger.MessageFormat(this, "Checking {0} for {1}.", thing, workGiverScanner.def.defName);
+
+                        // Have to try-catch all these damn things because other mods arent't doing null checks :(
+                        try
+                        {
+                            Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, thing);
+                            if (workGiverScanner.HasJobOnThing(meeseeks, thing, true))
+                                job = workGiverScanner.JobOnThing(meeseeks, thing, true);
+                        }
+                        catch(Exception e)
+                        {
+
+                        }
+                        finally
+                        {
+
+                        }
+
                         if (job != null)
                             break;
                     }
