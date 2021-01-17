@@ -24,6 +24,11 @@ namespace CM_Meeseeks_Box
 
             // If our creator is a Meeseeks, try his creator and so on until we get a target
             Pawn creator = memory.Creator;
+
+            // If we have no creator, um, just go ahead and we'll figure this out later
+            if (!TargetIsValid(pawn, creator))
+                return true;
+
             CompMeeseeksMemory creatorMemory = creator.GetComp<CompMeeseeksMemory>();
             while (creator != null && creatorMemory != null)
             {

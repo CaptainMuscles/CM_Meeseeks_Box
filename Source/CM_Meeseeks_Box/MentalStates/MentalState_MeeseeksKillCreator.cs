@@ -30,6 +30,13 @@ namespace CM_Meeseeks_Box
 
             CompMeeseeksMemory memory = pawn.GetComp<CompMeeseeksMemory>();
             Pawn creator = memory.Creator;
+
+            if (creator == null)
+            {
+                target = pawn;
+                return;
+            }
+
             CompMeeseeksMemory creatorMemory = creator.GetComp<CompMeeseeksMemory>();
 
             grandCreatorMeeseeks = pawn;
