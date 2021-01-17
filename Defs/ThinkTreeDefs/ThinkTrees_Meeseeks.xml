@@ -359,8 +359,9 @@
                 </li> -->
 				
 				<!-- Stand around -->
-				<li Class="JobGiver_StandAndBeSociallyActive"/>
-				
+				<li Class="JobGiver_StandAndBeSociallyActive">
+                  <ticksRange>350~750</ticksRange>
+                </li>
               </subNodes>
             </li>
           </subNodes>
