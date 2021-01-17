@@ -110,6 +110,7 @@
     <Compile Include="Patches\FloatMenuMakerMapPatches.cs" />
     <Compile Include="Patches\ForbidUtilityPatches.cs" />
     <Compile Include="Patches\GenMapUIPatches.cs" />
+    <Compile Include="Patches\HealthAIUtilityPatches.cs" />
     <Compile Include="Patches\JobDriverPatches.cs" />
     <Compile Include="Patches\LetterStackPatches.cs" />
     <Compile Include="Logger.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Patches\ToilsPatches.cs" />
     <Compile Include="Patches\WorkGiverPatches.cs" />
     <Compile Include="Patches\WorldPawnGCPatches.cs" />
+    <Compile Include="Patches\WorldPawnsPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SavedJob.cs" />
     <Compile Include="SavedTargetInfo.cs" />
