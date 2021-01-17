@@ -71,7 +71,10 @@ namespace CM_Meeseeks_Box
                         if (newCreatedMemory != null)
                         {
                             newCreatedMemory.CopyJobDataFrom(compMeeseeksMemory);
-                            newestCreated.jobs.EndCurrentJob(JobCondition.InterruptOptional);
+                            if (compMeeseeksMemory.givenTask)
+                                newestCreated.jobs.EndCurrentJob(JobCondition.InterruptOptional);
+                            else
+                                newCreatedMemory.temporarilyBlockTask = false;
                         }
                     }
                 }

@@ -18,6 +18,8 @@ namespace CM_Meeseeks_Box
         public bool startedTask = false;
         public bool taskCompleted = false;
 
+        public bool temporarilyBlockTask = false;
+
         public SavedJob savedJob = null;
         public JobDef lastStartedJobDef = null;
         public LocalTargetInfo lastStartedJobTarget = null;
@@ -227,21 +229,24 @@ namespace CM_Meeseeks_Box
 
         public void CopyJobDataFrom(CompMeeseeksMemory otherMemory)
         {
-            jobTargets = new List<SavedTargetInfo>(otherMemory.jobTargets);
+            if (otherMemory.givenTask)
+            {
+                jobTargets = new List<SavedTargetInfo>(otherMemory.jobTargets);
 
-            givenTask = otherMemory.givenTask;
-            startedTask = otherMemory.startedTask;
-            taskCompleted = otherMemory.taskCompleted;
+                givenTask = otherMemory.givenTask;
+                startedTask = otherMemory.startedTask;
+                taskCompleted = otherMemory.taskCompleted;
 
-            savedJob = new SavedJob(otherMemory.savedJob.MakeJob());
+                savedJob = new SavedJob(otherMemory.savedJob.MakeJob());
 
-            givenTaskTick = Find.TickManager.TicksGame;
+                givenTaskTick = Find.TickManager.TicksGame;
 
-            guardPosition = otherMemory.guardPosition;
-            if (guardPosition.IsValid)
-                ((Pawn)parent).drafter.Drafted = true;
+                guardPosition = otherMemory.guardPosition;
+                if (guardPosition.IsValid)
+                    ((Pawn)parent).drafter.Drafted = true;
 
-            MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+                MeeseeksUtility.PlayAcceptTaskSound(this.parent, voice);
+            }
         }
 
         public void ForceNewJob(Job newJob, SavedTargetInfo targetInfo)
@@ -359,7 +364,7 @@ namespace CM_Meeseeks_Box
 
         public bool HasTimeToQueueNewJob()
         {
-            if (CreatedByMeeseeks())
+            if (temporarilyBlockTask)
                 return false;
 
             int ticksSinceOrder = Find.TickManager.TicksGame - givenTaskTick;
@@ -368,7 +373,7 @@ namespace CM_Meeseeks_Box
 
         public bool CanTakeOrders()
         {
-            if (CreatedByMeeseeks())
+            if (temporarilyBlockTask)
                 return false;
 
             if (!givenTask)

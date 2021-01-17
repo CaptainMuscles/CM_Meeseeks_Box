@@ -132,6 +132,8 @@ namespace CM_Meeseeks_Box
             bool creatorIsMeeseeks = creatorMemory != null;
             if (!creatorIsMeeseeks)
                 MeeseeksUtility.PlayGreetingSound(mrMeeseeksLookAtMe, compMeeseeksMemory.Voice);
+            else
+                compMeeseeksMemory.temporarilyBlockTask = true;
 
             Thing smoke = ThingMaker.MakeThing(ThingDefOf.Gas_Smoke);
             GenSpawn.Spawn(smoke, summonPosition, map);
