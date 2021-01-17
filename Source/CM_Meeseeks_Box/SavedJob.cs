@@ -139,6 +139,17 @@ namespace CM_Meeseeks_Box
 
         }
 
+        public LocalTargetInfo GetTarget(TargetIndex ind)
+        {
+            switch (ind)
+            {
+                case TargetIndex.A: return targetA;
+                case TargetIndex.B: return targetB;
+                case TargetIndex.C: return targetC;
+                default: return null;
+            }
+        }
+
         public SavedJob(Job job)
         {
             def = job.def;
