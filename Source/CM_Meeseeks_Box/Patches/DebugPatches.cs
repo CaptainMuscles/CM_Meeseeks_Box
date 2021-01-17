@@ -86,6 +86,7 @@ namespace CM_Meeseeks_Box
 
                                     if (savedJob.workGiverDef != null && savedJob.workGiverDef.workType.relevantSkills != null)
                                     {
+                                        stringBuilder.AppendLine(savedJob.workGiverDef.defName);
                                         foreach (SkillDef skillDef in savedJob.workGiverDef.workType.relevantSkills)
                                             stringBuilder.AppendLine(skillDef.skillLabel);
                                     }
