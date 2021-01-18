@@ -38,7 +38,7 @@ namespace CM_Meeseeks_Box
             [HarmonyPostfix]
             public static void MonitorMeeseeksJob(EditWindow_DebugInspector __instance, ref string __result)
             {
-                if (Logger.WriteMeeseeksInfoToInspector)
+                if (MeeseeksMod.settings.showDebugLogMessages)
                 {
                     Map map = Find.CurrentMap;
 

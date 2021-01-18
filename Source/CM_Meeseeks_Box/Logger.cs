@@ -6,15 +6,12 @@ namespace CM_Meeseeks_Box
 {
     public static class Logger
     {
-        public static bool WriteMeeseeksInfoToInspector = false;
-
-        public static bool MessageEnabled = false;
         public static bool WarningEnabled = true;
         public static bool ErrorEnabled = true;
 
         public static void MessageFormat(object caller, string message, params object[] stuff)
         {
-            if (Logger.MessageEnabled)
+            if (MeeseeksMod.settings.showDebugLogMessages)
             {
                 message = caller.GetType().ToString() + "." + (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name + " - " + message;
                 Log.Message(String.Format(message, stuff));
@@ -23,7 +20,7 @@ namespace CM_Meeseeks_Box
 
         public static void MessageFormat(string message, params object[] stuff)
         {
-            if (Logger.MessageEnabled)
+            if (MeeseeksMod.settings.showDebugLogMessages)
             {
                 message = (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name + " - " + message;
                 Log.Message(String.Format(message, stuff));

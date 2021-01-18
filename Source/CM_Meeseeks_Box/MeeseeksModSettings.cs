@@ -13,6 +13,8 @@ namespace CM_Meeseeks_Box
         public bool meeseeksSpeaks = true;
         public bool screenShotDebug = false;
 
+        public bool showDebugLogMessages = false;
+
         public override void ExposeData()
         {
             base.ExposeData();
@@ -22,6 +24,8 @@ namespace CM_Meeseeks_Box
             Scribe_Values.Look(ref autoPauseOnCreation, "autoPauseOnCreation", false);
             Scribe_Values.Look(ref meeseeksSpeaks, "meeseeksSpeaks", true);
             Scribe_Values.Look(ref screenShotDebug, "screenShotDebug", false);
+
+            Scribe_Values.Look(ref showDebugLogMessages, "showDebugLogMessages", false);
         }
 
         public void DoSettingsWindowContents(Rect inRect)
@@ -34,7 +38,11 @@ namespace CM_Meeseeks_Box
             listing_Standard.CheckboxLabeled("CM_Meeseeks_Box_SettingMeeseeksSpeaksLabel".Translate(), ref meeseeksSpeaks, "CM_Meeseeks_Box_SettingMeeseeksSpeaksDescription".Translate());
 
             if (Prefs.DevMode)
+            {
                 listing_Standard.CheckboxLabeled("screenShotDebug", ref screenShotDebug, "screenShotDebug".Translate());
+
+                listing_Standard.CheckboxLabeled("Show debug messages".Translate(), ref showDebugLogMessages);
+            }
 
             listing_Standard.End();
         }
