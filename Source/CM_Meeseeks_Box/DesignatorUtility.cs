@@ -25,6 +25,10 @@ namespace CM_Meeseeks_Box
 
         private static bool busy = false;
 
+        public static bool getFudgedForWorkgiverCheck = false;
+
+        public static bool getFudgedForToilCheck = false;
+
         public static DesignationDef lastCheckedDef = null;
 
         public static DesignationDef GetDesignationDef(this Designator designator)
@@ -64,6 +68,8 @@ namespace CM_Meeseeks_Box
             }
 
             busy = true;
+
+            DesignatorUtility.getFudgedForWorkgiverCheck = true;
 
             if (cachedDesignators == null)
             {
@@ -138,6 +144,8 @@ namespace CM_Meeseeks_Box
 
             busy = true;
 
+            DesignatorUtility.getFudgedForWorkgiverCheck = true;
+
             savedDesignations.Clear();
 
             List<Designation> allDesignations = map.designationManager.allDesignations;
@@ -170,6 +178,8 @@ namespace CM_Meeseeks_Box
                 Logger.WarningFormat(cell, "Trying to restore designations without having forced them.");
                 return;
             }
+
+            DesignatorUtility.getFudgedForWorkgiverCheck = false;
 
             // Take of designations on cell, but also designations on buildings that intersect the cell
             List<Thing> thingsHere = cell.GetThingList(map);

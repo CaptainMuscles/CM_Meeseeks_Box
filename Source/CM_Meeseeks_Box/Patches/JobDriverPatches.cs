@@ -25,14 +25,14 @@ namespace CM_Meeseeks_Box
             public static void Prefix(JobDriver __instance)
             {
                 fudgeTime = (__instance.pawn.GetComp<CompMeeseeksMemory>() != null);
-                DesignationManagerPatches.DesignationManager_DesignationOn.getFudged = fudgeTime;
+                DesignatorUtility.getFudgedForToilCheck = fudgeTime;
             }
 
             [HarmonyFinalizer]
             public static void Finalizer()
             {
                 fudgeTime = false;
-                DesignationManagerPatches.DesignationManager_DesignationOn.getFudged = fudgeTime;
+                DesignatorUtility.getFudgedForToilCheck = fudgeTime;
             }
         }
     }

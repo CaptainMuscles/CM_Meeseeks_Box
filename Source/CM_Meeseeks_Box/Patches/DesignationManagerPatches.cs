@@ -12,14 +12,26 @@ namespace CM_Meeseeks_Box
         [HarmonyPatch("DesignationOn", new Type[] { typeof(Thing), typeof(DesignationDef) })]
         public class DesignationManager_DesignationOn
         {
-            public static bool getFudged = false;
-
             [HarmonyPostfix]
             public static void Postfix(Thing t, DesignationDef def, ref Designation __result)
             {
-                if (__result == null && getFudged)
+                if (__result == null && DesignatorUtility.getFudgedForToilCheck)
                 {
                     __result = new Designation(t, def);
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(DesignationManager))]
+        [HarmonyPatch("DesignationAt", new Type[] { typeof(IntVec3), typeof(DesignationDef) })]
+        public class DesignationManager_DesignationAt
+        {
+            [HarmonyPostfix]
+            public static void Postfix(IntVec3 c, DesignationDef def, ref Designation __result)
+            {
+                if (__result == null && DesignatorUtility.getFudgedForToilCheck)
+                {
+                    __result = new Designation(c, def);
                 }
             }
         }

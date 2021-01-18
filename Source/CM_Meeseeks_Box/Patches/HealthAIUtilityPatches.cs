@@ -23,7 +23,7 @@ namespace CM_Meeseeks_Box
             {
                 if (!__result)
                 {
-                    if (DesignationManagerPatches.DesignationManager_DesignationOn.getFudged)
+                    if (DesignatorUtility.getFudgedForToilCheck || DesignatorUtility.getFudgedForWorkgiverCheck)
                         __result = true;
                 }
             }
