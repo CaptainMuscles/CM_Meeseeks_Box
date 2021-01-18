@@ -31,12 +31,6 @@ namespace CM_Meeseeks_Box
             CompMeeseeksMemory memory = pawn.GetComp<CompMeeseeksMemory>();
             Pawn creator = memory.Creator;
 
-            if (creator == null)
-            {
-                target = pawn;
-                return;
-            }
-
             CompMeeseeksMemory creatorMemory = creator.GetComp<CompMeeseeksMemory>();
 
             grandCreatorMeeseeks = pawn;
@@ -57,7 +51,8 @@ namespace CM_Meeseeks_Box
             // Probably impossible as this should be checked by the mental state worker before we get here
             if (creator == null)
             {
-                Logger.ErrorFormat(this, "Meeseeks had KillCreator mental break but could not find non-Meeseeks creator.");
+                Logger.WarningFormat(this, "Meeseeks had KillCreator mental break but could not find non-Meeseeks creator.");
+                target = pawn;
                 return;
             }
 
