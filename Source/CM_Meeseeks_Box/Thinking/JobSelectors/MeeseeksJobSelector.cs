@@ -35,7 +35,7 @@ namespace CM_Meeseeks_Box
             return null;
         }
 
-        protected Job ScanForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty)
+        protected Job ScanForJob(Pawn meeseeks, CompMeeseeksMemory memory, SavedJob savedJob, SavedTargetInfo jobTarget, ref JobAvailability jobAvailabilty, bool scanAllThingsOnCell = false)
         {
             Job job = null;
 
@@ -48,7 +48,7 @@ namespace CM_Meeseeks_Box
 
                     foreach (WorkGiver_Scanner scanner in workGivers)
                     {
-                        job = this.GetJobOnTarget(meeseeks, jobTarget, scanner);
+                        job = this.GetJobOnTarget(meeseeks, jobTarget, scanner, scanAllThingsOnCell);
 
                         if (job != null)
                         {
@@ -82,7 +82,7 @@ namespace CM_Meeseeks_Box
             return job;
         }
 
-        protected Job GetJobOnTarget(Pawn meeseeks, SavedTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner)
+        protected Job GetJobOnTarget(Pawn meeseeks, SavedTargetInfo targetInfo, WorkGiver_Scanner workGiverScanner, bool scanAllThingsOnCell = false)
         {
             Job job = null;
 
@@ -103,10 +103,10 @@ namespace CM_Meeseeks_Box
                     // Have to try-catch all these damn things because other mods arent't doing null checks :(
                     try
                     {
-                        Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, targetInfo.Thing);
+                        //Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, targetInfo.Thing);
                         if (workGiverScanner.HasJobOnThing(meeseeks, targetInfo.Thing, true))
                         {
-                            Logger.MessageFormat(this, "Getting {0} for job on {1}", workGiverScanner, targetInfo.Thing);
+                            //Logger.MessageFormat(this, "Getting {0} for job on {1}", workGiverScanner, targetInfo.Thing);
                             job = workGiverScanner.JobOnThing(meeseeks, targetInfo.Thing, true);
                         }
                     }
@@ -119,24 +119,26 @@ namespace CM_Meeseeks_Box
 
                     }
                 }
-
-                // Have to try-catch all these damn things because other mods arent't doing null checks :(
-                try
+                else
                 {
-                    Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, targetInfo.Cell);
-                    if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
-                        job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
-                }
-                catch (Exception e)
-                {
+                    // Have to try-catch all these damn things because other mods arent't doing null checks :(
+                    try
+                    {
+                        //Logger.MessageFormat(this, "Checking {0} for job on {1}", workGiverScanner, targetInfo.Cell);
+                        if (job == null && workGiverScanner.HasJobOnCell(meeseeks, targetInfo.Cell, true))
+                            job = workGiverScanner.JobOnCell(meeseeks, targetInfo.Cell, true);
+                    }
+                    catch (Exception e)
+                    {
 
-                }
-                finally
-                {
+                    }
+                    finally
+                    {
 
+                    }
                 }
 
-                if (job == null)
+                if (job == null && scanAllThingsOnCell)
                 {
                     var thingsAtCell = meeseeks.MapHeld.thingGrid.ThingsAt(targetInfo.Cell);
                     foreach (Thing thing in thingsAtCell)
@@ -150,7 +152,7 @@ namespace CM_Meeseeks_Box
                             if (workGiverScanner.HasJobOnThing(meeseeks, thing, true))
                                 job = workGiverScanner.JobOnThing(meeseeks, thing, true);
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
 
                         }

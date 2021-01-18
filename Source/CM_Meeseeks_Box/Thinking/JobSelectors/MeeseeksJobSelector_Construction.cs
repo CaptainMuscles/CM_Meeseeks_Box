@@ -44,7 +44,7 @@ namespace CM_Meeseeks_Box
             }
             else if (status == ConstructionStatus.InProgress)
             {
-                job = ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty);
+                job = ScanForJob(meeseeks, memory, savedJob, jobTarget, ref jobAvailabilty, true);
                 if (job == null)
                     jobAvailabilty = JobAvailability.Delayed;
                 else
