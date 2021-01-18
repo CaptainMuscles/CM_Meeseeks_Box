@@ -162,13 +162,14 @@
                 </li>
               </subNodes>
             </li>
-
+			
+			<!-- Meeseeks don't rest
             <li Class="ThinkNode_Tagger">
               <tagToGive>RestingForMedicalReasons</tagToGive>
               <subNodes>
                 <li Class="JobGiver_PatientGoToBed" />
               </subNodes>
-            </li>
+            </li>-->
             
 			<!-- Meeseeks don't wear clothes
             <li Class="ThinkNode_Tagger">
@@ -266,11 +267,11 @@
               </subNodes>
             </li>
 
-            <!-- Emergency work -->
+            <!-- Emergency work
             <li Class="JobGiver_Work">
               <leaveJoinableLordIfIssuesJob>true</leaveJoinableLordIfIssuesJob>
               <emergency>true</emergency>
-            </li>
+            </li> -->
             
             <!-- Lord directives (medium priority) -->
             <li Class="ThinkNode_JoinVoluntarilyJoinableLord">
@@ -392,12 +393,13 @@
           <subNodes>
             <li Class="ThinkNode_ConditionalNonPlayerNonHostileFaction">
               <subNodes>
+				<!-- Meeseeks don't rest
                 <li Class="ThinkNode_Tagger">
                   <tagToGive>RestingForMedicalReasons</tagToGive>
                   <subNodes>
                     <li Class="JobGiver_PatientGoToBed" />
                   </subNodes>
-                </li>
+                </li>-->
                 
                 <li Class="ThinkNode_Tagger">
                   <tagToGive>Misc</tagToGive>
