@@ -175,7 +175,7 @@ namespace CM_Meeseeks_Box
         {
             if (!busy)
             {
-                Logger.WarningFormat(cell, "Trying to restore designations without having forced them.");
+                Logger.MessageFormat(cell, "Trying to restore designations without having forced them.");
                 return;
             }
 
