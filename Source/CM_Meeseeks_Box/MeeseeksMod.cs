@@ -14,7 +14,7 @@ namespace CM_Meeseeks_Box
 
         public override string SettingsCategory()
         {
-            return "Meeseeks Box";
+            return "Mister Meeseeks";
         }
 
         public MeeseeksMod(ModContentPack content) : base(content)
