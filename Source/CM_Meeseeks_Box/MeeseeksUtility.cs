@@ -72,7 +72,7 @@ namespace CM_Meeseeks_Box
 
             SoundInfo soundInfo = GetTargetInfo(target);
             soundInfo.pitchFactor = voice.pitch;
-            soundInfo.volumeFactor = voice.volume;
+            soundInfo.volumeFactor = ((float)voice.volume / 100.0f) * MeeseeksMod.settings.meeseeksVolume;
             soundDef.PlayOneShot(soundInfo);
         }
 

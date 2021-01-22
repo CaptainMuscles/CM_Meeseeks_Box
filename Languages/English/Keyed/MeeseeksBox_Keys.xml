@@ -9,6 +9,7 @@
 	<CM_Meeseeks_Box_SettingAutoPauseOnCreationDescription>If set, the game will pause when a Meeseeks is created by a player-controlled, non-Meeseeks pawn.</CM_Meeseeks_Box_SettingAutoPauseOnCreationDescription>
 	<CM_Meeseeks_Box_SettingMeeseeksSpeaksLabel>Meeseeks speaks</CM_Meeseeks_Box_SettingMeeseeksSpeaksLabel>
 	<CM_Meeseeks_Box_SettingMeeseeksSpeaksDescription>If set, voice clips will be played for a Meeseeks for certain events.</CM_Meeseeks_Box_SettingMeeseeksSpeaksDescription>
+	<CM_Meeseeks_Box_SettingMeeseeksSpeechVolumeLabel>Meeseeks volume</CM_Meeseeks_Box_SettingMeeseeksSpeechVolumeLabel>
 	
 	<CM_Meeseeks_Box_GuardHere>Guard here</CM_Meeseeks_Box_GuardHere>
 	<CM_Meeseeks_Box_SelectJobAreaLabel>Select additional targets</CM_Meeseeks_Box_SelectJobAreaLabel>

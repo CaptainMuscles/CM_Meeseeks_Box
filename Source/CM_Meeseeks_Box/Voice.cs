@@ -15,13 +15,13 @@ namespace CM_Meeseeks_Box
         public Voice()
         {
             pitch = (Rand.Value * 0.1f) + 0.95f;
-            volume = Rand.RangeInclusive(20, 30);
+            volume = Rand.RangeInclusive(80, 100);
         }
 
         public void ExposeData()
         {
             Scribe_Values.Look<float>(ref this.pitch, "pitch", 1.0f);
-            Scribe_Values.Look<int>(ref this.volume, "volume", 25);
+            Scribe_Values.Look<int>(ref this.volume, "volume", 90);
         }
 
         public override string ToString()
