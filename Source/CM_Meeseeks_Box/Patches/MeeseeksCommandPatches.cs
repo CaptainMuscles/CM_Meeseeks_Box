@@ -187,37 +187,6 @@ namespace CM_Meeseeks_Box
             }
         }
 
-        [HarmonyPatch(typeof(FloatMenuMakerMap))]
-        [HarmonyPatch("CanTakeOrder", MethodType.Normal)]
-        public static class MeeseeksCanTakeOrder
-        {
-            [HarmonyPrefix]
-            public static bool Prefix(Pawn pawn, ref bool __result)
-            {
-                //Logger.MessageFormat(pawn, "CanTakeOrder Prefix");
-
-                if (pawn != null)
-                {
-                    CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
-
-                    if (compMeeseeksMemory != null)
-                    {
-                        bool canTakeOrder = compMeeseeksMemory.CanTakeOrders();
-
-                        //Logger.MessageFormat(pawn, "CanTakeOrder Meeseeks: {0}", canTakeOrder.ToString());
-
-                        if (!canTakeOrder)
-                        {
-                            __result = false;
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            }
-        }
-
         [HarmonyPatch(typeof(Pawn))]
         [HarmonyPatch("GetGizmos", MethodType.Normal)]
         public static class MeeseeksNoGizmosAfterJobStarted

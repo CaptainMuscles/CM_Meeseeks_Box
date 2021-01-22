@@ -17,6 +17,34 @@ namespace CM_Meeseeks_Box
     public static class FloatMenuMakerMapPatches
     {
         [HarmonyPatch(typeof(FloatMenuMakerMap))]
+        [HarmonyPatch("CanTakeOrder", MethodType.Normal)]
+        public static class MeeseeksCanTakeOrder
+        {
+            [HarmonyPostfix]
+            public static void Postfix(Pawn pawn, ref bool __result)
+            {
+                //Logger.MessageFormat(pawn, "CanTakeOrder Postfix");
+
+                if (pawn != null)
+                {
+                    CompMeeseeksMemory compMeeseeksMemory = pawn.GetComp<CompMeeseeksMemory>();
+
+                    if (compMeeseeksMemory != null)
+                    {
+                        bool canTakeOrder = compMeeseeksMemory.CanTakeOrders();
+
+                        Logger.MessageFormat(pawn, "CanTakeOrder Meeseeks: {0}", canTakeOrder.ToString());
+
+                        if (!canTakeOrder)
+                        {
+                            __result = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(FloatMenuMakerMap))]
         [HarmonyPatch("ChoicesAtFor", MethodType.Normal)]
         static class FloatMenuMakerMap_ChoicesAtFor_Patch
         {
